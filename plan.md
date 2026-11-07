@@ -16,6 +16,8 @@ subject is the boundary between a model's tool call and the operating system.
    optional for the offline tests and required for the integration tests in
    Stages 4–5.
 2. Every chapter runs from its own directory with `python -m pytest -v`.
+   The folder number and stage number are identical: `ch00` is Stage 0,
+   `ch01` is Stage 1, and so on. Never renumber one without the other.
 3. No network or API key is required by any test. Assertions check behaviour
    and observation strings, never terminal colour or panel layout.
 4. A refusal is a stable observation string, never an uncaught exception.
