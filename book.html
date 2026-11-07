@@ -286,7 +286,7 @@ python -m mini_harness.demo</pre></figure>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Path</th><th style="text-align:left">What it is</th></tr></thead>
 <tbody>
-<tr><td style="text-align:left"><code>ch00/</code> … <code>ch05/</code></td><td style="text-align:left">One standalone, runnable stage per chapter</td></tr>
+<tr><td style="text-align:left"><code>ch00/</code> … <code>ch05/</code></td><td style="text-align:left">One standalone, runnable stage per chapter; <code>chNN</code> is Stage NN (<code>ch00</code> = Stage 0)</td></tr>
 <tr><td style="text-align:left"><code>chNN/CHAPTER.md</code></td><td style="text-align:left">The chapter: problem, design, walkthrough, acceptance, limits</td></tr>
 <tr><td style="text-align:left"><code>chNN/mini_harness/</code></td><td style="text-align:left">The stage's Python package</td></tr>
 <tr><td style="text-align:left"><code>chNN/mini_harness/ui.py</code></td><td style="text-align:left">Shared Rich presentation layer; the same file in every chapter</td></tr>
@@ -1305,7 +1305,7 @@ PY</pre></figure>
 <h3 id="s10-01">Global rules</h3>
 <ol>
 <li>Python 3.11+ for runtime code; pytest is the test runner. Rich is the only presentation dependency and is used only by the demo layer. Docker is optional for the offline tests and required for the integration tests in Stages 4–5.</li>
-<li>Every chapter runs from its own directory with <code>python -m pytest -v</code>.</li>
+<li>Every chapter runs from its own directory with <code>python -m pytest -v</code>. The folder number and stage number are identical: <code>ch00</code> is Stage 0, <code>ch01</code> is Stage 1, and so on. Never renumber one without the other.</li>
 <li>No network or API key is required by any test. Assertions check behaviour and observation strings, never terminal colour or panel layout.</li>
 <li>A refusal is a stable observation string, never an uncaught exception.</li>
 <li>Never weaken a test to make a demo pass. If a boundary cannot be tested on a platform, skip with a reason.</li>
