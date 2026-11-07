@@ -12,6 +12,10 @@ The naive fence fails because it asks "does this path *look* like it is inside
 the workspace?" The kernel asks "which file will this path *open*?" Those are
 different questions, and only the second one matters.
 
+> **Recording cue:** 🎬 Put that pair of questions on a slide and leave it up
+> for the whole explanation. Every mechanism in this chapter is an answer to
+> the second question.
+
 There are three layers to get right:
 
 1. **Lexical normalisation.** Collapse `.` and `..`; reject NUL bytes, control
@@ -126,6 +130,14 @@ the rest:
 [blocked] read prefix sibling: PATH: path escapes workspace: ../workspace-evil/secret.txt
 ```
 
+> **Demo beat:** 🧪 Run the normal read, then the two refusals through the same
+> policy. Point at the canonical path in the first line: that is the value the
+> kernel will use, and the string the naive fence never compared.
+
+> **Pro tip:** 💡 Show the `commonpath` comparison as one small code block.
+> Do not scroll the whole module. The viewer needs the boundary check, not the
+> platform trivia.
+
 ## It works when
 
 - [ ] A normal read resolves to a canonical path inside the root.
@@ -147,6 +159,10 @@ the rest:
 - The policy does not audit refusals; Stage 5 adds that.
 - `realpath` + `open` is still a time-of-check/time-of-use gap. The only full
   answer is a separate security boundary (Stage 4).
+
+> **Alert:** ⚠️ Do not call this chapter a jail. It is one policy, applied
+> consistently. The kernel still lets the same user open files directly, and a
+> determined race is out of scope until the container arrives.
 
 ## If it goes wrong
 

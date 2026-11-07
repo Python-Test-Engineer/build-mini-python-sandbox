@@ -14,7 +14,8 @@ Python path policy is accident prevention and usability, not a jail.
 | Disk | ~1 GB for the Python base image | More if you add tools |
 
 No API key or network access is needed for the offline suites. Install pytest
-(`python -m pip install pytest`); it is the only test dependency.
+and Rich (`python -m pip install pytest rich`). The sandbox core is standard
+library only; Rich is used by the demo layer for panels and colour.
 
 ## 2. Install and verify
 

@@ -18,6 +18,10 @@
  *   --eyebrow <text>  small label above the title (default: Reading guide)
  *   --lede <text>     subtitle paragraph
  *   --kicker <text>   sidebar kicker (default: explainer)
+ *   --meta <text>     pipe-separated masthead details
+ *   --foot <text>     sidebar footer line
+ *   --colophon <text> closing colophon line
+ *   --book            treat every H1 as a chapter and H2 as a subsection
  *   --link            reference assets/ instead of inlining them
  *   --out <file>      output path (same as the positional argument)
  */
@@ -31,16 +35,20 @@ const ROOT = resolve(HERE, '..');
 const ASSETS = join(ROOT, 'assets');
 
 const args = process.argv.slice(2);
-const opts = { link: false, out: '', title: '', eyebrow: '', lede: '', kicker: '', input: '' };
+const opts = { link: false, book: false, out: '', title: '', eyebrow: '', lede: '', kicker: '', meta: '', foot: '', colophon: '', input: '' };
 
 for (let i = 0; i < args.length; i++) {
   const a = args[i];
   if (a === '--link') opts.link = true;
+  else if (a === '--book') opts.book = true;
   else if (a === '--out') opts.out = args[++i] || '';
   else if (a === '--title') opts.title = args[++i] || '';
   else if (a === '--eyebrow') opts.eyebrow = args[++i] || '';
   else if (a === '--lede') opts.lede = args[++i] || '';
   else if (a === '--kicker') opts.kicker = args[++i] || '';
+  else if (a === '--meta') opts.meta = args[++i] || '';
+  else if (a === '--foot') opts.foot = args[++i] || '';
+  else if (a === '--colophon') opts.colophon = args[++i] || '';
   else if (a === '--help' || a === '-h') { usage(); process.exit(0); }
   else if (!opts.input) opts.input = a;
   else if (!opts.out) opts.out = a;
@@ -55,7 +63,7 @@ const sourceName = basename(inputPath);
 
 function usage() {
   console.log('Usage: node scripts/md-to-html.mjs <input.md> [output.html] [options]');
-  console.log('Options: --title --eyebrow --lede --kicker --link --out');
+  console.log('Options: --title --eyebrow --lede --kicker --meta --foot --colophon --book --link --out');
 }
 
 /* ------------------------------------------------------------------ */
@@ -211,14 +219,14 @@ function parseMarkdown(markdown, options) {
     if (heading) {
       const level = heading[1].length;
       const text = heading[2].replace(/\s*#+\s*$/, '');
-      if (level === 1 && !sawH1 && sectionCount === 0) {
-        /* The first H1 is the page title, not a numbered section. */
+      if (level === 1 && !sawH1 && sectionCount === 0 && !options.title) {
+        /* Without an explicit title, the first H1 is the page title. */
         sawH1 = true;
-        if (!options.title) title = plain(text);
+        title = plain(text);
       } else if (level === 1) addHeading(2, text);
-      else if (level === 2) addHeading(2, text);
-      else if (level === 3) addHeading(3, text);
-      else if (level === 4) addHeading(4, text);
+      else if (level === 2) addHeading(options.book ? 3 : 2, text);
+      else if (level === 3) addHeading(options.book ? 4 : 3, text);
+      else if (level === 4) addHeading(options.book ? 5 : 4, text);
       else addHeading(5, text);
       i++;
       continue;
@@ -290,7 +298,7 @@ function parseMarkdown(markdown, options) {
 
 function renderCallout(innerLines) {
   const text = innerLines.join('\n');
-  const warn = /^\s*\*\*\s*(warning|caution|danger)\b/i.test(text);
+  const warn = /^\s*\*\*\s*(warning|caution|danger|alert)\b/i.test(text);
   let html = '<div class="callout' + (warn ? ' warn' : '') + '">';
 
   const blocks = text.split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
@@ -391,6 +399,14 @@ function buildPage(parsed, options) {
   const sideSub = escapeHtml(options.lede || 'A styled explainer page.');
   const count = parsed.sectionCount;
   const toc = parsed.toc.map(tocLink).join('\n');
+  const metaItems = options.meta
+    ? options.meta.split('|').map((item) => item.trim()).filter(Boolean)
+    : [`${count} section${count === 1 ? '' : 's'}`, 'generated page'];
+  const metaHtml = metaItems
+    .map((item) => `<span>${escapeHtml(item)}</span>`)
+    .join('\n          ');
+  const footText = options.foot || `Built from ${sourceName}`;
+  const colophonText = options.colophon || `Built from ${sourceName} \u00b7 ${count} section${count === 1 ? '' : 's'} \u00b7 explainer series`;
 
   return `<!doctype html>
 <html lang="en">
@@ -415,8 +431,7 @@ ${THEME_BOOTSTRAP}
 ${toc}
     </nav>
     <div class="side-foot">
-      Built from <code>${escapeHtml(sourceName)}</code><br>
-      ${count} section${count === 1 ? '' : 's'}
+      ${escapeHtml(footText)}
     </div>
   </aside>
 
@@ -427,14 +442,13 @@ ${toc}
         <h1>${title}</h1>
         <p class="lede">${lede}</p>
         <p class="meta">
-          <span>${count} section${count === 1 ? '' : 's'}</span>
-          <span>generated page</span>
+          ${metaHtml}
         </p>
       </header>
 
 ${parsed.body}
       <div class="colophon">
-        Built from <code>${escapeHtml(sourceName)}</code> &middot; ${count} section${count === 1 ? '' : 's'} &middot; explainer series
+        ${escapeHtml(colophonText)}
       </div>
     </div>
   </main>

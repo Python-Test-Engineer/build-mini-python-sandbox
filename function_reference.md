@@ -159,7 +159,24 @@ numbers, line cap, truncation marker).
 ### `ch00`–`ch05` demos
 
 Each `mini_harness/demo.py` is a runnable walkthrough, not part of the public
-API. Run it with `python -m mini_harness.demo`.
+API. Run it with `python -m mini_harness.demo` or directly with
+`uv run mini_harness/demo.py`. Stage 5 uses `mini_harness/__main__.py` instead.
+
+### `ch00/mini_harness/ui.py` (identical in every chapter)
+
+| Name | Contract |
+|---|---|
+| `Theme(accent, success, warning, error, info, muted, title, box_name, icons)` | Frozen palette. Load presets and environment overrides with `Theme.from_env(accent=...)`. |
+| `Theme.from_env(accent=None)` | Supports `MINI_HARNESS_THEME=dark\|light\|mono` and the `MINI_HARNESS_*` colour variables. |
+| `UI(theme=None, accent=None, title=None, console=None)` | Wraps a Rich `Console`; per-chapter accent wins over the environment. |
+| `UI.header(title=None, subtitle=None, badge=None)` | Chapter banner panel. |
+| `UI.section(title)` | Coloured rule between demo sections. |
+| `UI.note(label, message, kind="info", icon=None)` | Coloured card for notes, warnings, skips and errors. |
+| `UI.result(label, text, kind=None)` | Observation card; infers `OK`, `ERROR`, `TIMEOUT` and `SKIP`. |
+| `UI.explain(title, what, why, kind="accent")` | Teaching card after each output section: what happened and why it matters. |
+| `UI.command(argv, cwd=None, title="command")` | Wrapped command panel with display-safe quoting. |
+| `UI.table(title, headers, rows)` | Compact table using the shared palette. |
+| `UI.done(message)` | Closing success card. |
 
 ## Alphabetical index
 
@@ -189,9 +206,11 @@ API. Run it with `python -m mini_harness.demo`.
 | `Sandbox` | 2, 5 | class |
 | `SandboxError` | 2, 5 | exception |
 | `ScriptedModel` | 5 | class |
+| `Theme` | 0–5 | frozen dataclass |
 | `ToolSpec` | 2, 5 | frozen dataclass |
 | `Toolbox` | 5 | class |
 | `TOOL_SPECS` | 2, 5 | constant |
+| `UI` | 0–5 | class |
 | `default_command_policy()` | 3 | function |
 | `expand_variables(text, env=None)` | 1–5 | function |
 | `format_result(result)` | 3, 5 | function |

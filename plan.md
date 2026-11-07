@@ -11,12 +11,13 @@ subject is the boundary between a model's tool call and the operating system.
 
 ## Global rules
 
-1. Python 3.11+ for runtime code; pytest is the test runner. Docker is
+1. Python 3.11+ for runtime code; pytest is the test runner. Rich is the only
+   presentation dependency and is used only by the demo layer. Docker is
    optional for the offline tests and required for the integration tests in
    Stages 4–5.
 2. Every chapter runs from its own directory with `python -m pytest -v`.
-3. No network, no API key and no third-party runtime dependency in any test;
-   pytest is the only test dependency.
+3. No network or API key is required by any test. Assertions check behaviour
+   and observation strings, never terminal colour or panel layout.
 4. A refusal is a stable observation string, never an uncaught exception.
 5. Never weaken a test to make a demo pass. If a boundary cannot be tested on a
    platform, skip with a reason.

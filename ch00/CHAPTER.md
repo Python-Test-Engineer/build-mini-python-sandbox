@@ -19,6 +19,10 @@ The interesting part for this book is the arrow between **tool call** and
 a file read, a file write, a process start. Everything else is conversation.
 Sandboxing is the set of decisions that controls that arrow.
 
+> **Recording cue:** 🎬 Open with the three-line prefix check, not the theory.
+> Ask the viewer to spot the flaw before you name it. The answer lands harder
+> after a pause than after a definition.
+
 Stage 0 deliberately makes the wrong decisions, because they are the ones a
 first prototype usually makes:
 
@@ -94,6 +98,14 @@ Expected shape:
 [blocked] plain ../ traversal: ValueError: path escapes workspace: ../outside-secret.txt
 ```
 
+> **Demo beat:** 🧪 Show the `[leaked]` prefix-sibling line first, then the
+> `[blocked]` traversal line. The contrast is the whole episode: one is caught
+> by spelling, the other is not a spelling problem at all.
+
+> **Alert:** ⚠️ Keep the shell command harmless. Never point this stage at a
+> real home folder or run a destructive command for a reaction. The lesson is
+> the shape of the call, not the damage.
+
 ## It works when
 
 - [ ] `python -m mini_harness.demo` exits zero.
@@ -112,6 +124,13 @@ ones: the escape must be refused.
 
 A second reason is pedagogical: the fixed version is easier to trust when you
 have seen the exact input that broke the naive version.
+
+> **Audience question:** 🗣️ "If the path starts with the workspace folder, is it
+> inside the workspace?" Pause, then show `workspace-evil`. That one example
+> carries the entire episode.
+
+> **Edit note:** ✂️ If the symlink case skips on Windows, record the skip once,
+> explain Developer Mode, and move on. Do not spend the take fighting the OS.
 
 ## Stage limits
 

@@ -22,6 +22,11 @@ The book is the six `chNN/CHAPTER.md` files. This repository is the runnable
 version: every stage is a standalone Python project, every module is commented,
 and every security claim has a test beside it.
 
+> **Recording cue:** 🎬 If you are using the book as the companion guide for a
+> video series, read **Appendix E — Instructor and recording companion** first.
+> It contains the episode run sheet, demo beats, reset commands, and the
+> questions to plant in each episode.
+
 > **Safety note.** Stage 0 is intentionally unsafe. It exists to demonstrate
 > three concrete holes, and its demo only runs against a temporary directory.
 > Do not point `unsafe.py` at your home folder, do not add `--privileged` to the
@@ -44,16 +49,51 @@ much it may consume, and what the model sees when it is refused.**
 
 ### Quick start
 
-Each chapter runs from its own directory. The runtime code has no third-party
-dependencies; pytest is the only test dependency. Install it once with
-`python -m pip install pytest` (or use your own environment manager). No API
-key is required. Python 3.11 or newer is recommended.
+Each chapter runs from its own directory. The sandbox code uses only the
+standard library; the demo layer uses Rich for presentation. pytest is the test
+runner. Install both once with `python -m pip install pytest rich` (or use your
+own environment manager such as `uv`). No API key is required. Python 3.11 or
+newer is recommended.
 
 ```bash
 cd ch00
 python -m mini_harness.demo
 python -m pytest -v
 ```
+
+> **Pro tip:** 💡 You can also run a demo as a file, which is handy with `uv`:
+> `cd ch02` then `uv run mini_harness/demo.py`. The demo adds the chapter
+> directory to the import path when it is launched directly. The Stage 5
+> equivalent is `uv run mini_harness/__main__.py` from `ch05/`.
+
+#### Demo presentation
+
+Every chapter ships the same `mini_harness/ui.py`, a small Rich wrapper that
+renders headers, section rules, colour-coded observation cards, command panels
+and tables. Each stage picks its own accent colour; the rest of the palette is
+shared.
+
+After each major output section the demo prints an **explainer** card with two
+fields: **What** happened in the observation, and **Why** it matters. A learner
+can read the result and the reasoning without leaving the terminal.
+
+```bash
+cd ch02
+
+# default palette, chapter accent
+uv run mini_harness/demo.py
+
+# plain output for a log file or CI
+MINI_HARNESS_THEME=mono uv run mini_harness/demo.py
+
+# override one colour without editing code
+MINI_HARNESS_ACCENT=magenta uv run mini_harness/demo.py
+```
+
+The presets are `dark`, `light` and `mono`. Individual overrides use
+`MINI_HARNESS_ACCENT`, `MINI_HARNESS_SUCCESS`, `MINI_HARNESS_WARNING`,
+`MINI_HARNESS_ERROR`, `MINI_HARNESS_INFO`, `MINI_HARNESS_MUTED`,
+`MINI_HARNESS_TITLE` and `MINI_HARNESS_BOX`.
 
 The finished harness:
 
@@ -109,11 +149,13 @@ python scripts/build_book_html.py
 | `ch00/` … `ch05/` | One standalone, runnable stage per chapter |
 | `chNN/CHAPTER.md` | The chapter: problem, design, walkthrough, acceptance, limits |
 | `chNN/mini_harness/` | The stage's Python package |
+| `chNN/mini_harness/ui.py` | Shared Rich presentation layer; the same file in every chapter |
 | `chNN/tests/` | unittest-style tests, collected by `pytest` |
 | `chNN/workspace/` | A small sample workspace for experimenting |
 | `ch04/docker/`, `ch05/docker/` | The sandbox image |
 | `plan.md` | The stage-by-stage build contract |
 | `function_reference.md` | Alphabetical and file-by-file code map |
+| `INSTRUCTOR_NOTES.md` | Appendix E: the episode run sheet and recording companion |
 | `THREAT_MODEL.md` | Assets, adversaries, threats, mitigations and residual risk |
 | `OPERATIONS.md` | Build, run, update, audit and incident-response runbook |
 | `qa.html` | Architecture Q&A companion built with the shared explainer standard; open it in a browser |
@@ -193,7 +235,8 @@ foreach ($chapter in "ch00","ch01","ch02","ch03","ch04","ch05") {
 
 Read `THREAT_MODEL.md` first if you want the “why”. Read `plan.md` if you want
 the contract. Read `function_reference.md` when you are tracing a function.
-Open `qa.html` when you want the short answer to an architecture question. Every
+Open `qa.html` when you want the short answer to an architecture question. Open
+`INSTRUCTOR_NOTES.md` when you are planning or recording an episode. Every
 HTML explainer follows `EXPLAINERS.md`; generate a new one from Markdown with
 `node scripts/md-to-html.mjs <input.md>`.
 
@@ -223,6 +266,10 @@ The interesting part for this book is the arrow between **tool call** and
 **observation**. A tool is where model text becomes an operating-system action:
 a file read, a file write, a process start. Everything else is conversation.
 Sandboxing is the set of decisions that controls that arrow.
+
+> **Recording cue:** 🎬 Open with the three-line prefix check, not the theory.
+> Ask the viewer to spot the flaw before you name it. The answer lands harder
+> after a pause than after a definition.
 
 Stage 0 deliberately makes the wrong decisions, because they are the ones a
 first prototype usually makes:
@@ -299,6 +346,14 @@ Expected shape:
 [blocked] plain ../ traversal: ValueError: path escapes workspace: ../outside-secret.txt
 ```
 
+> **Demo beat:** 🧪 Show the `[leaked]` prefix-sibling line first, then the
+> `[blocked]` traversal line. The contrast is the whole episode: one is caught
+> by spelling, the other is not a spelling problem at all.
+
+> **Alert:** ⚠️ Keep the shell command harmless. Never point this stage at a
+> real home folder or run a destructive command for a reaction. The lesson is
+> the shape of the call, not the damage.
+
 ### It works when
 
 - [ ] `python -m mini_harness.demo` exits zero.
@@ -317,6 +372,13 @@ ones: the escape must be refused.
 
 A second reason is pedagogical: the fixed version is easier to trust when you
 have seen the exact input that broke the naive version.
+
+> **Audience question:** 🗣️ "If the path starts with the workspace folder, is it
+> inside the workspace?" Pause, then show `workspace-evil`. That one example
+> carries the entire episode.
+
+> **Edit note:** ✂️ If the symlink case skips on Windows, record the skip once,
+> explain Developer Mode, and move on. Do not spend the take fighting the OS.
 
 ### Stage limits
 
@@ -358,6 +420,10 @@ have seen the exact input that broke the naive version.
 The naive fence fails because it asks "does this path *look* like it is inside
 the workspace?" The kernel asks "which file will this path *open*?" Those are
 different questions, and only the second one matters.
+
+> **Recording cue:** 🎬 Put that pair of questions on a slide and leave it up
+> for the whole explanation. Every mechanism in this chapter is an answer to
+> the second question.
 
 There are three layers to get right:
 
@@ -473,6 +539,14 @@ the rest:
 [blocked] read prefix sibling: PATH: path escapes workspace: ../workspace-evil/secret.txt
 ```
 
+> **Demo beat:** 🧪 Run the normal read, then the two refusals through the same
+> policy. Point at the canonical path in the first line: that is the value the
+> kernel will use, and the string the naive fence never compared.
+
+> **Pro tip:** 💡 Show the `commonpath` comparison as one small code block.
+> Do not scroll the whole module. The viewer needs the boundary check, not the
+> platform trivia.
+
 ### It works when
 
 - [ ] A normal read resolves to a canonical path inside the root.
@@ -494,6 +568,10 @@ the rest:
 - The policy does not audit refusals; Stage 5 adds that.
 - `realpath` + `open` is still a time-of-check/time-of-use gap. The only full
   answer is a separate security boundary (Stage 4).
+
+> **Alert:** ⚠️ Do not call this chapter a jail. It is one policy, applied
+> consistently. The kernel still lets the same user open files directly, and a
+> determined race is out of scope until the container arrives.
 
 ### If it goes wrong
 
@@ -540,6 +618,9 @@ can be used badly:
 Stage 2 turns the policy into a **sandbox contract**. The policy still answers
 "where"; the sandbox answers "how much, how safely, and what does the caller
 see when it is refused?"
+
+> **Recording cue:** 🎬 Open with the four failure modes as a list, not with the
+> code. The viewer should feel the problem before seeing `Limits(...)`.
 
 ### What changed
 
@@ -629,6 +710,14 @@ python -m pytest -v
 The demo performs normal work and then four refusals. The exact observation
 strings are what a model would see.
 
+> **Demo beat:** 🧪 Show one successful write, then `TOO_LARGE`, `EXISTS`,
+> `AMBIGUOUS`, and `PATH` in that order. End on the fact that no traceback
+> reaches the model.
+
+> **Audience question:** 🗣️ "Why not just catch the exception and return the
+> traceback?" Answer: a traceback is noisy context and can leak host paths. A
+> stable error code is a contract the model can act on.
+
 ### It works when
 
 - [ ] `read_text` returns the file, preserves `\r\n`, and refuses a directory.
@@ -649,6 +738,10 @@ strings are what a model would see.
 - Still a time-of-check/time-of-use gap between policy and open.
 - No command execution yet.
 - No audit trail yet.
+
+> **Alert:** ⚠️ These limits protect the agent process from oversized results.
+> They do not protect the host from a command. Stage 3 adds a runner, and Stage
+> 4 makes the runner live behind a real boundary.
 
 ### If it goes wrong
 
@@ -702,6 +795,10 @@ That single line gives the model:
 * the same filesystem and network access as the agent process.
 
 Stage 3 removes the easy accidents. It does **not** claim to be a jail.
+
+> **Recording cue:** 🎬 Build the episode around one sentence: "Hygiene is not a
+> boundary." Every control is a hygiene improvement; the final demo proves the
+> boundary is still missing.
 
 ### What changed
 
@@ -804,6 +901,13 @@ local runner is not a filesystem jail
 That is not a bug in Stage 3. It is the motivation for Stage 4. Hygiene is not
 a boundary.
 
+> **Demo beat:** 🧪 End the episode on this exact output. Stop talking, let the
+> outside read land, then say: "That is why Stage 4 exists." Cut to black.
+
+> **Alert:** ⚠️ Never describe the local runner as a sandbox on camera. Call it
+> a guardrail or accident prevention. The child still has the same filesystem
+> and network access as the agent process.
+
 ### Run it
 
 From `ch03/`:
@@ -815,6 +919,10 @@ python -m pytest -v
 
 The tests use the running Python interpreter as the only allowlisted program,
 so they need no network and no shell. pytest is the sole test dependency.
+
+> **Pro tip:** 💡 Put the `CommandPolicy` mapping on screen when you explain the
+> allowlist. A logical name that resolves to one absolute executable is easier
+> to grasp than a paragraph about `PATH`.
 
 ### It works when
 
@@ -884,6 +992,10 @@ seccomp profile and a separate filesystem view. It is still not magic — a
 container shares the host kernel — but it is a much better default than "same
 process, same user, same filesystem".
 
+> **Recording cue:** 🎬 Start with the three things the Stage 3 child can still
+> do: read SSH keys, write to the home folder, open a network connection. Then
+> introduce the container as the control for reachability, not just time.
+
 ### What changed
 
 - Added `docker/Dockerfile` and `docker/.dockerignore`.
@@ -952,6 +1064,10 @@ Every flag below is a deliberate decision. The tests fail if one disappears.
 Docker's default seccomp profile still applies. The runner does not pass
 `--privileged`, does not mount the Docker socket, and does not add devices.
 
+> **Pro tip:** 💡 Put the flag table on screen as a banner while the command
+> runs. Focus on `--network none`, `--read-only`, `--privileged` absence,
+> `--pids-limit`, and the single workspace mount. Do not read every row aloud.
+
 ### The important subtlety: read-only root is not read-only workspace
 
 `--read-only` freezes the **image** filesystem. The bind mount at `/workspace`
@@ -994,6 +1110,10 @@ python -m pytest -v
 The first command prints the full `docker run` argv even when Docker is not
 installed. The integration tests skip when the daemon or image is missing.
 
+> **Demo beat:** 🧪 Show the full argv first, then run the four live behaviours:
+> Python runs, the network fails, a root write fails, and the workspace is
+> visible. Keep each result on screen for a beat before moving on.
+
 ### It works when
 
 - [ ] The command contains `--network none`, `--read-only`, `--cap-drop ALL`,
@@ -1025,6 +1145,10 @@ installed. The integration tests skip when the daemon or image is missing.
   owned by a different uid. This is a deployment decision, not a bug.
 - `--network none` blocks network access inside the container; it does not stop
   the Docker daemon, the host, or a sibling container.
+
+> **Alert:** ⚠️ Never mount the Docker socket into the sandbox, never add
+> `--privileged`, and never demonstrate a write outside the workspace. The
+> container is a boundary, but a bad flag is a hole in it.
 
 ### If it goes wrong
 
@@ -1081,6 +1205,10 @@ The absence of an LLM client is deliberate. The book is about the sandbox, not
 about choosing a provider. A real adapter implements one method and everything
 else stays the same.
 
+> **Recording cue:** 🎬 Open with the two boundaries already built, then ask:
+> "What is missing?" The answer is not another control. It is the loop and the
+> record.
+
 ### What changed
 
 - Added `mini_harness/toolbox.py` — one dispatch point for all tools.
@@ -1132,6 +1260,10 @@ Two details matter:
 * **A refusal is an observation, not an exception.** The model sees
   `ERROR[PATH]` or `ERROR[DOCKER_MISSING]` and can choose a different action.
   The loop continues.
+
+> **Audience question:** 🗣️ "Why not let the model decide when to stop?" Answer:
+> a model may loop forever; the harness may not. The step limit belongs to the
+> loop.
 
 `AgentResult` returns the final text, the step count, the stop reason, the full
 transcript and a compact list of observations. A UI can render the transcript;
@@ -1189,6 +1321,10 @@ ERROR[DOCKER_MISSING]: Docker CLI/daemon is not available
 The loop still finishes. That is the desired behaviour: infrastructure absence
 is a visible failed tool call, not a crash.
 
+> **Demo beat:** 🧪 Show the write, the read, the container run, the final
+> answer, and `audit chain verifies: True`. Then open the JSONL and point at
+> `seq`, `prev`, and `hash` in one event. That is the proof, not the claim.
+
 ### End-to-end acceptance
 
 Run these in order on a machine with Docker and the image built:
@@ -1224,6 +1360,10 @@ This is a teaching harness, not a production service. It still lacks:
 Those are operations concerns. `../OPERATIONS.md` explains where they attach to
 this code without changing the boundaries.
 
+> **Recording cue:** 🎬 Close the series on the audit line, then a title card:
+> "The boundary is the product." Keep the final take under 20 seconds and resist
+> the urge to recap every chapter.
+
 ### If it goes wrong
 
 - **`ModuleNotFoundError: mini_harness`** — run from the chapter directory:
@@ -1244,6 +1384,10 @@ this code without changing the boundaries.
 - **Audit logging slows the demo** — fsync on every event is deliberate. Batch
   or buffer only with a clear durability trade-off; do not silently drop the
   trail.
+
+> **Alert:** ⚠️ This is a teaching harness, not a production service. Say so in
+> the episode. The audit makes tampering visible; it does not make tampering
+> impossible, and it is not a compliance control.
 
 ### Read next
 
@@ -1522,7 +1666,8 @@ Python path policy is accident prevention and usability, not a jail.
 | Disk | ~1 GB for the Python base image | More if you add tools |
 
 No API key or network access is needed for the offline suites. Install pytest
-(`python -m pip install pytest`); it is the only test dependency.
+and Rich (`python -m pip install pytest rich`). The sandbox core is standard
+library only; Rich is used by the demo layer for panels and colour.
 
 ### 2. Install and verify
 
@@ -1769,12 +1914,13 @@ subject is the boundary between a model's tool call and the operating system.
 
 ### Global rules
 
-1. Python 3.11+ for runtime code; pytest is the test runner. Docker is
+1. Python 3.11+ for runtime code; pytest is the test runner. Rich is the only
+   presentation dependency and is used only by the demo layer. Docker is
    optional for the offline tests and required for the integration tests in
    Stages 4–5.
 2. Every chapter runs from its own directory with `python -m pytest -v`.
-3. No network, no API key and no third-party runtime dependency in any test;
-   pytest is the only test dependency.
+3. No network or API key is required by any test. Assertions check behaviour
+   and observation strings, never terminal colour or panel layout.
 4. A refusal is a stable observation string, never an uncaught exception.
 5. Never weaken a test to make a demo pass. If a boundary cannot be tested on a
    platform, skip with a reason.
@@ -2063,7 +2209,24 @@ numbers, line cap, truncation marker).
 #### `ch00`–`ch05` demos
 
 Each `mini_harness/demo.py` is a runnable walkthrough, not part of the public
-API. Run it with `python -m mini_harness.demo`.
+API. Run it with `python -m mini_harness.demo` or directly with
+`uv run mini_harness/demo.py`. Stage 5 uses `mini_harness/__main__.py` instead.
+
+#### `ch00/mini_harness/ui.py` (identical in every chapter)
+
+| Name | Contract |
+|---|---|
+| `Theme(accent, success, warning, error, info, muted, title, box_name, icons)` | Frozen palette. Load presets and environment overrides with `Theme.from_env(accent=...)`. |
+| `Theme.from_env(accent=None)` | Supports `MINI_HARNESS_THEME=dark\|light\|mono` and the `MINI_HARNESS_*` colour variables. |
+| `UI(theme=None, accent=None, title=None, console=None)` | Wraps a Rich `Console`; per-chapter accent wins over the environment. |
+| `UI.header(title=None, subtitle=None, badge=None)` | Chapter banner panel. |
+| `UI.section(title)` | Coloured rule between demo sections. |
+| `UI.note(label, message, kind="info", icon=None)` | Coloured card for notes, warnings, skips and errors. |
+| `UI.result(label, text, kind=None)` | Observation card; infers `OK`, `ERROR`, `TIMEOUT` and `SKIP`. |
+| `UI.explain(title, what, why, kind="accent")` | Teaching card after each output section: what happened and why it matters. |
+| `UI.command(argv, cwd=None, title="command")` | Wrapped command panel with display-safe quoting. |
+| `UI.table(title, headers, rows)` | Compact table using the shared palette. |
+| `UI.done(message)` | Closing success card. |
 
 ### Alphabetical index
 
@@ -2093,9 +2256,11 @@ API. Run it with `python -m mini_harness.demo`.
 | `Sandbox` | 2, 5 | class |
 | `SandboxError` | 2, 5 | exception |
 | `ScriptedModel` | 5 | class |
+| `Theme` | 0–5 | frozen dataclass |
 | `ToolSpec` | 2, 5 | frozen dataclass |
 | `Toolbox` | 5 | class |
 | `TOOL_SPECS` | 2, 5 | constant |
+| `UI` | 0–5 | class |
 | `default_command_policy()` | 3 | function |
 | `expand_variables(text, env=None)` | 1–5 | function |
 | `format_result(result)` | 3, 5 | function |
@@ -2137,3 +2302,415 @@ API. Run it with `python -m mini_harness.demo`.
 | `FILE_TOOL_NAMES` | toolbox | derived file-tool dispatch set |
 | `RUN_COMMAND_SPEC` | docker tools | the command tool contract |
 | `CHAPTER_DIR` / `DOCKER_DIR` | cli | `ch05` / `ch05/docker` |
+
+---
+
+## Appendix E — Instructor and recording companion
+
+> **Educational use only — not a production-ready system.** These notes are for an educational video series that walks through the book. The code is deliberately simplified. Do not present it as a secure, complete, or production-ready sandbox, and do not deploy it as-is.
+
+This appendix is the production-side companion to the six chapters. It gives you
+a repeatable recording workflow, a shot list for each stage, the exact commands
+to run on camera, and the questions your audience is most likely to ask.
+
+Use the chapters as the teaching material. Use this appendix as the run sheet.
+
+### How to read the note cards
+
+The book uses coloured callout cards throughout. Each icon has one job:
+
+| Card | Icon | What it means on camera |
+|---|---|---|
+| Recording cue | 🎬 | Start, stop, or transition the take here. |
+| Demo beat | 🧪 | Run this command or show this result on screen. |
+| Pro tip | 💡 | A small production or teaching improvement. |
+| Alert | ⚠️ | A common failure, safety issue, or claim to avoid. |
+| Audience question | 🗣️ | A good question to pose before the explanation. |
+| Edit note | ✂️ | Something to cut, shorten, or use as b-roll. |
+
+> **Pro tip:** 💡 Keep a text file open beside the recording app with the
+> commands from the current chapter. Paste commands into the terminal instead
+> of typing them live. It removes dead air and typo retakes.
+
+### Series shape and timing
+
+The six stages make six episodes plus one short series trailer. The times below
+are editing targets, not hard limits.
+
+| Episode | Chapter | Target length | The one-sentence promise |
+|---|---|---|---|
+| Trailer | Introduction | 45–60 s | "A model can ask your computer to do things. This series builds the wall between the two." |
+| 0 | The naive fence | 8–10 min | "The first sandbox is always a string check. Here is why it fails." |
+| 1 | One path policy | 12–15 min | "Stop comparing spellings. Compare real filesystem paths." |
+| 2 | The sandbox and file tools | 12–15 min | "A good path is not enough: bound the bytes, the writes, and the errors." |
+| 3 | Running code locally | 14–18 min | "An argv allowlist is hygiene, not a jail." |
+| 4 | Docker as the real wall | 16–20 min | "Move the command into a container and make the boundary explicit." |
+| 5 | The finished harness | 16–20 min | "Route tools, limit the loop, and leave an audit trail you can verify." |
+
+> **Edit note:** ✂️ A 15-minute target usually means a 25–35 minute raw take.
+> Record one section at a time so a mistake costs one section, not the episode.
+
+### Pre-record checklist
+
+Run this before every session. It takes two minutes and saves retakes.
+
+1. Activate the virtual environment.
+2. Confirm Python and pytest are available.
+3. Confirm Docker is running for Stages 4–5.
+4. Build the container image once, before recording.
+5. Run the chapter demo and tests off camera.
+6. Clear terminals, browser tabs, notifications, and personal file paths.
+7. Increase terminal font size. Use a light or dark theme with high contrast.
+8. Check microphone levels and record a ten-second test.
+
+> **Pro tip:** 💡 The demos render with Rich panels and colours. Keep colour on
+> for a recording; use `NO_COLOR=1` or `MINI_HARNESS_THEME=mono` when you want a
+> plain transcript for a log or CI artifact. Each chapter has its own accent,
+> so the same terminal theme looks consistent across the series.
+
+```powershell
+# Windows PowerShell, from the repository root
+.\.venv\Scripts\Activate.ps1
+python --version
+python -m pytest ch00 -q
+docker version
+```
+
+```bash
+# macOS / Linux, from the repository root
+source .venv/bin/activate
+python --version
+python -m pytest ch00 -q
+docker version
+```
+
+> **Alert:** ⚠️ Do not record Stage 0 with a real home directory visible in the
+> terminal or on screen. The demo is deliberately unsafe. Use the throwaway
+> `tempfile.TemporaryDirectory` in the chapter demo, and blur or rename any
+> personal paths in the shell prompt.
+
+### Screen and scene setup
+
+A simple two-scene OBS layout is enough for the whole series.
+
+| Scene | Contents | Use it for |
+|---|---|---|
+| `Talking head` | Camera, soft light, book cover or chapter title card | Cold open, transitions, conclusions |
+| `Code` | Full-screen editor or terminal, small camera overlay | Walkthroughs and demos |
+| `Diagram` | One slide with the boundary diagram | Explaining the concept before code |
+
+Keep the terminal at roughly 18–22 pt. Keep lines under 90 characters. If a
+command is long, put it in a shell script and show the script, then run it.
+
+> **Pro tip:** 💡 Record at 1080p, not 4K, if you plan to zoom into code. A
+> 1080p canvas with a clean 18 pt terminal is easier to read after compression
+> than a 4K canvas scaled down.
+
+### Episode run sheets
+
+#### Trailer and introduction
+
+**Show:** the six-stage table from the Introduction, then a five-second clip of
+the Stage 5 demo ending with `audit chain verifies: True`.
+
+**Say:** "A coding agent is a loop that turns text into operating-system
+actions. This series is about that conversion point: what a tool may do, how
+much it may consume, and what the model sees when it is refused."
+
+**Do not say:** "This is how to build a secure agent." Say: "This is how to
+build and understand the boundary."
+
+> **Recording cue:** 🎬 End the trailer on the promise of the Stage 3 cliffhanger:
+> the local runner is still not a jail. That is the hook for Episode 4.
+
+#### Episode 0 — The naive fence
+
+**Open with the bug, not the theory.** Show the three-line prefix check and ask
+the audience to spot the flaw before you explain it.
+
+**Demo beats:**
+
+```bash
+cd ch00
+python -m mini_harness.demo
+python -m pytest -v
+```
+
+**Show on screen:** the `[leaked]` prefix-sibling result and the `[blocked]`
+plain traversal result. If the symlink case skips on Windows, say why.
+
+**Talking points:**
+
+- `startswith` compares spellings, not filesystem identities.
+- `abspath` collapses `.` and `..`; it does not resolve symlinks.
+- `shell=True` turns one request into a small program.
+- The tests assert the bad outcomes so the failure is reproducible.
+
+> **Audience question:** 🗣️ "If the path starts with the workspace folder,
+> is it inside the workspace?" Pause. Then show `workspace-evil`.
+
+> **Alert:** ⚠️ Never run the Stage 0 shell demo against your real home folder.
+> Keep the harmless `echo` example. The point is the shape of the call.
+
+#### Episode 1 — One path policy
+
+**Open with the question:** "Which file will the kernel actually open?" That is
+the whole chapter.
+
+**Demo beats:**
+
+```bash
+cd ch01
+python -m mini_harness.demo
+python -m pytest -v
+```
+
+**Show on screen:** a normal read, a traversal refusal, and the prefix-sibling
+refusal, all through the same `PathPolicy`.
+
+**Diagram:** `requested path -> lexical normalise -> resolve deepest existing
+ancestor -> compare real paths -> allow or refuse`.
+
+**Talking points:**
+
+- One policy for every tool; no tool invents a second check.
+- Reads may be absolute inside the root; writes must be relative.
+- `commonpath` understands boundaries; `startswith` does not.
+- The TOCTOU gap remains, and Stage 4 is the real answer.
+
+> **Pro tip:** 💡 Put the `commonpath` comparison on screen as a single code
+> block. Do not scroll through the whole module while explaining it.
+
+#### Episode 2 — The sandbox and file tools
+
+**Open with the failure modes:** a 2 GB read, a million-entry directory, a
+half-written file, a silent replace of three identical snippets.
+
+**Demo beats:**
+
+```bash
+cd ch02
+python -m mini_harness.demo
+python -m pytest -v
+```
+
+**Show on screen:** one successful write, then `TOO_LARGE`, `EXISTS`,
+`AMBIGUOUS`, and `PATH` observations. Point out that no traceback reaches the
+model.
+
+**Talking points:**
+
+- Limits protect the agent process, not the host kernel.
+- Atomic write: temp file in the same directory, fsync, replace.
+- Edit is unique by default; `count=0` is an explicit opt-in.
+- Delete is file-only; recursive delete is a different blast radius.
+- Errors are observations, so the loop can continue.
+
+> **Audience question:** 🗣️ "Why not just catch the exception and return it?"
+> Answer: a traceback is noise in the model's context and can leak host paths.
+> A stable error code is a contract.
+
+> **Edit note:** ✂️ The symlink-write test can skip on Windows. Record the skip
+> once, explain it, and move on. Do not fight the OS on camera.
+
+#### Episode 3 — Running code locally
+
+**Open with the one-liner everyone writes:** `subprocess.run(user_string,
+shell=True)`. Then list what that single line gives the model.
+
+**Demo beats:**
+
+```bash
+cd ch03
+python -m mini_harness.demo
+python -m pytest -v
+```
+
+**Show on screen:** argv refusal, clean-environment sentinel, timeout kill, and
+the final honest demo where the child reads a file outside the workspace.
+
+**Talking points:**
+
+- Argv, not a string: a semicolon is an argument, not a second command.
+- Absolute-path allowlist; do not use `shutil.which` for model input.
+- Clean environment: build it, do not inherit it.
+- Timeout kills the process tree, not just the direct child.
+- Output caps must keep draining the pipe or the child hangs.
+- POSIX rlimits are not portable; Docker is the portable boundary.
+
+> **Recording cue:** 🎬 End the episode on the outside-read result. Say: "That is
+> not a bug in Stage 3. That is the reason Stage 4 exists." Cut to black.
+
+> **Alert:** ⚠️ Do not claim the local runner is a sandbox. Call it hygiene, a
+> guardrail, or accident prevention. The chapter says this explicitly; keep the
+> video consistent with it.
+
+#### Episode 4 — Docker as the real wall
+
+**Open with the threat Stage 3 cannot stop:** the child process can read the
+user's SSH keys and open a network connection.
+
+**Pre-record:** start Docker Desktop and build the image before the take.
+
+```bash
+cd ch04
+docker build -t mini-harness-python:latest docker
+python -m mini_harness.demo
+python -m mini_harness.demo --build
+python -m pytest -v
+```
+
+**Show on screen:** the full `docker run` argv, then the four live behaviours:
+Python runs, network fails, root write fails, workspace is visible.
+
+**Talking points:**
+
+- Every flag in the run contract is a deliberate decision with a test.
+- `--read-only` freezes the image, not the workspace bind mount.
+- `--network none`, `--cap-drop ALL`, and `no-new-privileges` remove easy exits.
+- Timeout cleanup needs `docker rm -f`; killing the CLI is not enough.
+- The container shares the host kernel. It is a boundary, not magic.
+
+> **Pro tip:** 💡 Put the flag table on screen as an overlay while the command
+> runs. Pause on the four or five flags that matter most; do not read all of
+> them aloud.
+
+> **Alert:** ⚠️ Never mount the Docker socket into the sandbox, never add
+> `--privileged`, and do not show a command that writes to the host outside the
+> workspace.
+
+#### Episode 5 — The finished harness
+
+**Open with the missing piece:** we have boundaries but no agent loop and no
+record of what happened.
+
+**Demo beats:**
+
+```bash
+cd ch05
+python -m mini_harness
+python -m mini_harness --build
+python -m pytest -v
+```
+
+**Show on screen:** the write, the read, the container run, the final answer,
+and `audit chain verifies: True`. Then show the audit JSONL and point at `seq`,
+`prev`, and `hash`.
+
+**Talking points:**
+
+- The toolbox routes; it does not invent a second policy.
+- The step limit lives in the loop, not in the model.
+- A refusal is an observation; infrastructure absence still ends the loop.
+- The audit is append-only, hash-chained, outside the workspace, and redacted.
+- Tampering breaks `verify()`; the chain makes it visible, not impossible.
+
+> **Audience question:** 🗣️ "Why not let the model decide when to stop?"
+> Answer: a model may loop forever; the harness may not.
+
+> **Recording cue:** 🎬 Close the series on the audit line, then a title card:
+> "The boundary is the product." Keep the final take under 20 seconds.
+
+### Demo reset between takes
+
+Run these commands to return to a clean state. They are safe: they only remove
+generated caches, audit files, and the chapter's sample output.
+
+```bash
+# From the repository root
+find . -name "__pycache__" -type d -prune -exec rm -rf {} +
+find . -name ".pytest_cache" -type d -prune -exec rm -rf {} +
+rm -f ch05/audit/events.jsonl ch05/hello.py
+```
+
+```powershell
+# Windows PowerShell
+Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force
+Get-ChildItem -Recurse -Directory -Filter .pytest_cache | Remove-Item -Recurse -Force
+Remove-Item ch05\audit\events.jsonl, ch05\hello.py -ErrorAction SilentlyContinue
+```
+
+> **Pro tip:** 💡 Re-run the chapter demo once after cleanup and before the take.
+> A fresh run gives you the exact output you will point at later.
+
+### Common recording failures
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `ModuleNotFoundError: mini_harness` | Ran from the repository root, not the chapter | `cd ch00` (or the right chapter) first |
+| `pytest: command not found` | Virtual environment not active | Activate `.venv`, or use `python -m pytest` |
+| Docker demo prints `ERROR[DOCKER_MISSING]` | Docker Desktop is not running | Start Docker, wait for the whale icon, retry |
+| Docker integration tests skip | Image not built | `docker build -t mini-harness-python:latest docker` from `ch04/` |
+| Symlink test skips on Windows | Developer Mode or elevation is off | Explain the skip; do not enable Developer Mode just for the take |
+| Audit verification fails on a second run | Old audit log has a broken chain | Remove `ch05/audit/events.jsonl` deliberately and re-run |
+| Terminal text is unreadable after upload | Font too small or too many columns | 18–22 pt, wrap at 90 columns, enlarge the editor |
+
+> **Alert:** ⚠️ If a test fails on camera, do not hide it. Show the failure,
+> read the error code, and explain which contract caught it. That is better
+> teaching than a suspiciously perfect run.
+
+### Audience questions to plant
+
+Use one question per episode as a cold open or a transition. They give the
+audience a reason to keep watching.
+
+1. **Stage 0:** "What is the difference between a path that looks inside and a
+   file that opens inside?"
+2. **Stage 1:** "Why is `startswith` the wrong tool for containment?"
+3. **Stage 2:** "What should a model see when a tool refuses?"
+4. **Stage 3:** "If the command runner is allowlisted, why can it still read
+   your SSH keys?"
+5. **Stage 4:** "Why is a read-only root filesystem not a read-only workspace?"
+6. **Stage 5:** "How do you prove that nobody edited the audit log?"
+
+### Titles, thumbnails, and descriptions
+
+Keep titles concrete and outcome-led. Avoid claiming security guarantees.
+
+| Episode | Title idea | Thumbnail text |
+|---|---|---|
+| Trailer | Build a Mini Python Sandbox | "The boundary is the product" |
+| 0 | The sandbox that isn't | `startswith` is not enough |
+| 1 | One path policy to rule them all | Real paths, not spellings |
+| 2 | File tools that refuse safely | Errors are observations |
+| 3 | Running code without `shell=True` | Argv. Timeout. Clean env. |
+| 4 | Docker is the real wall | No network. No caps. |
+| 5 | The finished agent harness | Audit chain verifies: True |
+
+Description footer for every episode:
+
+> Educational content only. This is not a production-ready sandbox. Do not
+> deploy the code as-is. See the repository's `README.md` and
+> `THREAT_MODEL.md` for the full limits.
+
+### Editing notes
+
+- **Keep the failure.** A refusal or a failed test is the lesson, not a blooper.
+- **Cut installation and setup.** Put prerequisites in the description and a
+  pinned comment.
+- **Show the command before the output.** Let the viewer predict the result.
+- **Zoom on one line at a time.** Do not show a whole module for a single idea.
+- **Use chapter cards, not hard cuts.** A two-second card with the stage number
+  and boundary makes the series easier to follow.
+- **Caption code on screen.** Add the exact command to the lower third when the
+  terminal is small.
+
+> **Pro tip:** 💡 Export a clean `book.pdf` and put the chapter number in the
+> video description. Viewers who want the written version can follow along
+> without pausing the video.
+
+### Final checklist before publishing
+
+- [ ] The episode says "educational" and does not claim production security.
+- [ ] Stage 0 is clearly labelled unsafe.
+- [ ] The demo commands match the chapter exactly.
+- [ ] The test output shown is from a real run, not a mock-up.
+- [ ] Docker claims distinguish offline tests from integration tests.
+- [ ] The audit line `audit chain verifies: True` is shown honestly.
+- [ ] Personal paths, tokens, and notifications are not visible.
+- [ ] Captions are enabled or a transcript is linked.
+- [ ] The description links the book, `README.md`, and `THREAT_MODEL.md`.
+
+> **Alert:** ⚠️ The series teaches a boundary, not a security certification.
+> Keep the disclaimer in the video description, the pinned comment, and the
+> spoken introduction of Episode 0.

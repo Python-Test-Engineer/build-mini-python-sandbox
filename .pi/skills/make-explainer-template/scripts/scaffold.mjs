@@ -267,10 +267,10 @@ function bookBody() {
     const prev = index > 0 ? `ch${pad(index - 1)}` : null;
     const next = index < stages.length - 1 ? `ch${pad(index + 1)}` : null;
     return [
-      `# Chapter ${index} — ${stage}`,
+      `# Chapter ${index} — Stage ${index}: ${stage}`,
       '',
       '> [!WARNING]',
-      `> **Educational use only — not a production-ready system.** Chapter ${index} is part of an educational project to learn and understand. It simplifies the design so the idea stays visible. Do not deploy it as-is.`,
+      `> **Educational use only — not a production-ready system.** Chapter ${index} is Stage ${index} in an educational project to learn and understand. It simplifies the design so the idea stays visible. Do not deploy it as-is.`,
       '',
       '## What this chapter builds',
       '',
@@ -289,7 +289,7 @@ function bookBody() {
       'Walk through the change one decision at a time. Prefer short code blocks and observable checkpoints over long explanations.',
       '',
       '```' + fence,
-      `# Chapter ${index}: ${stage.toLowerCase()}`,
+      `# Chapter ${index} - Stage ${index}: ${stage.toLowerCase()}`,
       runCommand,
       '```',
       '',
@@ -311,7 +311,7 @@ function bookBody() {
       '## Read next',
       '',
       prev ? `- Previous checkpoint: [\`${prev}/\`](../${prev}/CHAPTER.md)` : '- This is the first checkpoint.',
-      next ? `- Next chapter: Chapter ${index + 1} — ${stages[index + 1]} (\`${next}/\`)` : '- This is the final checkpoint.',
+      next ? `- Next chapter: Chapter ${index + 1} — Stage ${index + 1}: ${stages[index + 1]} (\`${next}/\`)` : '- This is the final checkpoint.',
       '',
     ].join('\n');
   }).join('\n---\n\n');
@@ -446,7 +446,7 @@ for (let index = 0; index < stages.length; index++) {
       '"""Chapter placeholder. Replace this with the stage implementation."""',
       '',
       'def main() -> None:',
-      `    print("Chapter ${index}: replace src/main.py with this stage implementation.")`,
+      `    print("Chapter ${index} - Stage ${index}: replace src/main.py with this stage implementation.")`,
       '',
       '',
       'if __name__ == "__main__":',
@@ -457,7 +457,7 @@ for (let index = 0; index < stages.length; index++) {
   } else {
     write(`${dir}/src/main.js`, [
       '// Chapter placeholder. Replace this with the stage implementation.',
-      `console.log("Chapter ${index}: replace src/main.js with this stage implementation.");`,
+      `console.log("Chapter ${index} - Stage ${index}: replace src/main.js with this stage implementation.");`,
       '',
     ].join('\n'));
     write(`${dir}/package.json`, JSON.stringify({

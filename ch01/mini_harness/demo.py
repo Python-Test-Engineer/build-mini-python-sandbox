@@ -12,31 +12,48 @@ crash.
 from __future__ import annotations
 
 import os
+import sys
 import tempfile
 from pathlib import Path
 
-from .path_policy import PathPolicy, PolicyError
+# A direct script run (``uv run demo.py``) has no package context. Add the
+# chapter directory so ``mini_harness`` is importable; module runs skip this.
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from mini_harness.path_policy import PathPolicy, PolicyError
+from mini_harness.ui import UI
 
 
-def show(label: str, action) -> None:
-    """Run one path-policy call and print an allowed or refused result."""
+def show(ui: UI, label: str, action) -> None:
+    """Run one path-policy call and show an allowed or refused result card."""
     try:
         resolved = action()
     except PolicyError as exc:
         # PolicyError.__str__ already begins with "PATH: ".
-        print(f"[blocked] {label}: {exc}")
+        ui.result(label, str(exc), kind="error")
     except OSError as exc:
         # A policy pass can still fail later at the OS layer. Keep the demo
         # running so one bad case does not hide the rest.
-        print(f"[os-error] {label}: {type(exc).__name__}: {exc}")
+        ui.result(label, f"{type(exc).__name__}: {exc}", kind="warning")
     else:
         # ``relative`` is the model-facing spelling; ``absolute`` is the file
         # the OS will actually open after symlink resolution.
-        print(f"[allowed] {label}: {resolved.relative} -> {resolved.absolute}")
+        ui.result(
+            label,
+            f"{resolved.relative} -> {resolved.absolute}",
+            kind="success",
+        )
 
 
 def main() -> int:
     """Create a throwaway lab and exercise the policy from both sides."""
+    ui = UI(accent="cyan", title="Stage 1 - One path policy")
+    ui.header(
+        subtitle="Stop comparing spellings. Compare real filesystem paths.",
+        badge="one policy - every tool",
+    )
+
     with tempfile.TemporaryDirectory(prefix="sandbox-ch01-") as temp:
         base = Path(temp)
 
@@ -63,41 +80,68 @@ def main() -> int:
 
         policy = PathPolicy(workspace)
 
-        print("workspace root:", policy.real_root)
-        print()
+        ui.note("Workspace root", str(policy.real_root), kind="info")
+        ui.section("reads")
 
-        show("read notes.txt", lambda: policy.resolve_read("notes.txt"))
-        show("read ../outside.txt", lambda: policy.resolve_read("../outside.txt"))
+        show(ui, "read notes.txt", lambda: policy.resolve_read("notes.txt"))
+        show(ui, "read ../outside.txt", lambda: policy.resolve_read("../outside.txt"))
         show(
+            ui,
             "read prefix sibling",
             lambda: policy.resolve_read("../workspace-evil/secret.txt"),
         )
         show(
+            ui,
             "read absolute inside",
             lambda: policy.resolve_read(str(workspace / "notes.txt")),
         )
         show(
+            ui,
             "read absolute outside",
             lambda: policy.resolve_read(str(outside)),
         )
 
         if symlink_supported:
-            show("read symlink escape", lambda: policy.resolve_read("link.txt"))
+            show(ui, "read symlink escape", lambda: policy.resolve_read("link.txt"))
         else:
-            print("[skip] read symlink escape: OS did not allow creating a symlink")
+            ui.note(
+                "Skip",
+                "read symlink escape: OS did not allow creating a symlink",
+                kind="skip",
+            )
 
-        show("write notes.txt", lambda: policy.resolve_write("notes.txt"))
+        ui.explain(
+            "reads",
+            "A normal read and an absolute read inside the root are allowed. "
+            "Traversal, the prefix sibling and the symlink target are refused.",
+            "The policy resolves the real path and compares path boundaries "
+            "with commonpath. It answers 'which file will the kernel open?', "
+            "not 'does this string start with the workspace?'",
+        )
+
+        ui.section("writes and platform spellings")
+        show(ui, "write notes.txt", lambda: policy.resolve_write("notes.txt"))
         show(
+            ui,
             "write nested new path",
             lambda: policy.resolve_write("deep/new/file.txt"),
         )
-        show("write absolute", lambda: policy.resolve_write(str(outside)))
-        show("write ../outside.txt", lambda: policy.resolve_write("../outside.txt"))
-        show("write reserved CON.txt", lambda: policy.resolve_write("CON.txt"))
-        show("read NUL byte", lambda: policy.resolve_read("bad\x00name"))
+        show(ui, "write absolute", lambda: policy.resolve_write(str(outside)))
+        show(ui, "write ../outside.txt", lambda: policy.resolve_write("../outside.txt"))
+        show(ui, "write reserved CON.txt", lambda: policy.resolve_write("CON.txt"))
+        show(ui, "read NUL byte", lambda: policy.resolve_read("bad\x00name"))
 
-        print()
-        print("One policy, every tool. That is the Stage 1 rule.")
+        ui.explain(
+            "writes and platform spellings",
+            "Reads may be absolute inside the root, but writes must be "
+            "relative. Absolute writes, escaping writes, reserved device "
+            "names and control characters are refused.",
+            "A write is an intentional workspace action, not an absolute "
+            "overwrite. Normalising separators and platform spellings first "
+            "makes the same policy hold on Windows and Linux.",
+        )
+
+        ui.done("One policy, every tool. That is the Stage 1 rule.")
 
     return 0
 

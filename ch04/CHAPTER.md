@@ -18,6 +18,10 @@ seccomp profile and a separate filesystem view. It is still not magic — a
 container shares the host kernel — but it is a much better default than "same
 process, same user, same filesystem".
 
+> **Recording cue:** 🎬 Start with the three things the Stage 3 child can still
+> do: read SSH keys, write to the home folder, open a network connection. Then
+> introduce the container as the control for reachability, not just time.
+
 ## What changed
 
 - Added `docker/Dockerfile` and `docker/.dockerignore`.
@@ -86,6 +90,10 @@ Every flag below is a deliberate decision. The tests fail if one disappears.
 Docker's default seccomp profile still applies. The runner does not pass
 `--privileged`, does not mount the Docker socket, and does not add devices.
 
+> **Pro tip:** 💡 Put the flag table on screen as a banner while the command
+> runs. Focus on `--network none`, `--read-only`, `--privileged` absence,
+> `--pids-limit`, and the single workspace mount. Do not read every row aloud.
+
 ## The important subtlety: read-only root is not read-only workspace
 
 `--read-only` freezes the **image** filesystem. The bind mount at `/workspace`
@@ -128,6 +136,10 @@ python -m pytest -v
 The first command prints the full `docker run` argv even when Docker is not
 installed. The integration tests skip when the daemon or image is missing.
 
+> **Demo beat:** 🧪 Show the full argv first, then run the four live behaviours:
+> Python runs, the network fails, a root write fails, and the workspace is
+> visible. Keep each result on screen for a beat before moving on.
+
 ## It works when
 
 - [ ] The command contains `--network none`, `--read-only`, `--cap-drop ALL`,
@@ -159,6 +171,10 @@ installed. The integration tests skip when the daemon or image is missing.
   owned by a different uid. This is a deployment decision, not a bug.
 - `--network none` blocks network access inside the container; it does not stop
   the Docker daemon, the host, or a sibling container.
+
+> **Alert:** ⚠️ Never mount the Docker socket into the sandbox, never add
+> `--privileged`, and never demonstrate a write outside the workspace. The
+> container is a boundary, but a bad flag is a hole in it.
 
 ## If it goes wrong
 

@@ -12,20 +12,33 @@ motivation for the Docker chapter, not a bug to patch here.
 from __future__ import annotations
 
 import os
+import sys
 import tempfile
 from pathlib import Path
 
-from .command_tool import run_command_tool
-from .local_runner import CommandRunner, Limits
+# A direct script run (``uv run demo.py``) has no package context. Add the
+# chapter directory so ``mini_harness`` is importable; module runs skip this.
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from mini_harness.command_tool import run_command_tool
+from mini_harness.local_runner import CommandRunner, Limits
+from mini_harness.ui import UI
 
 
-def show(label: str, observation: str) -> None:
-    """Print one command observation with indentation."""
-    print(f"\n{label}\n  {observation.replace(chr(10), chr(10) + '  ')}")
+def show(ui: UI, label: str, observation: str) -> None:
+    """Show one command observation as a colour-coded card."""
+    ui.result(label, observation)
 
 
 def main() -> int:
     """Exercise the runner's normal path and each refusal path."""
+    ui = UI(accent="yellow", title="Stage 3 - Running code locally")
+    ui.header(
+        subtitle="Argv, a clean environment, a timeout and bounded output.",
+        badge="hygiene is not a boundary",
+    )
+
     with tempfile.TemporaryDirectory(prefix="sandbox-ch03-") as temp:
         workspace = Path(temp) / "workspace"
         workspace.mkdir()
@@ -45,7 +58,9 @@ def main() -> int:
             limits=Limits(timeout_seconds=2.0, max_output_bytes=300),
         )
 
+        ui.section("the seven controls")
         show(
+            ui,
             "normal command",
             run_command_tool(
                 runner,
@@ -53,6 +68,7 @@ def main() -> int:
             ),
         )
         show(
+            ui,
             "environment is scrubbed",
             run_command_tool(
                 runner,
@@ -66,10 +82,12 @@ def main() -> int:
             ),
         )
         show(
+            ui,
             "program not on allowlist",
             run_command_tool(runner, {"argv": ["sh", "-c", "echo nope"]}),
         )
         show(
+            ui,
             "timeout kills the tree",
             run_command_tool(
                 runner,
@@ -77,6 +95,7 @@ def main() -> int:
             ),
         )
         show(
+            ui,
             "output cap",
             run_command_tool(
                 runner,
@@ -84,6 +103,7 @@ def main() -> int:
             ),
         )
         show(
+            ui,
             "working directory escape",
             run_command_tool(
                 runner,
@@ -91,9 +111,21 @@ def main() -> int:
             ),
         )
 
+        ui.explain(
+            "the seven controls",
+            "A normal command runs. The secret sentinel is absent, the "
+            "non-allowlisted program is denied, the sleeping child is killed, "
+            "output is capped, and the escaping cwd is refused.",
+            "Argv, an absolute allowlist, a clean environment, a timeout, "
+            "tree kill, output caps and rlimits remove the easy accidents. "
+            "Each refusal is visible in the same observation shape.",
+        )
+
         # This command intentionally reads outside the workspace. It succeeds,
         # which is the honest lesson of Stage 3.
+        ui.section("the honest limit")
         show(
+            ui,
             "local runner is not a filesystem jail",
             run_command_tool(
                 runner,
@@ -107,8 +139,16 @@ def main() -> int:
             ),
         )
 
-        print(
-            "\nLesson: argv + allowlist + clean env + timeout are good hygiene,\n"
+        ui.explain(
+            "the limit of the local runner",
+            "The child process can still read a file outside the workspace.",
+            "The runner controls how a program starts and how long it runs; "
+            "it does not change which files or network the process can reach. "
+            "That is why Stage 4 moves the command into a container.",
+        )
+
+        ui.done(
+            "Lesson: argv + allowlist + clean env + timeout are good hygiene, "
             "but the child still runs as you. Stage 4 adds the container wall."
         )
 

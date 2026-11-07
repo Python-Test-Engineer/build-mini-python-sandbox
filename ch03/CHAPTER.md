@@ -27,6 +27,10 @@ That single line gives the model:
 
 Stage 3 removes the easy accidents. It does **not** claim to be a jail.
 
+> **Recording cue:** 🎬 Build the episode around one sentence: "Hygiene is not a
+> boundary." Every control is a hygiene improvement; the final demo proves the
+> boundary is still missing.
+
 ## What changed
 
 - Added `mini_harness/local_runner.py` with `CommandRunner`, `Limits`,
@@ -128,6 +132,13 @@ local runner is not a filesystem jail
 That is not a bug in Stage 3. It is the motivation for Stage 4. Hygiene is not
 a boundary.
 
+> **Demo beat:** 🧪 End the episode on this exact output. Stop talking, let the
+> outside read land, then say: "That is why Stage 4 exists." Cut to black.
+
+> **Alert:** ⚠️ Never describe the local runner as a sandbox on camera. Call it
+> a guardrail or accident prevention. The child still has the same filesystem
+> and network access as the agent process.
+
 ## Run it
 
 From `ch03/`:
@@ -139,6 +150,10 @@ python -m pytest -v
 
 The tests use the running Python interpreter as the only allowlisted program,
 so they need no network and no shell. pytest is the sole test dependency.
+
+> **Pro tip:** 💡 Put the `CommandPolicy` mapping on screen when you explain the
+> allowlist. A logical name that resolves to one absolute executable is easier
+> to grasp than a paragraph about `PATH`.
 
 ## It works when
 

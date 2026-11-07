@@ -20,9 +20,35 @@ from .audit import AuditLog, AuditError
 from .docker_runner import DockerError, DockerRunner
 from .sandbox import Sandbox
 from .toolbox import Toolbox
+from .ui import UI
 
 CHAPTER_DIR = Path(__file__).resolve().parents[1]
 DOCKER_DIR = CHAPTER_DIR / "docker"
+
+# Short teaching blocks for the tool observations the scripted demo produces.
+TOOL_EXPLANATIONS = {
+    "write_file": (
+        "write_file",
+        "The sandbox writes hello.py through one atomic write: temp file, "
+        "flush, fsync, then replace.",
+        "The model never touches the host path directly. The path policy, the "
+        "size limit and the atomic replace are all applied before the file "
+        "becomes visible.",
+    ),
+    "read_file": (
+        "read_file",
+        "The file tool reads hello.py back with numbered lines.",
+        "The observation is bounded and formatted for the model. A read is "
+        "allowed here because the resolved path is inside the workspace.",
+    ),
+    "run_command": (
+        "run_command",
+        "The command runs inside the Docker sandbox, or returns "
+        "ERROR[DOCKER_MISSING] when Docker is absent.",
+        "Infrastructure absence is a failed tool call, not a crash. The loop "
+        "sees the error and can still finish with a final answer.",
+    ),
+}
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -55,28 +81,50 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _print_run(result) -> None:
-    """Print a compact transcript of one agent run."""
+def _print_run(result, ui: UI) -> None:
+    """Print a compact, colour-coded transcript of one agent run."""
+    ui.section("transcript")
     for entry in result.transcript:
         role = entry.get("role")
         content = entry.get("content")
 
         if role == "user":
-            print(f"TASK: {content}")
+            ui.note("TASK:", str(content), kind="accent")
         elif role == "assistant" and isinstance(content, dict):
             tool = content.get("tool")
             args = content.get("args")
-            print(f"\nCALL: {tool}({args})")
+            ui.note("CALL:", f"{tool}({args})", kind="info")
         elif role == "assistant":
-            print(f"\nFINAL: {content}")
+            ui.note("FINAL:", str(content), kind="success")
+            ui.explain(
+                "the final answer",
+                "The agent returns a normal final response instead of another "
+                "tool call.",
+                "The transcript and audit still hold every action that led to "
+                "this answer. The final text is not the only record.",
+            )
         elif role == "tool":
-            # Show the whole observation, but keep long output readable.
+            # Show the whole observation, but keep huge output readable.
             text = str(content)
             if len(text) > 1200:
                 text = text[:1200] + "\n...[observation clipped in console]"
-            print(f"OBSERVE [{entry.get('name')}]:\n{text}")
-
-    print(f"\nstopped: {result.stopped} after {result.steps} step(s)")
+            name = entry.get("name")
+            ui.result(f"OBSERVE [{name}]:", text)
+            explanation = TOOL_EXPLANATIONS.get(str(name))
+            if explanation:
+                ui.explain(*explanation)
+    ui.note(
+        "Stopped",
+        f"{result.stopped} after {result.steps} step(s)",
+        kind="warning" if result.stopped != "final" else "success",
+    )
+    ui.explain(
+        "the loop limit",
+        "The loop stopped because the model returned a final answer, not "
+        "because the step budget ran out.",
+        "The step limit lives in the harness. A model may loop forever; the "
+        "harness may not.",
+    )
 
 
 def _demo_replies() -> list[ModelReply]:
@@ -101,40 +149,72 @@ def _demo_replies() -> list[ModelReply]:
 
 def run_demo(workspace: Path, *, build: bool, max_steps: int) -> int:
     """Run the fixed scenario against ``workspace`` and print the audit check."""
+    ui = UI(accent="magenta", title="Stage 5 - The finished harness")
+    ui.header(
+        subtitle="Route tools, bound the loop, and leave a verifiable trail.",
+        badge="offline demo - Docker optional",
+    )
+
     sandbox = Sandbox(workspace)
     runner = DockerRunner(workspace)
 
     if build:
+        ui.section("building the sandbox image")
         try:
             output = runner.build(DOCKER_DIR)
         except DockerError as exc:
-            print(f"build failed -> {exc}")
+            ui.note("Build failed", str(exc), kind="error")
             return 1
-        print(output[-1500:])
+        ui.note("Build output", output[-1500:], kind="info")
 
-    # The audit sits beside the workspace, not inside it, so file tools cannot
+    # The audit sits behind the workspace, not inside it, so file tools cannot
     # edit their own trail through the sandbox.
     audit_path = workspace.parent / "audit" / "events.jsonl"
     try:
         audit = AuditLog(audit_path)
     except AuditError as exc:
-        print(f"audit error -> {exc}")
+        ui.note("Audit error", str(exc), kind="error")
         return 1
 
     toolbox = Toolbox(sandbox=sandbox, runner=runner)
     model = ScriptedModel(_demo_replies())
     agent = Agent(toolbox, model, audit, max_steps=max_steps)
 
-    print(f"workspace: {sandbox.root}")
-    print(f"audit:     {audit.path}")
-    print(f"docker:    {'available' if runner.check_available() else 'NOT available (command step will be denied)'}")
-    print()
+    docker_state = "available" if runner.check_available() else "NOT available (command step will be denied)"
+    ui.table(
+        "run context",
+        ["Item", "Value"],
+        [
+            ["workspace", sandbox.root],
+            ["audit", audit.path],
+            ["docker", docker_state],
+        ],
+    )
+    ui.explain(
+        "the run context",
+        "The workspace is the only writable folder. The audit sits beside "
+        "it. Docker may be available or missing.",
+        "The audit is outside the sandbox, so tools cannot edit their own "
+        "trail. A missing Docker daemon becomes an observation, not a crash.",
+    )
 
     result = agent.run("Write hello.py, read it, then run it in the sandbox.")
-    _print_run(result)
+    _print_run(result, ui)
 
-    print(f"\naudit chain verifies: {audit.verify()}")
-    print(f"audit events: {len(audit.events())}")
+    verified = audit.verify()
+    ui.note(
+        "Audit",
+        f"audit chain verifies: {verified}",
+        kind="success" if verified else "error",
+    )
+    ui.note("Audit events", str(len(audit.events())), kind="info")
+    ui.explain(
+        "the audit chain",
+        "Each audit event stores a sequence number, the previous hash and its "
+        "own hash. verify() recomputes the chain from the start.",
+        "Editing or deleting a middle event breaks the chain, so tampering is "
+        "visible. The chain makes tampering detectable, not impossible.",
+    )
     return 0
 
 

@@ -128,13 +128,16 @@ node -e "const fs=require('fs'); for (const f of ['book/BOOK.html','ch00/CHAPTER
 
 ## House rules
 
-1. **One idea per stage.** Each chapter adds one visible capability and remains runnable on its own.
-2. **Runnable checkpoints.** Every chapter has a short run command and observable acceptance criteria.
-3. **Honest scope.** State what the teaching code skips: validation, isolation, scale, monitoring, error handling, and production operations.
-4. **Same styling.** Use `assets/book.css` and the generated page shell. Do not invent a second design system.
-5. **No fabricated evidence.** Do not claim tests pass, PDFs were generated, or features work unless you ran them.
-6. **Language fidelity.** Python chapters use Python idioms and tooling; JavaScript chapters use modern Node ESM. Do not mix languages in one book.
-7. **No production claims.** The disclaimer is not decoration. Repeat the limitation in the final docs and appendix.
+1. **Folder and stage agree.** `chNN/` is always `Stage NN`. `ch00/` is Stage 0,
+   `ch01/` is Stage 1, and so on. Never introduce a separate stage numbering
+   scheme; a reader must be able to map a folder to a stage at a glance.
+2. **One idea per stage.** Each chapter adds one visible capability and remains runnable on its own.
+3. **Runnable checkpoints.** Every chapter has a short run command and observable acceptance criteria.
+4. **Honest scope.** State what the teaching code skips: validation, isolation, scale, monitoring, error handling, and production operations.
+5. **Same styling.** Use `assets/book.css` and the generated page shell. Do not invent a second design system.
+6. **No fabricated evidence.** Do not claim tests pass, PDFs were generated, or features work unless you ran them.
+7. **Language fidelity.** Python chapters use Python idioms and tooling; JavaScript chapters use modern Node ESM. Do not mix languages in one book.
+8. **No production claims.** The disclaimer is not decoration. Repeat the limitation in the final docs and appendix.
 
 ## Language profiles
 

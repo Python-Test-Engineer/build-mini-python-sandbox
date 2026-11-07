@@ -27,6 +27,10 @@ The absence of an LLM client is deliberate. The book is about the sandbox, not
 about choosing a provider. A real adapter implements one method and everything
 else stays the same.
 
+> **Recording cue:** 🎬 Open with the two boundaries already built, then ask:
+> "What is missing?" The answer is not another control. It is the loop and the
+> record.
+
 ## What changed
 
 - Added `mini_harness/toolbox.py` — one dispatch point for all tools.
@@ -78,6 +82,10 @@ Two details matter:
 * **A refusal is an observation, not an exception.** The model sees
   `ERROR[PATH]` or `ERROR[DOCKER_MISSING]` and can choose a different action.
   The loop continues.
+
+> **Audience question:** 🗣️ "Why not let the model decide when to stop?" Answer:
+> a model may loop forever; the harness may not. The step limit belongs to the
+> loop.
 
 `AgentResult` returns the final text, the step count, the stop reason, the full
 transcript and a compact list of observations. A UI can render the transcript;
@@ -135,6 +143,10 @@ ERROR[DOCKER_MISSING]: Docker CLI/daemon is not available
 The loop still finishes. That is the desired behaviour: infrastructure absence
 is a visible failed tool call, not a crash.
 
+> **Demo beat:** 🧪 Show the write, the read, the container run, the final
+> answer, and `audit chain verifies: True`. Then open the JSONL and point at
+> `seq`, `prev`, and `hash` in one event. That is the proof, not the claim.
+
 ## End-to-end acceptance
 
 Run these in order on a machine with Docker and the image built:
@@ -170,6 +182,10 @@ This is a teaching harness, not a production service. It still lacks:
 Those are operations concerns. `../OPERATIONS.md` explains where they attach to
 this code without changing the boundaries.
 
+> **Recording cue:** 🎬 Close the series on the audit line, then a title card:
+> "The boundary is the product." Keep the final take under 20 seconds and resist
+> the urge to recap every chapter.
+
 ## If it goes wrong
 
 - **`ModuleNotFoundError: mini_harness`** — run from the chapter directory:
@@ -190,6 +206,10 @@ this code without changing the boundaries.
 - **Audit logging slows the demo** — fsync on every event is deliberate. Batch
   or buffer only with a clear durability trade-off; do not silently drop the
   trail.
+
+> **Alert:** ⚠️ This is a teaching harness, not a production service. Say so in
+> the episode. The audit makes tampering visible; it does not make tampering
+> impossible, and it is not a compliance control.
 
 ## Read next
 

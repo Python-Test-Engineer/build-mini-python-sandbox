@@ -21,6 +21,9 @@ Stage 2 turns the policy into a **sandbox contract**. The policy still answers
 "where"; the sandbox answers "how much, how safely, and what does the caller
 see when it is refused?"
 
+> **Recording cue:** 🎬 Open with the four failure modes as a list, not with the
+> code. The viewer should feel the problem before seeing `Limits(...)`.
+
 ## What changed
 
 - Added `mini_harness/sandbox.py` with `Sandbox`, `Limits`, `DirEntry` and
@@ -109,6 +112,14 @@ python -m pytest -v
 The demo performs normal work and then four refusals. The exact observation
 strings are what a model would see.
 
+> **Demo beat:** 🧪 Show one successful write, then `TOO_LARGE`, `EXISTS`,
+> `AMBIGUOUS`, and `PATH` in that order. End on the fact that no traceback
+> reaches the model.
+
+> **Audience question:** 🗣️ "Why not just catch the exception and return the
+> traceback?" Answer: a traceback is noisy context and can leak host paths. A
+> stable error code is a contract the model can act on.
+
 ## It works when
 
 - [ ] `read_text` returns the file, preserves `\r\n`, and refuses a directory.
@@ -129,6 +140,10 @@ strings are what a model would see.
 - Still a time-of-check/time-of-use gap between policy and open.
 - No command execution yet.
 - No audit trail yet.
+
+> **Alert:** ⚠️ These limits protect the agent process from oversized results.
+> They do not protect the host from a command. Stage 3 adds a runner, and Stage
+> 4 makes the runner live behind a real boundary.
 
 ## If it goes wrong
 

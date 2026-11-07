@@ -81,7 +81,7 @@ Keep the wording direct. Do not bury it in an appendix or a footer.
 | Table renders as text | Include a separator row such as `|---|---|`. |
 | PDF is missing | Install Chrome/Edge or set `CHROME_PATH`; rerun `node scripts/build.mjs`. |
 | Disclaimer missing from HTML | Do not edit generated HTML by hand. Fix `book.config.json` or the source Markdown and rebuild. |
-| Chapter links point to the wrong folder | Keep `chNN` numbering consistent with the stage map. |
+| Chapter links point to the wrong folder | Keep `chNN` numbering consistent with the stage map: folder `chNN/` is Stage NN. `ch00/` is Stage 0, `ch01/` is Stage 1. |
 | One language leaks into another | Choose Python or JavaScript for the whole book; do not mix run commands. |
 
 ## Definition of done

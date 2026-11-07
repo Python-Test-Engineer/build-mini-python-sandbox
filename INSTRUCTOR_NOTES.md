@@ -56,6 +56,11 @@ Run this before every session. It takes two minutes and saves retakes.
 7. Increase terminal font size. Use a light or dark theme with high contrast.
 8. Check microphone levels and record a ten-second test.
 
+> **Pro tip:** 💡 The demos render with Rich panels and colours. Keep colour on
+> for a recording; use `NO_COLOR=1` or `MINI_HARNESS_THEME=mono` when you want a
+> plain transcript for a log or CI artifact. Each chapter has its own accent,
+> so the same terminal theme looks consistent across the series.
+
 ```powershell
 # Windows PowerShell, from the repository root
 .\.venv\Scripts\Activate.ps1

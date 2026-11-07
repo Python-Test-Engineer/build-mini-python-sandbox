@@ -39,10 +39,10 @@ METADATA = {
     ),
     "DOC_TOC_TITLE": "Build a Mini Python Sandbox",
     "DOC_SIDE_SUB": "The path policy, the command runner, the container, the audit trail.",
-    "DOC_META": "6 chapters|4 appendices|Python 3.11+|pytest",
-    "DOC_SIDE_FOOT": "Built from book_html.md<br>Six stages and four appendices",
+    "DOC_META": "6 chapters|5 appendices|Python 3.11+|pytest",
+    "DOC_SIDE_FOOT": "Built from book_html.md · six stages and five appendices",
     "DOC_SIDE_KICKER": "Mini Python Sandbox · reading guide",
-    "DOC_COLOPHON": "Built from book_html.md · six stages · four appendices",
+    "DOC_COLOPHON": "Built from book_html.md · six stages · five appendices",
 }
 
 
@@ -58,19 +58,37 @@ def main() -> int:
         print(f"missing source: {SOURCE}; run scripts/build_book.py first", file=sys.stderr)
         return 1
 
-    # Start from the caller's environment so PATH and proxy settings still work,
-    # then add only the document metadata.
+    # Start from the caller's environment so PATH and proxy settings still work.
     env = os.environ.copy()
-    env.update(METADATA)
 
+    # The converter takes document metadata as CLI options. ``--book`` makes
+    # every H1 a numbered chapter and every H2 a nested subsection, which is
+    # the shape build_book.py writes into book_html.md.
     completed = subprocess.run(
-        ["node", os.fspath(CONVERTER), os.fspath(SOURCE), os.fspath(OUTPUT)],
+        [
+            "node",
+            os.fspath(CONVERTER),
+            os.fspath(SOURCE),
+            os.fspath(OUTPUT),
+            "--book",
+            "--title",
+            METADATA["DOC_TITLE"],
+            "--eyebrow",
+            METADATA["DOC_EYEBROW"],
+            "--lede",
+            METADATA["DOC_LEDE"],
+            "--kicker",
+            "Mini Python Sandbox",
+            "--meta",
+            METADATA["DOC_META"],
+            "--foot",
+            METADATA["DOC_SIDE_FOOT"],
+            "--colophon",
+            METADATA["DOC_COLOPHON"],
+        ],
         env=env,
         check=False,
     )
-    if completed.returncode != 0:
-        return completed.returncode
-
     if completed.returncode != 0:
         return completed.returncode
 

@@ -11,6 +11,11 @@ The book is the six `chNN/CHAPTER.md` files. This repository is the runnable
 version: every stage is a standalone Python project, every module is commented,
 and every security claim has a test beside it.
 
+> **Recording cue:** 🎬 If you are using the book as the companion guide for a
+> video series, read **Appendix E — Instructor and recording companion** first.
+> It contains the episode run sheet, demo beats, reset commands, and the
+> questions to plant in each episode.
+
 > **Safety note.** Stage 0 is intentionally unsafe. It exists to demonstrate
 > three concrete holes, and its demo only runs against a temporary directory.
 > Do not point `unsafe.py` at your home folder, do not add `--privileged` to the
@@ -33,16 +38,51 @@ much it may consume, and what the model sees when it is refused.**
 
 ## Quick start
 
-Each chapter runs from its own directory. The runtime code has no third-party
-dependencies; pytest is the only test dependency. Install it once with
-`python -m pip install pytest` (or use your own environment manager). No API
-key is required. Python 3.11 or newer is recommended.
+Each chapter runs from its own directory. The sandbox code uses only the
+standard library; the demo layer uses Rich for presentation. pytest is the test
+runner. Install both once with `python -m pip install pytest rich` (or use your
+own environment manager such as `uv`). No API key is required. Python 3.11 or
+newer is recommended.
 
 ```bash
 cd ch00
 python -m mini_harness.demo
 python -m pytest -v
 ```
+
+> **Pro tip:** 💡 You can also run a demo as a file, which is handy with `uv`:
+> `cd ch02` then `uv run mini_harness/demo.py`. The demo adds the chapter
+> directory to the import path when it is launched directly. The Stage 5
+> equivalent is `uv run mini_harness/__main__.py` from `ch05/`.
+
+### Demo presentation
+
+Every chapter ships the same `mini_harness/ui.py`, a small Rich wrapper that
+renders headers, section rules, colour-coded observation cards, command panels
+and tables. Each stage picks its own accent colour; the rest of the palette is
+shared.
+
+After each major output section the demo prints an **explainer** card with two
+fields: **What** happened in the observation, and **Why** it matters. A learner
+can read the result and the reasoning without leaving the terminal.
+
+```bash
+cd ch02
+
+# default palette, chapter accent
+uv run mini_harness/demo.py
+
+# plain output for a log file or CI
+MINI_HARNESS_THEME=mono uv run mini_harness/demo.py
+
+# override one colour without editing code
+MINI_HARNESS_ACCENT=magenta uv run mini_harness/demo.py
+```
+
+The presets are `dark`, `light` and `mono`. Individual overrides use
+`MINI_HARNESS_ACCENT`, `MINI_HARNESS_SUCCESS`, `MINI_HARNESS_WARNING`,
+`MINI_HARNESS_ERROR`, `MINI_HARNESS_INFO`, `MINI_HARNESS_MUTED`,
+`MINI_HARNESS_TITLE` and `MINI_HARNESS_BOX`.
 
 The finished harness:
 
@@ -95,14 +135,16 @@ python scripts/build_book_html.py
 
 | Path | What it is |
 |---|---|
-| `ch00/` … `ch05/` | One standalone, runnable stage per chapter |
+| `ch00/` … `ch05/` | One standalone, runnable stage per chapter; `chNN` is Stage NN (`ch00` = Stage 0) |
 | `chNN/CHAPTER.md` | The chapter: problem, design, walkthrough, acceptance, limits |
 | `chNN/mini_harness/` | The stage's Python package |
+| `chNN/mini_harness/ui.py` | Shared Rich presentation layer; the same file in every chapter |
 | `chNN/tests/` | unittest-style tests, collected by `pytest` |
 | `chNN/workspace/` | A small sample workspace for experimenting |
 | `ch04/docker/`, `ch05/docker/` | The sandbox image |
 | `plan.md` | The stage-by-stage build contract |
 | `function_reference.md` | Alphabetical and file-by-file code map |
+| `INSTRUCTOR_NOTES.md` | Appendix E: the episode run sheet and recording companion |
 | `THREAT_MODEL.md` | Assets, adversaries, threats, mitigations and residual risk |
 | `OPERATIONS.md` | Build, run, update, audit and incident-response runbook |
 | `qa.html` | Architecture Q&A companion built with the shared explainer standard; open it in a browser |
@@ -182,7 +224,8 @@ foreach ($chapter in "ch00","ch01","ch02","ch03","ch04","ch05") {
 
 Read `THREAT_MODEL.md` first if you want the “why”. Read `plan.md` if you want
 the contract. Read `function_reference.md` when you are tracing a function.
-Open `qa.html` when you want the short answer to an architecture question. Every
+Open `qa.html` when you want the short answer to an architecture question. Open
+`INSTRUCTOR_NOTES.md` when you are planning or recording an episode. Every
 HTML explainer follows `EXPLAINERS.md`; generate a new one from Markdown with
 `node scripts/md-to-html.mjs <input.md>`.
 

@@ -48,6 +48,7 @@ SOURCES = [
     ("OPERATIONS.md", "Appendix B — Operations runbook", "manual"),
     ("plan.md", "Appendix C — Build contract", "manual"),
     ("function_reference.md", "Appendix D — Function reference", "manual"),
+    ("INSTRUCTOR_NOTES.md", "Appendix E — Instruction and recording notes", "manual"),
 ]
 
 # One or more leading hashes followed by a space. We only touch headings at

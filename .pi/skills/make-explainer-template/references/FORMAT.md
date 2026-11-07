@@ -68,7 +68,9 @@ A stage contract contains:
 4. Who it is for.
 5. How to use it.
 6. The educational contract.
-7. One `# Chapter N — Title` section per chapter.
+7. One `# Chapter N — Stage N: Title` section per chapter. The folder
+   `chNN/` and `Stage NN` always use the same number: `ch00` is Stage 0,
+   `ch01` is Stage 1, and so on.
 8. Appendix: study and review.
 9. Closing reminder.
 
@@ -85,7 +87,8 @@ Each chapter section should contain:
 
 ### chNN/CHAPTER.md
 
-1. `# Chapter N — Title`.
+1. `# Chapter N — Stage N: Title`. The folder number and stage number are
+   identical (`chNN/` = Stage NN).
 2. **Disclaimer block** immediately after the title.
 3. Book/plan/goal metadata.
 4. What you will build.
