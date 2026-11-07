@@ -1,5 +1,8 @@
 # Build a Mini Python Sandbox
 
+> **Educational use only — not a production-ready system.**
+> This repository is an educational project to learn and understand how to sandbox a small Python coding agent. It is intentionally simplified, optimised for clarity and step-by-step learning, and makes no claim to be secure, complete, or production-ready. Do not deploy it as-is. If you adapt it for real work, add proper validation, isolation, monitoring, testing, and operational controls.
+
 Companion code for a short, hands-on book about sandboxing a small **Python
 coding agent** — from a deliberately broken string-prefix fence to a hardened
 Docker container with a hash-chained audit log.

@@ -27,6 +27,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "book.md"
 
+BOOK_DISCLAIMER = (
+    "> **Educational use only — not a production-ready system.** This book is an "
+    "educational project to learn and understand how to sandbox a small Python "
+    "coding agent. It is intentionally simplified and makes no claim to be secure, "
+    "complete, or production-ready. Do not deploy the code as-is."
+)
+
 # The order is the reading order of the finished book. README becomes the
 # introduction; the numbered chapters follow; the manuals are appendices.
 SOURCES = [
@@ -140,6 +147,7 @@ def build() -> str:
     parts.append(
         "*Mini Python Sandbox · the path policy, the command runner, the container*\n\n"
         "# Build a Mini Python Sandbox\n\n"
+        f"{BOOK_DISCLAIMER}\n\n"
         "A short, runnable book about turning model tool calls into bounded, "
         "auditable operating-system actions. Six standalone Python stages move "
         "from a deliberately broken fence to a hardened Docker container.\n"

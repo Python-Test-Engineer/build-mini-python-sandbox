@@ -50,7 +50,7 @@ If a stage needs more than one major idea, split it.
 
 Every project, book, plan, and chapter begins with a variation of:
 
-> **Educational use only — not production grade.** This material is a deliberately simplified teaching system. It is not secure, complete, or ready for real users, and must not be deployed as-is. If you adapt it for real work, add proper validation, isolation, monitoring, testing, and operational controls.
+> **Educational use only — not a production-ready system.** This material is an educational project to learn and understand. It is a deliberately simplified teaching system, not secure, complete, or ready for real users, and must not be deployed as-is. If you adapt it for real work, add proper validation, isolation, monitoring, testing, and operational controls.
 
 Keep the wording direct. Do not bury it in an appendix or a footer.
 

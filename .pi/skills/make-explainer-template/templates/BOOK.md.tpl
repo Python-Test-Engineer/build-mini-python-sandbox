@@ -1,8 +1,8 @@
 # __TITLE__
 
 > [!WARNING]
-> **This book is for educational purposes only.**
-> It teaches a simplified, deliberately small implementation. It is **not** a production-ready system and should not be used as one. The code favours clarity over robustness, security, scale, and operational correctness. Use it to learn the ideas, then build production software with proper validation, isolation, observability, testing, and review.
+> **This book is an educational project to learn and understand, not a production-ready system.**
+> It teaches a simplified, deliberately small implementation. It is **not** production-ready software and should not be used as one. The code favours clarity over robustness, security, scale, and operational correctness. Use it to learn the ideas, then build production software with proper validation, isolation, observability, testing, and review.
 
 ## About this book
 
@@ -61,4 +61,4 @@ Add links to the language documentation, relevant specifications, and reference 
 
 ---
 
-**Educational use only — not production grade.** The book and its code are teaching material, not a deployable system.
+**Educational use only — not a production-ready system.** The book and its code are an educational project to learn and understand, not a deployable system.

@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CONVERTER = ROOT / "skills" / "make-html-from-md" / "scripts" / "md-to-html.mjs"
+CONVERTER = ROOT / "scripts" / "md-to-html.mjs"
 SOURCE = ROOT / "book_html.md"
 OUTPUT = ROOT / "book.html"
 

@@ -138,8 +138,8 @@ const last = String(stages.length - 1).padStart(2, '0');
 const outDir = path.resolve(process.cwd(), outArg);
 
 const disclaimer =
-  'Educational purposes only — not production grade. This material is a deliberately simplified teaching system. ' +
-  'It is not secure, complete, or ready for real users, and must not be deployed as-is. ' +
+  'Educational use only — not a production-ready system. This material is an educational project to learn and understand. ' +
+  'It is a deliberately simplified teaching system, not secure, complete, or ready for real users, and must not be deployed as-is. ' +
   'If you adapt it for real work, add proper validation, isolation, monitoring, testing, and operational controls.';
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -270,7 +270,7 @@ function bookBody() {
       `# Chapter ${index} — ${stage}`,
       '',
       '> [!WARNING]',
-      `> **Educational use only — not production grade.** Chapter ${index} is part of a teaching build-along. It simplifies the design so the idea stays visible. Do not deploy it as-is.`,
+      `> **Educational use only — not a production-ready system.** Chapter ${index} is part of an educational project to learn and understand. It simplifies the design so the idea stays visible. Do not deploy it as-is.`,
       '',
       '## What this chapter builds',
       '',

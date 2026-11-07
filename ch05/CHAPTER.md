@@ -1,5 +1,7 @@
 # Chapter 5 — Stage 5: The finished harness
 
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
+
 **Book:** Stage 5, "The finished harness"
 **Plan:** Stage 5
 **Goal:** Wire the path policy, file sandbox, Docker runner and an append-only audit log into one small agent loop, then prove it end to end without an API key.

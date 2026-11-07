@@ -1,5 +1,7 @@
 # Chapter 2 — Stage 2: The sandbox object and file tools
 
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
+
 **Book:** Stage 2, "The sandbox object and file tools"
 **Plan:** Stage 2
 **Goal:** Put every file operation behind one object with size limits, atomic writes and a stable error vocabulary.

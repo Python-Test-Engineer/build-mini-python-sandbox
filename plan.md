@@ -1,5 +1,7 @@
 # Plan — the stage contract
 
+> **Educational use only — not a production-ready system.** This plan describes an educational project to learn and understand, not a production architecture. It is deliberately simplified. Do not deploy it as-is. The goal is to make each layer visible, runnable, and easy to reason about.
+
 This is the build contract for **Build a Mini Python Sandbox**. Each stage is a
 standalone chapter directory with runnable code and tests. A stage is done when
 its acceptance checks pass and its known limits are written down.

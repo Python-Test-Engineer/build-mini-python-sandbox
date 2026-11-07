@@ -529,7 +529,7 @@ ${css}
       </header>
 
       <div class="disclaimer" role="note">
-        <span class="label">Educational use only &middot; not production grade</span>
+        <span class="label">Educational use only &middot; not a production-ready system</span>
         ${esc(disclaimer || 'This material is for educational purposes only. It is a deliberately simplified teaching system, not a production-grade implementation. Do not deploy it as-is.')}
       </div>
 

@@ -1,5 +1,7 @@
 # Chapter 4 — Stage 4: Docker as the real wall
 
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
+
 **Book:** Stage 4, "Docker as the real wall"
 **Plan:** Stage 4
 **Goal:** Run one argv command inside a no-network, no-capability, resource-limited container with a read-only root and a single workspace bind mount.

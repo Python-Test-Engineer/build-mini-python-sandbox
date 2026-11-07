@@ -1,5 +1,7 @@
 # Chapter 1 — Stage 1: One path policy
 
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
+
 **Book:** Stage 1, "One path policy"
 **Plan:** Stage 1
 **Goal:** Replace the string-prefix fence with one object that resolves real paths and answers the same question for every tool.

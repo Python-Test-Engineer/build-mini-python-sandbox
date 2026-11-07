@@ -1,5 +1,8 @@
 # Introduction
 
+> **Educational use only — not a production-ready system.**
+> This repository is an educational project to learn and understand how to sandbox a small Python coding agent. It is intentionally simplified, optimised for clarity and step-by-step learning, and makes no claim to be secure, complete, or production-ready. Do not deploy it as-is. If you adapt it for real work, add proper validation, isolation, monitoring, testing, and operational controls.
+
 Companion code for a short, hands-on book about sandboxing a small **Python
 coding agent** — from a deliberately broken string-prefix fence to a hardened
 Docker container with a hash-chained audit log.
@@ -191,6 +194,8 @@ the boundary you care about.
 
 # Chapter 0 — Stage 0: The naive fence
 
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
+
 **Book:** Stage 0, "The naive fence"
 **Plan:** Stage 0
 **Goal:** Build the smallest possible tool surface, then prove that its sandbox is not a sandbox.
@@ -330,6 +335,8 @@ have seen the exact input that broke the naive version.
 ---
 
 # Chapter 1 — Stage 1: One path policy
+
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
 
 **Book:** Stage 1, "One path policy"
 **Plan:** Stage 1
@@ -502,6 +509,8 @@ the rest:
 
 # Chapter 2 — Stage 2: The sandbox object and file tools
 
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
+
 **Book:** Stage 2, "The sandbox object and file tools"
 **Plan:** Stage 2
 **Goal:** Put every file operation behind one object with size limits, atomic writes and a stable error vocabulary.
@@ -655,6 +664,8 @@ strings are what a model would see.
 ---
 
 # Chapter 3 — Stage 3: Running code locally
+
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
 
 **Book:** Stage 3, "Running code locally"
 **Plan:** Stage 3
@@ -844,6 +855,8 @@ so they need no network and no shell. pytest is the sole test dependency.
 
 # Chapter 4 — Stage 4: Docker as the real wall
 
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
+
 **Book:** Stage 4, "Docker as the real wall"
 **Plan:** Stage 4
 **Goal:** Run one argv command inside a no-network, no-capability, resource-limited container with a read-only root and a single workspace bind mount.
@@ -1029,6 +1042,8 @@ installed. The integration tests skip when the daemon or image is missing.
 ---
 
 # Chapter 5 — Stage 5: The finished harness
+
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
 
 **Book:** Stage 5, "The finished harness"
 **Plan:** Stage 5
@@ -1731,6 +1746,8 @@ Before merging a change to any boundary:
 ---
 
 # Plan — the stage contract
+
+> **Educational use only — not a production-ready system.** This plan describes an educational project to learn and understand, not a production architecture. It is deliberately simplified. Do not deploy it as-is. The goal is to make each layer visible, runnable, and easy to reason about.
 
 This is the build contract for **Build a Mini Python Sandbox**. Each stage is a
 standalone chapter directory with runnable code and tests. A stage is done when

@@ -1,5 +1,7 @@
 # Chapter 3 — Stage 3: Running code locally
 
+> **Educational use only — not a production-ready system.** This chapter is part of an educational project to learn and understand. It deliberately simplifies design, error handling, security, and operations so the core idea stays visible. Do not deploy this code as-is.
+
 **Book:** Stage 3, "Running code locally"
 **Plan:** Stage 3
 **Goal:** Execute a command through an argv allowlist with a clean environment, a timeout, a process-tree kill and bounded output.

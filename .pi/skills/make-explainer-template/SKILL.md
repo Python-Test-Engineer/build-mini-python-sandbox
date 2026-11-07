@@ -14,7 +14,7 @@ Create a complete build-along explainer project from two inputs: a **topic** and
 - a print-ready PDF (`book/BOOK.pdf`),
 - the same web styling as the existing explainer pages (`assets/book.css`).
 
-Every generated document starts with a prominent **educational purposes only / not production grade** disclaimer. The HTML build also injects the disclaimer into the page header.
+Every generated document starts with a prominent disclaimer stating that this is an **educational project to learn and understand**, and **not a production-ready system**. The HTML build also injects that disclaimer into the page header.
 
 ## Inputs
 
@@ -81,7 +81,7 @@ The disclaimer **must** remain at the beginning of:
 - `book/BOOK.md`
 - every `chNN/CHAPTER.md`
 
-The generator also injects a visible disclaimer block at the top of every HTML page. Do not remove it, water it down, or move it to the end. It must say this is for educational purposes only and not a production-grade system.
+The generator also injects a visible disclaimer block at the top of every HTML page. Do not remove it, water it down, or move it to the end. It must say, in direct language, that this is an educational project to learn and understand and that it is **not a production-ready system**. Reuse the template wording rather than inventing a weaker variant.
 
 ### 3. Build Markdown, HTML, and PDF
 
@@ -123,7 +123,7 @@ Useful smoke test:
 
 ```bash
 node scripts/build.mjs --no-pdf
-node -e "const fs=require('fs'); for (const f of ['book/BOOK.html','ch00/CHAPTER.html']) { const s=fs.readFileSync(f,'utf8'); if(!s.includes('Educational use only')) throw new Error(f+' missing disclaimer'); }"
+node -e "const fs=require('fs'); for (const f of ['book/BOOK.html','ch00/CHAPTER.html']) { const s=fs.readFileSync(f,'utf8'); if(!s.includes('Educational use only') || !s.includes('not a production-ready system')) throw new Error(f+' missing disclaimer'); }"
 ```
 
 ## House rules
