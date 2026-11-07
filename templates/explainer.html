@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explainer title</title>
+<!-- When this file lives in templates/, the path is ../assets/. Move it to the
+     repo root and use assets/ instead. -->
+<link rel="stylesheet" href="../assets/explainer.css">
+<script>
+/* Theme bootstrap — keep this inline and before any content. */
+(function () {
+  try {
+    var saved = JSON.parse(localStorage.getItem('mca-site-customiser:v2')) || {};
+    var mode = saved.mode === 'light' || saved.mode === 'dark' ? saved.mode : 'auto';
+    var dark = mode === 'dark' || (mode === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  } catch (e) { /* no stored preference */ }
+})();
+</script>
+</head>
+<body>
+<div class="progress"><span id="bar"></span></div>
+<div class="shell">
+
+  <aside class="sidebar">
+    <a class="side-kicker" href="#top">project name &middot; explainer</a>
+    <p class="side-title">TITLE</p>
+    <p class="side-sub">One line describing the page.</p>
+    <div class="side-rule"></div>
+    <p class="side-label">Contents</p>
+    <nav class="toc" id="toc">
+      <a href="#s01" class="l2"><span class="n">01</span><span>First section</span></a>
+      <a href="#s01-01" class="l3"><span class="n"></span><span>Subsection</span></a>
+      <a href="#s02" class="l2"><span class="n">02</span><span>Second section</span></a>
+    </nav>
+    <div class="side-foot">
+      Built from <code>PLAN.md</code><br>
+      2 sections
+    </div>
+  </aside>
+
+  <main class="pane" id="top">
+    <div class="inner">
+      <header class="page-heading">
+        <p class="eyebrow">Reading guide</p>
+        <h1>TITLE</h1>
+        <p class="lede">What this page explains and who it is for.</p>
+        <p class="meta">
+          <span>2 sections</span>
+          <span>generated page</span>
+        </p>
+      </header>
+
+      <section id="s01">
+        <h2><span class="num">01</span><span>First section</span></h2>
+        <p>Body copy. Use <strong>strong</strong>, <em>em</em> and <code>inline_code()</code>.</p>
+
+        <div class="callout"><strong>Goal:</strong> a callout for the one thing the reader must remember.</div>
+        <div class="callout warn"><strong>Warning:</strong> a warning callout for a trap.</div>
+
+        <h3 id="s01-01">Subsection</h3>
+        <figure class="code">
+          <figcaption><span>example.js</span><span class="lang">javascript</span></figcaption>
+          <pre>const answer = 42;
+console.log(answer);</pre>
+        </figure>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Control</th><th>What it stops</th></tr></thead>
+            <tbody>
+              <tr><td><code>PathPolicy</code></td><td>Containment checks</td></tr>
+              <tr><td><code>Container</code></td><td>Process isolation</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="s02">
+        <h2><span class="num">02</span><span>Second section</span></h2>
+        <p>More prose.</p>
+
+        <figure class="ascii">
+          <figcaption>Flow</figcaption>
+          <pre>input ──▶ policy ──▶ tool</pre>
+        </figure>
+
+        <ol>
+          <li>First step.</li>
+          <li>Second step.</li>
+        </ol>
+      </section>
+
+      <div class="colophon">
+        Built from <code>PLAN.md</code> &middot; 2 sections &middot; explainer series
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../assets/explainer.js"></script>
+</body>
+</html>

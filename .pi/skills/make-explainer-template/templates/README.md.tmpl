@@ -1,0 +1,59 @@
+# __TITLE__
+
+> **Educational use only — not production grade.**
+> This repository is a teaching artifact. It is intentionally simplified, optimised for clarity and step-by-step learning, and makes no claim to be secure, complete, or production-ready. Do not deploy it as-is. If you adapt it for real work, add proper validation, isolation, monitoring, testing, and operational controls.
+
+Companion code and book for **__TOPIC__**, built one runnable stage at a time in **__LANGUAGE_LABEL__**.
+
+## What this repository is
+
+A staged build-along course. Each `chNN/` folder is a standalone checkpoint with its own run sheet, and the book explains the architecture, decisions, and failure modes behind each stage.
+
+| Path | What it is |
+|---|---|
+| `ch00/` … `ch__LAST__/` | One runnable snapshot per chapter |
+| `chNN/CHAPTER.md` | The chapter run sheet |
+| `plan.md` | The concise stage contract |
+| `book/BOOK.md` | The explainer book in Markdown |
+| `book/BOOK.html` | Styled single-file HTML edition |
+| `book/BOOK.pdf` | Print-ready PDF edition |
+| `scripts/build.mjs` | Markdown → HTML → PDF builder |
+| `assets/book.css` | The house stylesheet used by every HTML page |
+
+Every chapter is a standalone __LANGUAGE_LABEL__ project.
+
+## Quick start
+
+```__FENCE__
+__QUICKSTART__
+```
+
+## Build the book
+
+Requires Node.js 20+ and a local Chrome or Edge install for PDF output.
+
+```bash
+node scripts/build.mjs              # book + every chapter
+node scripts/build.mjs --no-pdf     # HTML only
+node scripts/build.mjs --book-only  # book only
+```
+
+Set `CHROME_PATH` if the browser is not in a standard location.
+
+## Read the book
+
+- Markdown: [`book/BOOK.md`](book/BOOK.md)
+- HTML: [`book/BOOK.html`](book/BOOK.html)
+- PDF: [`book/BOOK.pdf`](book/BOOK.pdf)
+
+## Configuration
+
+Copy `.env.example` to `.env` if the project needs secrets. Never commit a real key. The book and the offline docs should remain useful without credentials.
+
+## Author
+
+__AUTHOR__
+
+---
+
+**Again: educational use only.** This is a teaching system, not a production-grade implementation.

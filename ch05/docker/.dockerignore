@@ -1,0 +1,10 @@
+# Keep the build context tiny and free of local state.
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.git/
+.env
+workspace/
+tests/

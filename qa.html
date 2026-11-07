@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mini Python Sandbox — architecture Q&amp;A</title>
+<link rel="stylesheet" href="assets/explainer.css">
+<script>
+/* Set the theme before first paint. Keep this inline and first. */
+(function () {
+  try {
+    var saved = JSON.parse(localStorage.getItem('mca-site-customiser:v2')) || {};
+    var mode = saved.mode === 'light' || saved.mode === 'dark' ? saved.mode : 'auto';
+    var dark = mode === 'dark' || (mode === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  } catch (e) { /* no stored preference */ }
+})();
+</script>
+</head>
+<body>
+<div class="progress"><span id="bar"></span></div>
+<div class="shell">
+
+  <aside class="sidebar">
+    <a class="side-kicker" href="#top">mini python sandbox &middot; Q&amp;A</a>
+    <p class="side-title">Architecture Q&amp;A</p>
+    <p class="side-sub">Short answers mapped to the six chapters.</p>
+    <div class="side-rule"></div>
+    <p class="side-label">Contents</p>
+    <input id="search" class="search" type="search" placeholder="Search questions and answers…" aria-label="Search questions and answers">
+    <nav class="toc" id="toc"></nav>
+    <div class="side-foot">
+      Companion to <code>ch00</code>–<code>ch05</code><br>
+      <span id="side-count">10 sections &middot; 56 questions</span>
+    </div>
+  </aside>
+
+  <main class="pane" id="top">
+    <div class="inner">
+      <header class="page-heading">
+        <p class="eyebrow">Reading guide</p>
+        <h1>Architecture Q&amp;A</h1>
+        <p class="lede">A single-file companion to the six chapters. Start with the section that matches the boundary you are debugging; each answer is short on purpose.</p>
+        <p class="meta">
+          <span>10 sections</span>
+          <span>56 questions</span>
+          <span>offline companion</span>
+        </p>
+      </header>
+
+      <div class="callout"><strong>The key sentence of the whole book:</strong> the container is the boundary; the path policy is accident prevention; the audit is evidence, not prevention.</div>
+
+      <p>Where this reference and the implementation disagree, the implementation and its tests win. The code and the chapter carry the detail; the answers here are the map.</p>
+
+      <div id="qa-root"></div>
+
+      <div class="colophon">
+        Offline companion for <em>Build a Mini Python Sandbox</em> &middot; open this file directly in a browser.
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/explainer.js"></script>
+<script>
+const QA = [
+  {
+    id: "orientation",
+    title: "Orientation",
+    items: [
+      {
+        q: "What exactly is being sandboxed in this book?",
+        a: `<p>The point where a model's tool call becomes an operating-system action: a file read, a file write, or a process start. The agent loop, the prompt and the model are context; the sandbox is the control on that conversion.</p>`
+      },
+      {
+        q: "Why start with deliberately broken code?",
+        a: `<p>Because the first prototype usually is a string prefix check and a shell call. Stage 0 makes those choices explicit and tests the bad outcomes, so the fixes in Stage 1 and Stage 3 have a concrete target. The tests assert the escape instead of hiding it.</p>`
+      },
+      {
+        q: "Is this a complete coding agent?",
+        a: `<p>No. It is a small harness with file tools, a command tool, a ReAct loop and an audit log. The model is scripted so everything runs offline. A real LLM adapter implements one method: <code>reply(messages, tools) -&gt; ModelReply</code>.</p>`
+      },
+      {
+        q: "What are the three boundaries a reader should remember?",
+        a: `<ul><li><strong>Path policy:</strong> canonical containment for file tools.</li><li><strong>Command runner:</strong> argv, allowlist, clean env and limits.</li><li><strong>Container:</strong> namespaces, cgroups and capabilities for processes.</li></ul><p>The audit is a fourth, separate control: evidence rather than prevention.</p>`
+      },
+      {
+        q: "Which chapter should I read first if I only care about Docker?",
+        a: `<p>Read <code>ch03/CHAPTER.md</code> first, then <code>ch04/CHAPTER.md</code>. The Docker recipe only makes sense as the answer to the local runner's residual filesystem and network access.</p>`
+      }
+    ]
+  },
+  {
+    id: "threat-model",
+    title: "Threat model",
+    items: [
+      {
+        q: "What are the main assets?",
+        a: `<p>Files outside the workspace (SSH keys, cloud credentials), the workspace itself, the parent process environment, host compute, network access, the audit trail, the image and the Docker daemon.</p>`
+      },
+      {
+        q: "Is the model trusted?",
+        a: `<p>No. It can be prompt-injected by a README, an issue comment or a test fixture. The tool layer must re-validate every call regardless of what the transcript says.</p>`
+      },
+      {
+        q: "What is the most important residual risk after Stage 5?",
+        a: `<p>The container shares the host kernel. A kernel exploit, a Docker daemon compromise or a malicious bind-mount configuration is outside the book's boundary. Host hardening, rootless Docker, image scanning and network policy are operations work.</p>`
+      },
+      {
+        q: "Why is a refusal not a security failure?",
+        a: `<p>A refusal means a control worked. The audit should distinguish refusals (the sandbox doing its job) from failures (the sandbox or infrastructure broken). A spike in <code>ERROR[PATH]</code> may be probing, but it is not automatically an incident.</p>`
+      },
+      {
+        q: "What does prompt injection change in the design?",
+        a: `<p>Nothing about the boundary. It changes the probability that the model asks for something dangerous. The answer is to keep the boundary independent of model intent: path policy, allowlist, container limits and a step cap.</p>`
+      }
+    ]
+  },
+  {
+    id: "path-policy",
+    title: "Path policy",
+    items: [
+      {
+        q: "Why is <code>startswith</code> not a containment check?",
+        a: `<p><code>/tmp/workspace-evil</code> starts with <code>/tmp/workspace</code>. A prefix check compares spellings; containment compares canonical path components. Use <code>os.path.commonpath</code> after resolving both sides.</p>`
+      },
+      {
+        q: "How does the policy defeat a symlink escape?",
+        a: `<p>It resolves the deepest existing ancestor with <code>os.path.realpath</code>, then reattaches the part that does not exist yet. A symlinked parent such as <code>workspace/link-to-outside/new.txt</code> resolves outside the root and is refused.</p>`
+      },
+      {
+        q: "Why resolve the deepest existing ancestor instead of the whole path?",
+        a: `<p>Write targets often do not exist. <code>realpath</code> only sees the filesystem, so resolving the nearest existing parent catches symlinked parents while still returning a canonical path for the missing tail.</p>`
+      },
+      {
+        q: "Why are reads allowed to be absolute but writes are not?",
+        a: `<p>An absolute read inside the root is convenient and still contained. A write should be an intentional workspace action, not an absolute overwrite of a system file. The asymmetry is a policy choice, not an inconsistency.</p>`
+      },
+      {
+        q: "Which Windows path forms are refused?",
+        a: `<ul><li><code>C:foo</code> is drive-relative and refused.</li><li><code>\\\\server\\share</code> is UNC and refused.</li><li><code>CON</code>, <code>NUL</code>, <code>LPT1.log</code> are reserved device names.</li><li>Trailing dots or spaces on Windows can name the same file as a clean name.</li><li>Control characters, especially NUL, are refused.</li></ul>`
+      },
+      {
+        q: "Does the path policy stop a malicious local process?",
+        a: `<p>No. It protects the Python file tools from mistakes and model-generated requests. A process running as the same user can call <code>os.open</code> directly. That is why command execution moves into a container.</p>`
+      }
+    ]
+  },
+  {
+    id: "file-tools",
+    title: "Sandbox and file tools",
+    items: [
+      {
+        q: "Why does the sandbox return strings instead of raising?",
+        a: `<p>A model should see <code>ERROR[PATH]</code> and continue, not crash the session. The tool boundary converts expected failures into observations; unexpected bugs become <code>ERROR[INTERNAL]</code> and are logged elsewhere.</p>`
+      },
+      {
+        q: "What makes a write atomic here?",
+        a: `<p>Write a temporary file in the same directory, flush and <code>fsync</code> it, then <code>os.replace</code> it over the target. A reader sees the old file or the new file, never a half-written one. The temp file is removed on failure.</p>`
+      },
+      {
+        q: "Why is an edit unique by default?",
+        a: `<p>If the old text appears three times, a silent replace corrupts three places. The default requires exactly one match. Replacing all is an explicit <code>count=0</code> opt-in.</p>`
+      },
+      {
+        q: "Why can a delete remove only a regular file?",
+        a: `<p>Recursive delete has a much larger blast radius. The agent can ask for files one at a time. Directories and non-regular files are refused before deletion.</p>`
+      },
+      {
+        q: "What do the byte and entry caps actually protect?",
+        a: `<p>The agent process and its context window. They stop one tool call from reading a 2 GB file or listing a million entries. They are not a multi-tenant quota; rate limits and step caps belong at the service layer.</p>`
+      },
+      {
+        q: "Why does a symlink write fail even if the target is inside the root?",
+        a: `<p>The policy refuses a final symlink for writes so the rule is independent of the tool that performs the write. The atomic writer would replace the link safely, but a different tool might follow it. Refusing is simpler to audit.</p>`
+      }
+    ]
+  },
+  {
+    id: "local-runner",
+    title: "Command runner",
+    items: [
+      {
+        q: "Why is <code>shell=True</code> banned for model input?",
+        a: `<p>It turns one tool call into a small programming language: <code>;</code>, <code>&amp;&amp;</code>, pipes, redirection and command substitution. An argv list makes those characters ordinary arguments.</p>`
+      },
+      {
+        q: "How does the allowlist avoid PATH shadowing?",
+        a: `<p>It maps a logical name to an absolute executable and never calls <code>shutil.which</code> on a model-supplied name. A file called <code>python</code> in the workspace cannot shadow the interpreter.</p>`
+      },
+      {
+        q: "What does the clean environment keep?",
+        a: `<p>Only OS-essential variables (<code>SYSTEMROOT</code>, <code>WINDIR</code>, <code>COMSPEC</code>, <code>PATHEXT</code>, <code>LANG</code>, <code>LC_ALL</code>), a minimal PATH, workspace-local <code>HOME</code>/<code>TMP</code>, and deterministic Python flags. Host secrets are not inherited.</p>`
+      },
+      {
+        q: "Why kill a process group instead of the direct child?",
+        a: `<p>A command can spawn workers. Killing only the parent leaves grandchildren running. POSIX gets a new session and <code>killpg</code>; Windows gets a new process group and <code>taskkill /T</code>.</p>`
+      },
+      {
+        q: "Why keep reading after the output cap is reached?",
+        a: `<p>If the parent stops reading, the child blocks on a full pipe and never exits. The cap decides what is stored; draining avoids turning the cap into a hang.</p>`
+      },
+      {
+        q: "Does the local runner isolate the filesystem or network?",
+        a: `<p>No, and the demo proves it by reading a file outside the workspace. Argv, allowlist, clean env, timeout and rlimits are hygiene. The container is the isolation boundary.</p>`
+      }
+    ]
+  },
+  {
+    id: "docker",
+    title: "Docker boundary",
+    items: [
+      {
+        q: "Why does <code>--read-only</code> not make the workspace read-only?",
+        a: `<p><code>--read-only</code> freezes the image root filesystem. The bind mount at <code>/workspace</code> is separate. Use <code>workspace_mode=\"ro\"</code> when the task only needs to read.</p>`
+      },
+      {
+        q: "What does <code>--network none</code> actually stop?",
+        a: `<p>Network connectivity inside the container namespace. It does not configure the host firewall, the Docker daemon, or sibling containers. Those are platform controls.</p>`
+      },
+      {
+        q: "Why drop all capabilities?",
+        a: `<p>Most commands need none. Dropping all of them removes raw sockets, mounts and other privileged operations. <code>no-new-privileges</code> then stops a setuid binary from gaining them back.</p>`
+      },
+      {
+        q: "Why pass <code>--user 1000:1000</code>?",
+        a: `<p>So the process inside the container is not root. The image creates a fixed uid:gid for this. On a host bind mount, the uid must be able to write the workspace, so deployment may need to align ownership.</p>`
+      },
+      {
+        q: "Why is there exactly one bind mount?",
+        a: `<p>Every additional host mount widens the reachable filesystem. The workspace is the task. Scratch space belongs in a size-limited tmpfs, not in the user's home directory.</p>`
+      },
+      {
+        q: "What happens to a container after a timeout?",
+        a: `<p>The runner calls <code>docker rm -f &lt;unique-name&gt;</code> and then kills the CLI process. Killing the CLI alone can leave the daemon-side container running.</p>`
+      },
+      {
+        q: "Does Docker make the host safe?",
+        a: `<p>No. Containers share the host kernel. Kernel exploits, a compromised daemon and a mounted Docker socket are outside the boundary. Rootless Docker, host hardening, image scanning and daemon access control are required for real deployments.</p>`
+      }
+    ]
+  },
+  {
+    id: "agent-audit",
+    title: "Agent loop and audit",
+    items: [
+      {
+        q: "Why is the step limit in the loop rather than the prompt?",
+        a: `<p>A model can loop forever; the harness cannot. <code>max_steps</code> is enforced in <code>Agent.run</code> and returns a visible <code>stopped=\"max_steps\"</code> result.</p>`
+      },
+      {
+        q: "What does a tool refusal do to the loop?",
+        a: `<p>It becomes an observation. The transcript gets the observation and the model chooses the next action. Infrastructure absence such as <code>ERROR[DOCKER_MISSING]</code> behaves the same way.</p>`
+      },
+      {
+        q: "How does the audit chain work?",
+        a: `<p>Each event carries the previous event's hash. The new hash is <code>sha256(prev + canonical_event)</code>. Editing or deleting a middle line breaks <code>verify()</code>. The log is append-only JSONL and fsynced per event.</p>`
+      },
+      {
+        q: "Why is the audit outside the workspace?",
+        a: `<p>So the file tools cannot edit their own trail through the sandbox. A local user with the same permissions can still tamper; the hash chain makes that visible rather than impossible. Ship the log off-host for real accountability.</p>`
+      },
+      {
+        q: "What is redacted in the audit?",
+        a: `<p>Keys matching <code>key</code>, <code>token</code>, <code>secret</code>, <code>password</code>, <code>passwd</code> or <code>credential</code> are masked. Strings longer than 500 characters are truncated. Redaction is not classification; arbitrary content can still be sensitive.</p>`
+      },
+      {
+        q: "Why is the demo model scripted?",
+        a: `<p>So the book can be read, tested and run in CI without an API key or network. The sandbox is the subject. A real adapter implements <code>Model.reply</code> and the rest of the harness is unchanged.</p>`
+      }
+    ]
+  },
+  {
+    id: "testing",
+    title: "Testing",
+    items: [
+      {
+        q: "Why do Stage 0 tests assert the bad outcomes?",
+        a: `<p>They are an executable threat model. When Stage 1 lands, the expectations are reversed: the escape must now be refused. Keeping the Stage 0 tests makes the change in behaviour visible.</p>`
+      },
+      {
+        q: "How are Docker tests run without Docker?",
+        a: `<p><code>build_command</code> is a pure function. The offline tests inspect the exact <code>docker run</code> argv and the configuration refusals. Integration tests skip when <code>docker version</code> fails or the image is missing.</p>`
+      },
+      {
+        q: "Why do symlink and rlimit tests skip?",
+        a: `<p>Windows may refuse symlink creation without Developer Mode, and POSIX resource limits do not exist on Windows. A skip with a reason is honest; a weakened test is not.</p>`
+      },
+      {
+        q: "What should a new boundary change add?",
+        a: `<p>A test that fails without the control and passes with it, plus a threat-model entry and, if the default changes, an operations note. A boundary change without a test is a comment.</p>`
+      },
+      {
+        q: "How can I run everything?",
+        a: `<p>Install pytest once with <code>python -m pip install pytest</code>. Run each chapter from its own directory because the packages share the name <code>mini_harness</code>:</p><pre><code>for chapter in ch00 ch01 ch02 ch03 ch04 ch05; do
+  (cd \"$chapter\" &amp;&amp; python -m pytest -v)
+done</code></pre><p>On Windows, use the PowerShell loop in <code>README.md</code>.</p>`
+      }
+    ]
+  },
+  {
+    id: "operations",
+    title: "Operations",
+    items: [
+      {
+        q: "What is the minimum viable kill switch?",
+        a: `<p>Stop accepting new tasks, deny the harness access to Docker or stop the daemon, revoke the model API key, and preserve the audit log. Do not rely on a prompt instruction.</p>`
+      },
+      {
+        q: "How should the image be managed?",
+        a: `<p>Build in CI from a reviewed Dockerfile, pin the base image by digest, scan it, test the recipe, publish an immutable tag, deploy the exact digest, and rebuild on base-image security updates.</p>`
+      },
+      {
+        q: "How should the audit log be rotated?",
+        a: `<p>Stop the process, move the file, start a new segment. The chain restarts at sequence 1 for the new file. Do not edit or truncate a live file; verify the chain on ingest.</p>`
+      },
+      {
+        q: "What should be alerted on?",
+        a: `<p>A rising rate of path/denied/cwd refusals, timeouts, output truncation, audit verification failures, daemon restarts, disk pressure, failed container cleanup and repeated max-step stops.</p>`
+      },
+      {
+        q: "What should a runaway container runbook look like?",
+        a: `<p><code>docker ps</code> for a <code>mini-harness-*</code> name, <code>docker rm -f &lt;name&gt;</code>, check the audit for a <code>tool.call</code> without a <code>tool.result</code>, then review the timeout and memory limits.</p>`
+      }
+    ]
+  },
+  {
+    id: "tradeoffs",
+    title: "Design trade-offs",
+    items: [
+      {
+        q: "Why one policy instead of per-tool checks?",
+        a: `<p>Because multiple implementations of the same rule drift. One <code>PathPolicy</code> means a read, write, edit and delete answer the same question the same way. The toolbox routes; it does not re-policy.</p>`
+      },
+      {
+        q: "Why are writes relative-only?",
+        a: `<p>It makes a write an intentional workspace action. An absolute path is allowed for reads when it resolves inside the root, but a write to an absolute system path is never a normal coding-agent operation.</p>`
+      },
+      {
+        q: "Why not let the model write shell scripts?",
+        a: `<p>It can, if the script is a file and an allowlisted interpreter runs it. The harness does not pass a shell string. The container still limits what the script can reach.</p>`
+      },
+      {
+        q: "Why is <code>--memory-swap</code> set equal to <code>--memory</code>?",
+        a: `<p>So the container cannot hide a memory overrun in swap. The limit is the limit. If swap is part of the intended budget, raise both deliberately and document it.</p>`
+      },
+      {
+        q: "Why is the audit not encrypted?",
+        a: `<p>The book treats the audit as a local trail with redaction and a hash chain. Confidentiality is a deployment concern: file permissions, disk encryption, an off-host log store and retention policy.</p>`
+      }
+    ]
+  }
+];
+
+const root = document.getElementById("qa-root");
+const toc = document.getElementById("toc");
+const search = document.getElementById("search");
+
+const pad = (n) => String(n).padStart(2, "0");
+
+function render() {
+  const query = (search.value || "").trim().toLowerCase();
+  root.innerHTML = "";
+  toc.innerHTML = "";
+  let shown = 0;
+
+  QA.forEach((section, index) => {
+    const matching = section.items.filter((item) => {
+      if (!query) return true;
+      return (item.q + " " + item.a).toLowerCase().includes(query);
+    });
+
+    if (matching.length === 0) return;
+    shown++;
+
+    const link = document.createElement("a");
+    link.className = "l2";
+    link.href = "#" + section.id;
+    const n = document.createElement("span");
+    n.className = "n";
+    n.textContent = pad(index + 1);
+    const label = document.createElement("span");
+    label.textContent = section.title;
+    link.append(n, label);
+    toc.appendChild(link);
+
+    const sec = document.createElement("section");
+    sec.id = section.id;
+
+    const heading = document.createElement("h2");
+    const num = document.createElement("span");
+    num.className = "num";
+    num.textContent = pad(index + 1);
+    const title = document.createElement("span");
+    title.textContent = section.title;
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = query
+      ? matching.length + " match" + (matching.length === 1 ? "" : "es")
+      : matching.length + " questions";
+    heading.append(num, title, tag);
+    sec.appendChild(heading);
+
+    matching.forEach((item) => {
+      const details = document.createElement("details");
+      details.className = "qa-item";
+      const summary = document.createElement("summary");
+      summary.textContent = item.q;
+      const answer = document.createElement("div");
+      answer.className = "answer";
+      answer.innerHTML = item.a;
+      details.append(summary, answer);
+      sec.appendChild(details);
+    });
+
+    root.appendChild(sec);
+  });
+
+  if (!shown) {
+    const empty = document.createElement("div");
+    empty.className = "qa-empty";
+    empty.innerHTML = "<p>No question matches that search. Try a shorter term such as &ldquo;symlink&rdquo;, &ldquo;network&rdquo; or &ldquo;audit&rdquo;.</p>";
+    root.appendChild(empty);
+  }
+
+  if (window.Explainer) window.Explainer.refreshToc();
+}
+
+search.addEventListener("input", render);
+render();
+</script>
+</body>
+</html>

